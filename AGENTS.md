@@ -131,6 +131,10 @@ UI 方向：
 - 每个实施步骤完成后，必须先完成验证，再进入下一步。
 - 创建代码后，需要在 `memory-bank/progress.md` 中记录已完成步骤。
 - 新增文件或模块后，需要在 `memory-bank/architecture.md` 中记录其作用。
+- 每完成一个 Step 后，必须提醒用户先完成验证；用户确认通过后，再更新 `progress.md` 和必要的 `architecture.md`。
+- 用户验证通过并完成记录后，建议进行本地 Git commit。
+- 每完成一个阶段或可演示节点后，建议 push 到 GitHub。
+- 不要在用户尚未验证通过时主动进入下一步、提交或推送。
 - 未经用户确认，不要扩大 MVP 范围。
 - 未经用户要求，不要移动 `memory-bank` 中的核心文档。
 
@@ -168,6 +172,14 @@ UI 方向：
 > 初始化微信小程序 TypeScript 项目。
 
 每完成一个步骤后，在 `memory-bank/progress.md` 中记录进度。
+
+## Git 工作流
+
+- 当前 GitHub remote：`https://github.com/Sunnnnnyh/Scene-English.git`
+- 当前默认分支：`main`
+- 推荐节奏：每完成一个 Step 并通过用户验证后本地 commit；每完成一个阶段或可演示节点后 push 到 GitHub。
+- commit 前应先检查工作区状态，确认只包含本次 Step 相关改动。
+- push 前应确认本地分支已与 `origin/main` 同步，避免覆盖远端已有内容。
 
 ## 重要提示
 

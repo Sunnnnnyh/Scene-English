@@ -21,6 +21,18 @@
 
 ## 当前进度
 
+### 2026-05-14｜GitHub 连接与提交策略记录
+
+- 完成内容：
+  - 本地仓库已连接 GitHub remote：`https://github.com/Sunnnnnyh/Scene-English.git`。
+  - 当前默认分支为 `main`。
+  - 已将当前文档版本推送到 GitHub。
+  - 确认后续 Git 节奏：每完成一个 Step 并通过用户验证后本地 commit；每完成一个阶段或可演示节点后 push 到 GitHub。
+- 验证结果：
+  - 已完成远端推送，`main` 与 `origin/main` 保持一致。
+- 遗留问题：
+  - 后续每次提交前需要检查工作区状态，避免混入无关文件。
+
 ### 2026-05-14｜阶段 0 / Step 0.0 初始化协作文档和忽略规则
 
 - 完成内容：

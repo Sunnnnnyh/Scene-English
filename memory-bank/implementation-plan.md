@@ -18,6 +18,8 @@
 8. 开发阶段参考 Figma 文件中的 `SceneEnglish Low-fi Wireframes`，但不追求像素级还原。
 9. 自动化测试与微信开发者工具人工验收并存：`services`、`utils`、数据逻辑优先自动测试；页面跳转、热区点击、录音、音频播放和真机体验使用人工验收记录。
 10. 每完成一个重大功能或里程碑后，必须更新 `memory-bank/progress.md` 和 `memory-bank/architecture.md`。
+11. 每完成一个 Step，先等待用户验证通过；验证通过后更新 `progress.md`，如有新增或调整文件则更新 `architecture.md`，然后建议进行本地 Git commit。
+12. 每完成一个阶段或可演示节点后，建议 push 到 GitHub；不要在未验证通过时提交或推送。
 
 ## 已确认执行细则
 
@@ -51,6 +53,8 @@
 - 收藏夹、错题夹等页面需要基础空状态和轻量跳转操作。
 - 错误反馈采用轻问题 toast、关键阻断 modal 的方式。
 - 界面主体使用中文，学习内容保留英文，并提供可展开中文辅助。
+- GitHub remote 已连接到 `https://github.com/Sunnnnnyh/Scene-English.git`，本地默认分支为 `main`。
+- Git 节奏采用“Step 级别本地 commit，阶段级别或可演示节点 push 到 GitHub”。
 
 ---
 
