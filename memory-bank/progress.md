@@ -125,3 +125,21 @@
   - 当前使用项目本地 `.tools/` 中的 Node.js，不依赖系统全局 npm；后续运行 npm 脚本前需要先把该目录临时加入当前 PowerShell 的 `PATH`。
   - 当前仅有占位 smoke test；后续进入服务层和工具函数开发后，需要补充真实单元测试。
   - 尚未开始阶段 1。
+
+### 2026-05-15 — Phase 1 / Step 1.1 Define core TypeScript types
+
+- Completed:
+  - Added `miniprogram/types/index.ts` as the centralized domain type export.
+  - Defined core business types for scenes, words, progress, favorites, mistakes, quiz questions, quiz rounds, quiz answer results, speech recognition results, local storage envelopes, and onboarding state.
+  - Covered `expressionEn`, `expressionCn`, hotspot coordinates, scene status, `sceneenglish:` storage key shape, and `click` / `spelling` / `speaking` mistake types.
+  - Modeled mistake mastery progress as `0 | 50 | 100`, matching the product rule that one correct answer means 50% and two consecutive correct answers complete the weak item type.
+  - Removed the placeholder `miniprogram/types/.gitkeep` because the directory now contains real source code.
+- Verification:
+  - User manually confirmed the type file contains the expected `Mistake` structure.
+  - User ran `npm run typecheck`; it passed.
+  - User ran `npm run lint`; it passed.
+  - User ran `npm run format:check`; it passed and reported all matched files use Prettier style.
+  - User ran `npm test`; Vitest reported `1 passed`.
+- Remaining notes:
+  - Step 1.2 has not started yet.
+  - Previous Step 0.3 local commit is still ahead of `origin/main` because the earlier push attempts failed due GitHub network connection resets.

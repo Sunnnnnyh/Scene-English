@@ -268,3 +268,23 @@ $env:PATH = "D:\SceneEnglish\.tools\node-v24.11.1-win-x64;$env:PATH"
 | `tests/smoke.test.ts` | 占位 smoke test，用于验证测试环境可运行 | 阶段 0 / Step 0.3 |
 | `miniprogram/tsconfig.json` | 更新为微信开发者工具可识别官方小程序全局类型 | 阶段 0 / Step 0.3 |
 | `miniprogram/typings/index.d.ts` | 保留 `IAppOption`，移除与官方类型重复的 `App` / `Page` 声明 | 阶段 0 / Step 0.3 |
+
+## 9. Phase 1 / Step 1.1 Type Architecture Update
+
+`miniprogram/types/index.ts` is now the central domain type module for the miniprogram source code. It contains business data shapes only, not page UI state.
+
+Key responsibilities:
+
+- `Scene` describes learnable and coming-soon scenes, including image paths, base canvas size, word count, and scene status.
+- `Word` describes vocabulary records, including Chinese and English text, phonetic text, examples, practical expressions, audio path, and hotspot position.
+- `UserProgress`, `Favorite`, `Mistake`, and `OnboardingState` describe local user data that will later be persisted through service and storage layers.
+- `MistakeTypeStats` and `Mistake` support separate `click`, `spelling`, and `speaking` weak-item tracking, including mistake count, correct streak, mastery progress, and latest mistake time.
+- `QuizQuestion`, `QuizRound`, and `QuizAnswerResult` provide reusable business types for later Listen + Spell, Listen + Speak, and mistake-review flows.
+- `SpeechResult` defines the replaceable speech-recognition contract for the MVP mock ASR and later real ASR implementation.
+
+File change log addition:
+
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `miniprogram/types/index.ts` | Centralized core TypeScript domain types for scenes, words, user progress, favorites, mistakes, quiz flow, speech results, local store envelopes, and onboarding state. | Phase 1 / Step 1.1 |
+| `miniprogram/types/.gitkeep` | Removed because `miniprogram/types/` now contains the real type module. | Phase 1 / Step 1.1 |
