@@ -180,3 +180,25 @@
   - 热区坐标为临时合理值，后续需要在正式或占位场景图确定后重新校准。
   - 音频路径已与数据文件保持一致，但实际音频资源将在 Step 1.4 准备。
   - 尚未开始 Step 1.4。
+
+### 2026-05-15 — 阶段 1 / Step 1.4 准备占位图片和音频资源
+
+- 完成内容：
+  - 新增 `miniprogram/assets/images/classroom-cover.png` 和 `miniprogram/assets/images/classroom.png` 作为低保真教室占位图。
+  - 新增 20 个 `miniprogram/assets/audio/*.mp3` 占位音频文件，文件名与 `classroomWords` 中的 `audioUrl` 保持一致。
+  - 新增 `miniprogram/assets/audio/README.md`，说明当前音频为临时静音占位资源，后续用户测试前需要替换为真实发音。
+  - 新增 `tests/assets.test.ts`，验证 Classroom 图片资源存在、PNG 文件头正确，以及 20 个单词音频资源存在且非空。
+  - 更新 `tsconfig.test.json`，将测试配置的 `moduleResolution` 调整为 `Node` 并启用 `skipLibCheck`，避免微信开发者工具内置 TypeScript 服务误报测试配置和 `vitest` 模块解析问题。
+- 验证结果：
+  - 新增资源测试先在图片和音频不存在时失败，随后补充资源后通过。
+  - 本地已验证 TypeScript 小程序配置检查通过。
+  - 本地已验证 TypeScript 测试配置检查通过。
+  - 本地已验证 ESLint 通过。
+  - 本地已验证 Prettier 项目脚本范围检查通过。
+  - 本地已验证 Vitest 通过，显示 3 个测试文件、8 个测试用例通过。
+  - 用户已在微信开发者工具中重新编译并确认通过。
+- 遗留问题：
+  - 当前图片为低保真占位图，后续视觉精修阶段需要替换为正式教室插画并重新校准热区。
+  - 当前音频为静音占位 mp3，后续用户测试前需要替换为真实单词发音。
+  - 本地 `main` 分支仍有提交未能推送到 GitHub，原因是当前环境连接 `github.com:443` 超时；网络恢复后需要执行 `git push origin main`。
+  - 尚未开始 Step 2.1。

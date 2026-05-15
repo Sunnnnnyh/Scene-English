@@ -6,7 +6,7 @@
 
 ## 1. 当前阶段
 
-当前项目已完成阶段 1 / Step 1.3，已初始化微信小程序 TypeScript 工程，建立基础目录结构和全部规划页面占位，配置基础开发质量工具，并完成核心类型、场景数据和 Classroom 20 个单词静态数据。工程可以被微信开发者工具识别，所有已注册页面都能打开占位页；TypeScript、ESLint、Prettier 和 Vitest 命令均可运行。
+当前项目已完成阶段 1 / Step 1.4，已初始化微信小程序 TypeScript 工程，建立基础目录结构和全部规划页面占位，配置基础开发质量工具，并完成核心类型、场景数据、Classroom 20 个单词静态数据以及占位图片 / 音频资源。工程可以被微信开发者工具识别，所有已注册页面都能打开占位页；TypeScript、ESLint、Prettier 和 Vitest 命令均可运行。
 
 当前源码目录为：
 
@@ -372,3 +372,41 @@ $env:PATH = "D:\SceneEnglish\.tools\node-v24.11.1-win-x64;$env:PATH"
 |---|---|---|
 | `miniprogram/data/scenes.ts` | 新增 `classroomWords`，定义 Classroom 20 个单词及其学习内容、音频路径和临时热区坐标。 | 阶段 1 / Step 1.3 |
 | `tests/scenes.test.ts` | 补充 Classroom 词表完整性测试，覆盖数量、唯一性、必填字段、音频路径、热区坐标和 `wordCount` 对齐。 | 阶段 1 / Step 1.3 |
+
+## 12. 阶段 1 / Step 1.4 占位资源更新
+
+当前已为 Classroom 场景准备基础占位资源，资源路径与 `miniprogram/data/scenes.ts` 中的场景和单词数据保持一致。
+
+图片资源：
+
+- `miniprogram/assets/images/classroom-cover.png`：场景选择页后续使用的 Classroom 封面占位图。
+- `miniprogram/assets/images/classroom.png`：记忆模式和练习模式后续使用的 Classroom 场景占位图。
+
+音频资源：
+
+- `miniprogram/assets/audio/*.mp3`：20 个单词的临时静音占位音频，文件名与单词 id 一致。
+- `miniprogram/assets/audio/README.md`：说明当前音频为临时静音占位资源，后续用户测试前需要替换为真实发音。
+
+当前音频文件均复制自 `silent-mp3-datauri@1.0.0` 的 `silence.mp3`（MIT license），仅用于验证路径和播放接口可找到资源，不代表真实单词发音。
+
+`tests/assets.test.ts` 验证：
+
+- Classroom 封面图和场景图存在；
+- 图片文件为 PNG；
+- 20 个单词音频文件均存在且非空。
+
+`tsconfig.test.json` 更新：
+
+- `moduleResolution` 使用 `Node`，兼容微信开发者工具内置 TypeScript 服务。
+- `skipLibCheck` 设为 `true`，避免 Vite / Vitest 依赖库声明在微信开发者工具中造成无关误报，同时继续检查项目测试代码。
+
+文件变更记录补充：
+
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `miniprogram/assets/images/classroom-cover.png` | Classroom 封面占位图。 | 阶段 1 / Step 1.4 |
+| `miniprogram/assets/images/classroom.png` | Classroom 场景占位图。 | 阶段 1 / Step 1.4 |
+| `miniprogram/assets/audio/*.mp3` | 20 个单词的临时静音占位音频，路径与 `classroomWords` 保持一致。 | 阶段 1 / Step 1.4 |
+| `miniprogram/assets/audio/README.md` | 记录占位音频来源、用途和后续替换要求。 | 阶段 1 / Step 1.4 |
+| `tests/assets.test.ts` | 验证 Classroom 图片和单词音频资源存在且路径可用。 | 阶段 1 / Step 1.4 |
+| `tsconfig.test.json` | 调整测试 TypeScript 配置以兼容微信开发者工具，同时保持本地测试类型检查可运行。 | 阶段 1 / Step 1.4 |
