@@ -223,3 +223,22 @@
 - 遗留问题：
   - 当前只完成 storage 工具层，尚未接入 progress、favorite、mistake 等 service。
   - 尚未开始 Step 2.2。
+
+### 2026-05-15 — 阶段 2 / Step 2.2 实现字符串标准化工具
+
+- 完成内容：
+  - 新增 `miniprogram/utils/normalize.ts`，实现拼写判断用的标准化工具。
+  - 实现 `normalizeSpelling`，只做首尾空格去除和小写转换。
+  - 实现 `isNormalizedSpellingMatch`，用于比较标准化后的用户输入和目标单词。
+  - 新增 `tests/normalize.test.ts`，覆盖大小写忽略、首尾空格忽略、不同拼写不匹配，以及 MVP 阶段不折叠单词内部空格的规则。
+- 验证结果：
+  - 新增测试先在 `miniprogram/utils/normalize.ts` 不存在时失败，随后实现工具后通过。
+  - 本地已验证 TypeScript 小程序配置检查通过。
+  - 本地已验证 TypeScript 测试配置检查通过。
+  - 本地已验证 ESLint 通过。
+  - 本地已验证 Prettier 项目脚本范围检查通过。
+  - 本地已验证 Vitest 通过，显示 5 个测试文件、21 个测试用例通过。
+  - 用户已运行验证并确认通过。
+- 遗留问题：
+  - 当前只完成纯标准化工具，尚未接入 Listen + Spell 页面或 quiz service。
+  - 尚未开始 Step 2.3。

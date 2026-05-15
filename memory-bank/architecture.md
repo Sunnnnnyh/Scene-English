@@ -6,7 +6,7 @@
 
 ## 1. 当前阶段
 
-当前项目已完成阶段 2 / Step 2.1，已初始化微信小程序 TypeScript 工程，建立基础目录结构和全部规划页面占位，配置基础开发质量工具，完成核心类型、场景数据、Classroom 20 个单词静态数据、占位图片 / 音频资源，并实现本地缓存工具。工程可以被微信开发者工具识别，所有已注册页面都能打开占位页；TypeScript、ESLint、Prettier 和 Vitest 命令均可运行。
+当前项目已完成阶段 2 / Step 2.2，已初始化微信小程序 TypeScript 工程，建立基础目录结构和全部规划页面占位，配置基础开发质量工具，完成核心类型、场景数据、Classroom 20 个单词静态数据、占位图片 / 音频资源，并实现本地缓存工具和字符串标准化工具。工程可以被微信开发者工具识别，所有已注册页面都能打开占位页；TypeScript、ESLint、Prettier 和 Vitest 命令均可运行。
 
 当前源码目录为：
 
@@ -447,3 +447,35 @@ $env:PATH = "D:\SceneEnglish\.tools\node-v24.11.1-win-x64;$env:PATH"
 | `miniprogram/utils/storage.ts` | 封装本地缓存 key、读写、删除、默认值兜底和 `LocalStore<T>` 包装。 | 阶段 2 / Step 2.1 |
 | `tests/storage.test.ts` | 使用 Vitest 覆盖 storage 工具的 key、读写、默认值、异常兜底和删除行为。 | 阶段 2 / Step 2.1 |
 | `miniprogram/utils/.gitkeep` | 已删除，因为 `miniprogram/utils/` 目录已经包含真实工具模块。 | 阶段 2 / Step 2.1 |
+
+## 14. 阶段 2 / Step 2.2 字符串标准化工具更新
+
+`miniprogram/utils/normalize.ts` 现在是拼写判断的标准化工具模块。后续 Listen + Spell、quiz service 或其他拼写判断逻辑应复用该模块，避免页面层重复实现大小写和空格处理。
+
+导出内容：
+
+- `normalizeSpelling(value)`：对输入执行 `trim()` 和 `toLowerCase()`。
+- `isNormalizedSpellingMatch(input, target)`：比较标准化后的用户输入和目标拼写。
+
+当前规则：
+
+- 忽略大小写差异。
+- 忽略首尾空格。
+- 不做复杂相似度判断。
+- 不折叠单词内部空格；例如 `trash  can` 不等于 `trash can`。
+
+`tests/normalize.test.ts` 验证：
+
+- 首尾空格会被去除；
+- 大小写会被统一为小写；
+- 大小写不同仍判定为同一拼写；
+- 首尾空格不同仍判定为同一拼写；
+- 不同拼写保持不匹配；
+- 内部多余空格不会被自动修正。
+
+文件变更记录补充：
+
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `miniprogram/utils/normalize.ts` | 实现 Listen + Spell 拼写判断所需的标准化和匹配函数。 | 阶段 2 / Step 2.2 |
+| `tests/normalize.test.ts` | 使用 Vitest 覆盖拼写标准化、大小写、首尾空格和不同拼写判断规则。 | 阶段 2 / Step 2.2 |
