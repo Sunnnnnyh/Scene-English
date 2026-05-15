@@ -6,7 +6,7 @@
 
 ## 1. 当前阶段
 
-当前项目已完成阶段 1 / Step 1.4，已初始化微信小程序 TypeScript 工程，建立基础目录结构和全部规划页面占位，配置基础开发质量工具，并完成核心类型、场景数据、Classroom 20 个单词静态数据以及占位图片 / 音频资源。工程可以被微信开发者工具识别，所有已注册页面都能打开占位页；TypeScript、ESLint、Prettier 和 Vitest 命令均可运行。
+当前项目已完成阶段 2 / Step 2.1，已初始化微信小程序 TypeScript 工程，建立基础目录结构和全部规划页面占位，配置基础开发质量工具，完成核心类型、场景数据、Classroom 20 个单词静态数据、占位图片 / 音频资源，并实现本地缓存工具。工程可以被微信开发者工具识别，所有已注册页面都能打开占位页；TypeScript、ESLint、Prettier 和 Vitest 命令均可运行。
 
 当前源码目录为：
 
@@ -410,3 +410,40 @@ $env:PATH = "D:\SceneEnglish\.tools\node-v24.11.1-win-x64;$env:PATH"
 | `miniprogram/assets/audio/README.md` | 记录占位音频来源、用途和后续替换要求。 | 阶段 1 / Step 1.4 |
 | `tests/assets.test.ts` | 验证 Classroom 图片和单词音频资源存在且路径可用。 | 阶段 1 / Step 1.4 |
 | `tsconfig.test.json` | 调整测试 TypeScript 配置以兼容微信开发者工具，同时保持本地测试类型检查可运行。 | 阶段 1 / Step 1.4 |
+
+## 13. 阶段 2 / Step 2.1 本地缓存工具更新
+
+`miniprogram/utils/storage.ts` 现在是本地缓存访问的统一工具模块。页面和 service 后续不应直接调用原始 `wx.getStorageSync`、`wx.setStorageSync` 或 `wx.removeStorageSync`，而应通过本工具或基于本工具的 service 访问缓存。
+
+导出内容：
+
+- `StorageAdapter`：抽象同步 storage 接口，便于在 Vitest 中注入 fake storage，也便于后续迁移或测试。
+- `getStorageKey(entity)`：将 `favorites`、`mistakes`、`progress`、`settings`、`onboarding` 转换为统一的 `sceneenglish:` 前缀 key。
+- `createLocalStore(data)`：生成 `LocalStore<T>` 包装，包含 `version: 1`、`updatedAt` 和业务 `data`。
+- `readStorage(entity, defaultValue, adapter?)`：读取缓存，空数据、坏数据或读取异常时返回默认值。
+- `writeStorage(entity, data, adapter?)`：将业务数据包装为 `LocalStore<T>` 后写入缓存。
+- `removeStorage(entity, adapter?)`：按统一 key 删除缓存。
+
+实现细节：
+
+- 小程序运行时默认从 `globalThis.wx` 获取 storage adapter。
+- 测试中可以显式传入 fake adapter，避免 Node 环境依赖小程序全局对象。
+- 读取逻辑只接受带 `version`、`updatedAt` 和 `data` 字段的本地存储包装；异常结构会走默认值兜底。
+
+`tests/storage.test.ts` 验证：
+
+- 所有缓存 key 都带 `sceneenglish:` 前缀；
+- 写入数据带版本和更新时间；
+- 首次读取不存在数据时返回默认值；
+- 写入后再次读取能得到相同业务数据；
+- 异常结构不会导致页面崩溃，会返回默认值；
+- storage adapter 抛错时返回默认值；
+- 删除操作使用规范 key，并能清空对应数据。
+
+文件变更记录补充：
+
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `miniprogram/utils/storage.ts` | 封装本地缓存 key、读写、删除、默认值兜底和 `LocalStore<T>` 包装。 | 阶段 2 / Step 2.1 |
+| `tests/storage.test.ts` | 使用 Vitest 覆盖 storage 工具的 key、读写、默认值、异常兜底和删除行为。 | 阶段 2 / Step 2.1 |
+| `miniprogram/utils/.gitkeep` | 已删除，因为 `miniprogram/utils/` 目录已经包含真实工具模块。 | 阶段 2 / Step 2.1 |

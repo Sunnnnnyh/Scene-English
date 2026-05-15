@@ -202,3 +202,24 @@
   - 当前音频为静音占位 mp3，后续用户测试前需要替换为真实单词发音。
   - 本地 `main` 分支仍有提交未能推送到 GitHub，原因是当前环境连接 `github.com:443` 超时；网络恢复后需要执行 `git push origin main`。
   - 尚未开始 Step 2.1。
+
+### 2026-05-15 — 阶段 2 / Step 2.1 实现本地缓存工具
+
+- 完成内容：
+  - 新增 `miniprogram/utils/storage.ts`，封装小程序本地缓存读写。
+  - 实现 `getStorageKey`，统一生成 `sceneenglish:` 前缀的缓存 key。
+  - 实现 `createLocalStore`，为数据写入添加 `version`、`updatedAt` 和 `data` 包装。
+  - 实现 `readStorage`、`writeStorage` 和 `removeStorage`，支持默认值、读取失败兜底、异常兜底和可注入 storage adapter。
+  - 新增 `tests/storage.test.ts`，覆盖 key 前缀、元数据包装、空数据默认值、写入后读取、坏数据兜底、wx storage 异常兜底和删除数据。
+  - 删除 `miniprogram/utils/.gitkeep`，因为 `utils/` 目录已经包含真实工具模块。
+- 验证结果：
+  - 新增测试先在 `miniprogram/utils/storage.ts` 不存在时失败，随后实现工具后通过。
+  - 本地已验证 TypeScript 小程序配置检查通过。
+  - 本地已验证 TypeScript 测试配置检查通过。
+  - 本地已验证 ESLint 通过。
+  - 本地已验证 Prettier 项目脚本范围检查通过。
+  - 本地已验证 Vitest 通过，显示 4 个测试文件、15 个测试用例通过。
+  - 用户已运行验证并确认通过。
+- 遗留问题：
+  - 当前只完成 storage 工具层，尚未接入 progress、favorite、mistake 等 service。
+  - 尚未开始 Step 2.2。
