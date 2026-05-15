@@ -269,22 +269,53 @@ $env:PATH = "D:\SceneEnglish\.tools\node-v24.11.1-win-x64;$env:PATH"
 | `miniprogram/tsconfig.json` | 更新为微信开发者工具可识别官方小程序全局类型 | 阶段 0 / Step 0.3 |
 | `miniprogram/typings/index.d.ts` | 保留 `IAppOption`，移除与官方类型重复的 `App` / `Page` 声明 | 阶段 0 / Step 0.3 |
 
-## 9. Phase 1 / Step 1.1 Type Architecture Update
+## 9. 阶段 1 / Step 1.1 类型架构更新
 
-`miniprogram/types/index.ts` is now the central domain type module for the miniprogram source code. It contains business data shapes only, not page UI state.
+`miniprogram/types/index.ts` 现在是小程序源码的集中领域类型模块。该文件只描述业务数据结构，不混入页面 UI 状态。
 
-Key responsibilities:
+核心职责：
 
-- `Scene` describes learnable and coming-soon scenes, including image paths, base canvas size, word count, and scene status.
-- `Word` describes vocabulary records, including Chinese and English text, phonetic text, examples, practical expressions, audio path, and hotspot position.
-- `UserProgress`, `Favorite`, `Mistake`, and `OnboardingState` describe local user data that will later be persisted through service and storage layers.
-- `MistakeTypeStats` and `Mistake` support separate `click`, `spelling`, and `speaking` weak-item tracking, including mistake count, correct streak, mastery progress, and latest mistake time.
-- `QuizQuestion`, `QuizRound`, and `QuizAnswerResult` provide reusable business types for later Listen + Spell, Listen + Speak, and mistake-review flows.
-- `SpeechResult` defines the replaceable speech-recognition contract for the MVP mock ASR and later real ASR implementation.
+- `Scene` 描述可学习场景和 coming soon 场景，包括图片路径、原始画布尺寸、词数和场景状态。
+- `Word` 描述单词记录，包括中文、英文、音标、例句、实用表达、音频路径和热区坐标。
+- `UserProgress`、`Favorite`、`Mistake` 和 `OnboardingState` 描述后续会通过 service 层和 storage 工具持久化的本地用户数据。
+- `MistakeTypeStats` 和 `Mistake` 支持按 `click`、`spelling`、`speaking` 分别记录弱项，包括错误次数、连续答对次数、掌握进度和最近错误时间。
+- `QuizQuestion`、`QuizRound` 和 `QuizAnswerResult` 为后续 Listen + Spell、Listen + Speak 和错题复习流程提供可复用业务类型。
+- `SpeechResult` 定义可替换的语音识别结果契约，用于 MVP 阶段的 mock ASR 和后续真实 ASR。
 
-File change log addition:
+文件变更记录补充：
 
 | File path | Purpose | Created / updated phase |
 |---|---|---|
-| `miniprogram/types/index.ts` | Centralized core TypeScript domain types for scenes, words, user progress, favorites, mistakes, quiz flow, speech results, local store envelopes, and onboarding state. | Phase 1 / Step 1.1 |
-| `miniprogram/types/.gitkeep` | Removed because `miniprogram/types/` now contains the real type module. | Phase 1 / Step 1.1 |
+| `miniprogram/types/index.ts` | 集中定义场景、单词、学习进度、收藏、错题、练习流程、语音识别结果、本地存储包装和新手引导状态等核心 TypeScript 领域类型。 | 阶段 1 / Step 1.1 |
+| `miniprogram/types/.gitkeep` | 已删除，因为 `miniprogram/types/` 目录已经包含真实类型模块。 | 阶段 1 / Step 1.1 |
+
+## 10. 阶段 1 / Step 1.2 场景数据更新
+
+`miniprogram/data/scenes.ts` 现在负责维护 MVP 阶段的静态场景列表。
+
+当前场景记录：
+
+- `classroom`：available，20 个单词，MVP 可学习场景。
+- `lecture-hall`：coming soon，不可进入。
+- `dormitory`：coming soon，不可进入。
+- `cafeteria`：coming soon，不可进入。
+
+导出内容：
+
+- `scenes`：完整场景列表。
+- `availableScenes`：筛选出 `status === "available"` 的场景列表。
+- `comingSoonScenes`：筛选出 `status === "comingSoon"` 的场景列表。
+
+`tests/scenes.test.ts` 验证：
+
+- 4 个场景 id 都可以读取；
+- Classroom 是唯一可进入场景；
+- 所有非 Classroom 场景都保持 `comingSoon`。
+
+文件变更记录补充：
+
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `miniprogram/data/scenes.ts` | 定义 MVP 静态场景数据，并导出 available / coming-soon 场景列表。 | 阶段 1 / Step 1.2 |
+| `tests/scenes.test.ts` | 使用 Vitest 覆盖场景数据完整性和可进入状态规则。 | 阶段 1 / Step 1.2 |
+| `miniprogram/data/.gitkeep` | 已删除，因为 `miniprogram/data/` 目录已经包含真实场景数据模块。 | 阶段 1 / Step 1.2 |

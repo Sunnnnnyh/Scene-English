@@ -126,20 +126,37 @@
   - 当前仅有占位 smoke test；后续进入服务层和工具函数开发后，需要补充真实单元测试。
   - 尚未开始阶段 1。
 
-### 2026-05-15 — Phase 1 / Step 1.1 Define core TypeScript types
+### 2026-05-15 — 阶段 1 / Step 1.1 定义核心 TypeScript 类型
 
-- Completed:
-  - Added `miniprogram/types/index.ts` as the centralized domain type export.
-  - Defined core business types for scenes, words, progress, favorites, mistakes, quiz questions, quiz rounds, quiz answer results, speech recognition results, local storage envelopes, and onboarding state.
-  - Covered `expressionEn`, `expressionCn`, hotspot coordinates, scene status, `sceneenglish:` storage key shape, and `click` / `spelling` / `speaking` mistake types.
-  - Modeled mistake mastery progress as `0 | 50 | 100`, matching the product rule that one correct answer means 50% and two consecutive correct answers complete the weak item type.
-  - Removed the placeholder `miniprogram/types/.gitkeep` because the directory now contains real source code.
-- Verification:
-  - User manually confirmed the type file contains the expected `Mistake` structure.
-  - User ran `npm run typecheck`; it passed.
-  - User ran `npm run lint`; it passed.
-  - User ran `npm run format:check`; it passed and reported all matched files use Prettier style.
-  - User ran `npm test`; Vitest reported `1 passed`.
-- Remaining notes:
-  - Step 1.2 has not started yet.
-  - Previous Step 0.3 local commit is still ahead of `origin/main` because the earlier push attempts failed due GitHub network connection resets.
+- 完成内容：
+  - 新增 `miniprogram/types/index.ts`，作为小程序源码的集中类型出口。
+  - 定义场景、单词、学习进度、收藏、错题、练习题、练习轮次、答题结果、语音识别结果、本地存储包装和新手引导状态等核心业务类型。
+  - 覆盖 `expressionEn`、`expressionCn`、热区坐标、场景状态、`sceneenglish:` 本地缓存 key 结构，以及 `click` / `spelling` / `speaking` 错题类型。
+  - 将错题掌握进度建模为 `0 | 50 | 100`，对应答对 1 次为 50%、连续答对 2 次完成该弱项类型的产品规则。
+  - 删除 `miniprogram/types/.gitkeep`，因为 `types/` 目录已经有真实源码文件。
+- 验证结果：
+  - 用户已人工确认类型文件中包含预期的 `Mistake` 结构。
+  - 用户运行 `npm run typecheck`，通过。
+  - 用户运行 `npm run lint`，通过。
+  - 用户运行 `npm run format:check`，通过，并显示所有匹配文件符合 Prettier 格式。
+  - 用户运行 `npm test`，Vitest 显示 `1 passed`。
+- 遗留问题：
+  - 尚未开始 Step 1.2。
+  - Step 0.3 本地提交曾因 GitHub 网络连接重置未能立即 push，后续已在 Step 1.1 提交时一并推送成功。
+
+### 2026-05-15 — 阶段 1 / Step 1.2 创建场景数据
+
+- 完成内容：
+  - 新增 `miniprogram/data/scenes.ts`，包含 4 个 MVP 场景记录。
+  - 将 `classroom` / `Classroom` 标记为唯一可进入场景，`wordCount` 为 `20`。
+  - 将 `lecture-hall`、`dormitory`、`cafeteria` 标记为 `comingSoon`，`wordCount` 为 `0`。
+  - 导出 `scenes`、`availableScenes` 和 `comingSoonScenes`，供后续页面和 service 层复用。
+  - 新增 `tests/scenes.test.ts`，验证全部场景可读取，并且只有 Classroom 为可进入状态。
+  - 删除 `miniprogram/data/.gitkeep`，因为 `data/` 目录已经有真实数据源码文件。
+- 验证结果：
+  - 用户已人工确认场景数据结构和状态规则。
+  - 用户运行 `npm test`，Vitest 显示 2 个测试文件通过、4 个测试用例通过。
+  - 本地也已验证 `npm run typecheck`、`npm run lint`、`npm run format:check` 和 `npm test` 均通过。
+- 遗留问题：
+  - 尚未开始 Step 1.3。
+  - 场景图片路径目前指向后续计划中的占位资源，实际图片文件将在后续资源准备步骤中处理。
