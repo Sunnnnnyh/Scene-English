@@ -6,13 +6,22 @@
 
 ## 1. 当前阶段
 
-当前项目已完成阶段 0 / Step 0.2，已初始化微信小程序 TypeScript 工程，并建立基础目录结构和全部规划页面占位。工程可以被微信开发者工具识别，所有已注册页面都能打开占位页。
+当前项目已完成阶段 0 / Step 0.3，已初始化微信小程序 TypeScript 工程，建立基础目录结构和全部规划页面占位，并配置基础开发质量工具。工程可以被微信开发者工具识别，所有已注册页面都能打开占位页；TypeScript、ESLint、Prettier 和 Vitest 命令均可运行。
 
 当前源码目录为：
 
 ```text
 D:\SceneEnglish
   AGENTS.md
+  package.json
+  package-lock.json
+  tsconfig.json
+  tsconfig.miniprogram.json
+  tsconfig.test.json
+  eslint.config.js
+  vitest.config.ts
+  .prettierrc.json
+  .prettierignore
   project.config.json
   project.private.config.json
   memory-bank/
@@ -70,6 +79,15 @@ D:\SceneEnglish
 | `memory-bank/progress.md` | 实施进度、验证结果和遗留问题记录 |
 | `memory-bank/architecture.md` | 本架构记录文件 |
 | `.gitignore` | Git 忽略规则，避免依赖、构建产物、日志、本地配置和临时文件进入版本管理 |
+| `package.json` | Node 开发脚本和 TypeScript / ESLint / Prettier / Vitest 开发依赖配置 |
+| `package-lock.json` | npm 依赖锁定文件，保证质量工具版本可复现 |
+| `tsconfig.json` | 根 TypeScript 配置，引用小程序源码和测试两个子配置 |
+| `tsconfig.miniprogram.json` | 小程序源码 TypeScript 类型检查配置 |
+| `tsconfig.test.json` | 测试和 Node 配置文件 TypeScript 类型检查配置 |
+| `eslint.config.js` | ESLint flat config，用于检查小程序 TS、测试和配置文件 |
+| `vitest.config.ts` | Vitest 单元测试配置 |
+| `.prettierrc.json` | Prettier 格式化规则 |
+| `.prettierignore` | Prettier 忽略规则 |
 | `project.config.json` | 微信开发者工具项目配置，指定 `miniprogram/` 为小程序源码根目录 |
 | `project.private.config.json` | 微信开发者工具本地私有配置，已被 `.gitignore` 忽略 |
 | `miniprogram/` | 微信小程序源码目录 |
@@ -190,6 +208,16 @@ data/scenes.ts + utils/storage.ts
 - 人工验证：微信开发者工具中的页面跳转、热区点击、音频播放、录音权限、真机预览和 UI 适配。
 - 每个实施步骤完成后，需要在 `memory-bank/progress.md` 记录验证结果。
 
+当前质量检查命令：
+
+```powershell
+$env:PATH = "D:\SceneEnglish\.tools\node-v24.11.1-win-x64;$env:PATH"
+.\.tools\node-v24.11.1-win-x64\npm.cmd run typecheck
+.\.tools\node-v24.11.1-win-x64\npm.cmd run lint
+.\.tools\node-v24.11.1-win-x64\npm.cmd run format:check
+.\.tools\node-v24.11.1-win-x64\npm.cmd test
+```
+
 ---
 
 ## 8. 文件变更记录
@@ -228,3 +256,15 @@ data/scenes.ts + utils/storage.ts
 | `miniprogram/assets/audio/` | 后续音频资源目录，目前使用 `.gitkeep` 保留空目录 | 阶段 0 / Step 0.2 |
 | `miniprogram/assets/icons/` | 后续图标资源目录，目前使用 `.gitkeep` 保留空目录 | 阶段 0 / Step 0.2 |
 | `tests/` | 后续 Vitest 单元测试目录，目前使用 `.gitkeep` 保留空目录 | 阶段 0 / Step 0.2 |
+| `package.json` | 配置开发依赖和 `typecheck`、`lint`、`format`、`format:check`、`test` 脚本 | 阶段 0 / Step 0.3 |
+| `package-lock.json` | 锁定 npm 开发依赖版本 | 阶段 0 / Step 0.3 |
+| `tsconfig.json` | 根 TypeScript 配置，引用小程序源码和测试两个子配置 | 阶段 0 / Step 0.3 |
+| `tsconfig.miniprogram.json` | 小程序源码类型检查配置，加载 `miniprogram-api-typings` | 阶段 0 / Step 0.3 |
+| `tsconfig.test.json` | 测试和 Node 配置文件类型检查配置，加载 Node 和 Vitest 类型 | 阶段 0 / Step 0.3 |
+| `eslint.config.js` | ESLint 检查配置 | 阶段 0 / Step 0.3 |
+| `.prettierrc.json` | Prettier 格式化配置 | 阶段 0 / Step 0.3 |
+| `.prettierignore` | Prettier 忽略配置 | 阶段 0 / Step 0.3 |
+| `vitest.config.ts` | Vitest 测试配置 | 阶段 0 / Step 0.3 |
+| `tests/smoke.test.ts` | 占位 smoke test，用于验证测试环境可运行 | 阶段 0 / Step 0.3 |
+| `miniprogram/tsconfig.json` | 更新为微信开发者工具可识别官方小程序全局类型 | 阶段 0 / Step 0.3 |
+| `miniprogram/typings/index.d.ts` | 保留 `IAppOption`，移除与官方类型重复的 `App` / `Page` 声明 | 阶段 0 / Step 0.3 |

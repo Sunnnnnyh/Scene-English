@@ -103,3 +103,25 @@
   - 当前仅创建页面占位和基础目录，尚未实现真实页面内容、导航、数据、服务层或测试环境。
   - GitHub 已对历史提交中的测试号 AppID 发出 secret scanning 提示；后续需要在修复提交 push 后到 GitHub alert 页面将该提示标记为已处理。
   - 尚未开始 Step 0.3。
+
+### 2026-05-15｜阶段 0 / Step 0.3 配置基础开发质量工具
+
+- 完成内容：
+  - 新增 `package.json` 和 `package-lock.json`，配置 `typecheck`、`lint`、`format`、`format:check`、`test` 脚本。
+  - 新增 TypeScript 配置：根 `tsconfig.json`、小程序源码专用 `tsconfig.miniprogram.json`、测试和 Node 配置专用 `tsconfig.test.json`。
+  - 更新 `miniprogram/tsconfig.json`，让微信开发者工具识别 `miniprogram-api-typings` 中的 `Page`、`App`、`wx` 等全局类型。
+  - 新增 ESLint 配置 `eslint.config.js`。
+  - 新增 Prettier 配置 `.prettierrc.json` 和 `.prettierignore`。
+  - 新增 Vitest 配置 `vitest.config.ts` 和占位测试 `tests/smoke.test.ts`。
+  - 新增项目本地 Node.js 工具链目录 `.tools/`，并在 `.gitignore` 中忽略 `.tools/`、`node_modules/` 等本地依赖产物。
+- 验证结果：
+  - 用户已在 PowerShell 中设置临时 `PATH` 指向 `.tools/node-v24.11.1-win-x64`。
+  - `npm run typecheck` 通过。
+  - `npm run lint` 通过。
+  - `npm run format:check` 通过。
+  - `npm test` 通过，Vitest 显示 `1 passed`。
+  - 微信开发者工具重新加载后，页面 TypeScript 文件中的 `Page` 红线消失；编译后无红色启动错误。
+- 遗留问题：
+  - 当前使用项目本地 `.tools/` 中的 Node.js，不依赖系统全局 npm；后续运行 npm 脚本前需要先把该目录临时加入当前 PowerShell 的 `PATH`。
+  - 当前仅有占位 smoke test；后续进入服务层和工具函数开发后，需要补充真实单元测试。
+  - 尚未开始阶段 1。

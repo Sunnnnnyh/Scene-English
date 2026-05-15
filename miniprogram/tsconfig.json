@@ -2,9 +2,7 @@
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
-    "lib": [
-      "ES2020"
-    ],
+    "lib": ["ES2020"],
     "module": "CommonJS",
     "moduleResolution": "Node",
     "noImplicitAny": false,
@@ -12,14 +10,8 @@
     "outDir": "./",
     "strictNullChecks": true,
     "target": "ES2020",
-    "typeRoots": [
-      "./typings"
-    ]
+    "types": ["miniprogram-api-typings"]
   },
-  "include": [
-    "**/*.ts"
-  ],
-  "exclude": [
-    "miniprogram_npm"
-  ]
+  "include": ["**/*.ts"],
+  "exclude": ["miniprogram_npm"]
 }
