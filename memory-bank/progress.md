@@ -64,3 +64,22 @@
 - 遗留问题：
   - 后续进入开发前，需要按 `implementation-plan.md` Step 0.0 创建或更新 `.gitignore`。
   - 后续创建代码文件后，需要持续更新 `memory-bank/architecture.md` 的文件变更记录。
+
+### 2026-05-15｜阶段 0 / Step 0.1 初始化微信小程序 TypeScript 工程
+
+- 完成内容：
+  - 创建 `project.config.json`，将微信小程序工程根目录配置为 `miniprogram/`。
+  - 创建 `miniprogram/` 下的最小小程序入口文件：`app.json`、`app.ts`、`app.wxss` 和 `sitemap.json`。
+  - 创建首页占位页面 `miniprogram/pages/index/`，包含 `index.json`、`index.ts`、`index.wxml` 和 `index.wxss`。
+  - 创建 `miniprogram/tsconfig.json` 和最小类型声明 `miniprogram/typings/index.d.ts`，为后续 TypeScript 开发预留类型检查基础。
+  - 更新 `.gitignore`，忽略微信开发者工具本地私有配置 `project.private.config.json`。
+- 验证结果：
+  - 本地 JSON 配置解析通过。
+  - 本地结构检查确认 `project.config.json` 指向 `miniprogram/`，且 `app.json` 中配置的首页文件存在。
+  - 用户已使用微信开发者工具导入 `D:\SceneEnglish`，选择不使用云服务，并成功编译运行首页。
+  - 首页已显示 `SceneEnglish`、`按真实场景学习英语单词`、`Step 0.1` 和 `微信小程序 TypeScript 工程已初始化`。
+  - 使用调试基础库 `3.14.3` 后，控制台无红色启动错误；仅存在自动热重载、SharedArrayBuffer 和 getSystemInfo API 等工具提示级 warning。
+- 遗留问题：
+  - 调试基础库 `3.15.2` 在当前微信开发者工具版本中会出现疑似工具内部 `WAServiceMainContext` timeout，开发阶段暂用 `3.14.3` 保持控制台干净。
+  - 当前环境缺少全局 `npm`、`npx` 和 `tsc`，因此终端 TypeScript 编译验证将在 Step 0.3 配置开发质量工具时补齐。
+  - 尚未开始 Step 0.2；在用户确认前不进入基础目录结构扩展。

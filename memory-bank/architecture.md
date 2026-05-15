@@ -6,13 +6,15 @@
 
 ## 1. 当前阶段
 
-当前项目仍处于规划和文档准备阶段，尚未初始化微信小程序代码工程。
+当前项目已完成阶段 0 / Step 0.1，初始化了最小微信小程序 TypeScript 工程。工程可以被微信开发者工具识别，并能运行首页占位页面。
 
-预计源码目录为：
+当前源码目录为：
 
 ```text
 D:\SceneEnglish
   AGENTS.md
+  project.config.json
+  project.private.config.json
   memory-bank/
     design-document.md
     tech-stack.md
@@ -24,14 +26,16 @@ D:\SceneEnglish
     app.ts
     app.json
     app.wxss
+    sitemap.json
+    tsconfig.json
     pages/
-    components/
-    data/
-    services/
-    utils/
-    types/
-    assets/
-  tests/
+      index/
+        index.json
+        index.ts
+        index.wxml
+        index.wxss
+    typings/
+      index.d.ts
 ```
 
 ---
@@ -48,6 +52,8 @@ D:\SceneEnglish
 | `memory-bank/progress.md` | 实施进度、验证结果和遗留问题记录 |
 | `memory-bank/architecture.md` | 本架构记录文件 |
 | `.gitignore` | Git 忽略规则，避免依赖、构建产物、日志、本地配置和临时文件进入版本管理 |
+| `project.config.json` | 微信开发者工具项目配置，指定 `miniprogram/` 为小程序源码根目录 |
+| `project.private.config.json` | 微信开发者工具本地私有配置，已被 `.gitignore` 忽略 |
 | `miniprogram/` | 微信小程序源码目录 |
 | `tests/` | Vitest 单元测试目录，主要测试 `services` 和 `utils` |
 
@@ -170,8 +176,20 @@ data/scenes.ts + utils/storage.ts
 
 ## 8. 文件变更记录
 
-目前尚未创建代码文件。后续每新增关键文件或模块，请在这里追加记录：
+后续每新增关键文件或模块，请在这里追加记录：
 
 | 文件路径 | 作用 | 创建/更新阶段 |
 |---|---|---|
 | `.gitignore` | 忽略 `node_modules/`、`dist/`、`miniprogram/miniprogram_npm/`、日志、本地环境文件、编辑器配置和临时文件 | 阶段 0 / Step 0.0 |
+| `project.config.json` | 微信开发者工具项目配置，指定小程序源码根目录和 TypeScript 编译插件 | 阶段 0 / Step 0.1 |
+| `project.private.config.json` | 微信开发者工具本地私有配置，不进入版本管理 | 阶段 0 / Step 0.1 |
+| `miniprogram/app.json` | 小程序全局配置，注册首页和基础窗口样式 | 阶段 0 / Step 0.1 |
+| `miniprogram/app.ts` | 小程序应用入口，初始化最小 `globalData` | 阶段 0 / Step 0.1 |
+| `miniprogram/app.wxss` | 小程序全局基础样式 | 阶段 0 / Step 0.1 |
+| `miniprogram/sitemap.json` | 小程序页面收录规则占位配置 | 阶段 0 / Step 0.1 |
+| `miniprogram/tsconfig.json` | 小程序 TypeScript 配置，为后续类型检查和开发工具编译提供基础 | 阶段 0 / Step 0.1 |
+| `miniprogram/typings/index.d.ts` | 最小微信小程序全局类型声明，支撑当前 `App` 和 `Page` TypeScript 文件 | 阶段 0 / Step 0.1 |
+| `miniprogram/pages/index/index.json` | 首页页面配置 | 阶段 0 / Step 0.1 |
+| `miniprogram/pages/index/index.ts` | 首页页面逻辑，提供 Step 0.1 占位展示数据 | 阶段 0 / Step 0.1 |
+| `miniprogram/pages/index/index.wxml` | 首页页面结构，展示最小工程初始化状态 | 阶段 0 / Step 0.1 |
+| `miniprogram/pages/index/index.wxss` | 首页页面样式，使用基础浅色 SceneEnglish 风格 | 阶段 0 / Step 0.1 |

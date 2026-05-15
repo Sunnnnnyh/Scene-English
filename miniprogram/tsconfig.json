@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "lib": [
+      "ES2020"
+    ],
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "noImplicitAny": false,
+    "noImplicitThis": true,
+    "outDir": "./",
+    "strictNullChecks": true,
+    "target": "ES2020",
+    "typeRoots": [
+      "./typings"
+    ]
+  },
+  "include": [
+    "**/*.ts"
+  ],
+  "exclude": [
+    "miniprogram_npm"
+  ]
+}
