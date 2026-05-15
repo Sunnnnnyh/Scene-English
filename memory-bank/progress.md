@@ -160,3 +160,23 @@
 - 遗留问题：
   - 尚未开始 Step 1.3。
   - 场景图片路径目前指向后续计划中的占位资源，实际图片文件将在后续资源准备步骤中处理。
+
+### 2026-05-15 — 阶段 1 / Step 1.3 创建教室单词数据
+
+- 完成内容：
+  - 在 `miniprogram/data/scenes.ts` 中新增 `classroomWords`，包含 20 个 Classroom 单词。
+  - 每个单词均包含中文、英文、美式音标、英文例句、中文翻译、实用表达、实用表达中文翻译、音频路径和临时热区坐标。
+  - 词表覆盖 `blackboard`、`whiteboard`、`projector`、`podium`、`desk`、`chair`、`backpack`、`textbook`、`notebook`、`pencil`、`pen`、`eraser`、`chalk`、`ruler`、`window`、`curtain`、`door`、`clock`、`socket`、`trash-can`。
+  - 更新 `tests/scenes.test.ts`，验证教室词表数量、id 唯一性、所属场景、必填字段、音频路径、热区坐标和 Classroom `wordCount` 对齐。
+- 验证结果：
+  - 新增测试先在 `classroomWords` 尚不存在时失败，随后补充数据后通过。
+  - 本地已验证 TypeScript 小程序配置检查通过。
+  - 本地已验证 TypeScript 测试配置检查通过。
+  - 本地已验证 ESLint 通过。
+  - 本地已验证 Prettier 项目脚本范围检查通过。
+  - 本地已验证 Vitest 通过，显示 2 个测试文件、6 个测试用例通过。
+  - 用户已运行验证并确认通过。
+- 遗留问题：
+  - 热区坐标为临时合理值，后续需要在正式或占位场景图确定后重新校准。
+  - 音频路径已与数据文件保持一致，但实际音频资源将在 Step 1.4 准备。
+  - 尚未开始 Step 1.4。

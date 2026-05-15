@@ -1,4 +1,4 @@
-import type { Scene } from "../types";
+import type { Scene, Word } from "../types";
 
 export const scenes: Scene[] = [
   {
@@ -50,3 +50,266 @@ export const scenes: Scene[] = [
 export const availableScenes = scenes.filter((scene) => scene.status === "available");
 
 export const comingSoonScenes = scenes.filter((scene) => scene.status === "comingSoon");
+
+export const classroomWords: Word[] = [
+  {
+    id: "blackboard",
+    sceneId: "classroom",
+    cn: "黑板",
+    en: "blackboard",
+    phonetic: "/ˈblækbɔːrd/",
+    exampleEn: "The teacher writes on the blackboard.",
+    exampleCn: "老师在黑板上写字。",
+    expressionEn: "Could you write it on the blackboard?",
+    expressionCn: "可以把它写在黑板上吗？",
+    audioUrl: "/assets/audio/blackboard.mp3",
+    position: { x: 520, y: 170, width: 720, height: 260 }
+  },
+  {
+    id: "whiteboard",
+    sceneId: "classroom",
+    cn: "白板",
+    en: "whiteboard",
+    phonetic: "/ˈwaɪtbɔːrd/",
+    exampleEn: "Please look at the whiteboard.",
+    exampleCn: "请看白板。",
+    expressionEn: "Can you see the whiteboard clearly?",
+    expressionCn: "你能看清白板吗？",
+    audioUrl: "/assets/audio/whiteboard.mp3",
+    position: { x: 1250, y: 180, width: 430, height: 240 }
+  },
+  {
+    id: "projector",
+    sceneId: "classroom",
+    cn: "投影仪",
+    en: "projector",
+    phonetic: "/prəˈdʒektər/",
+    exampleEn: "The teacher is using the projector.",
+    exampleCn: "老师正在使用投影仪。",
+    expressionEn: "Could you turn on the projector?",
+    expressionCn: "可以打开投影仪吗？",
+    audioUrl: "/assets/audio/projector.mp3",
+    position: { x: 870, y: 30, width: 190, height: 120 }
+  },
+  {
+    id: "podium",
+    sceneId: "classroom",
+    cn: "讲台",
+    en: "podium",
+    phonetic: "/ˈpoʊdiəm/",
+    exampleEn: "The teacher stands behind the podium.",
+    exampleCn: "老师站在讲台后面。",
+    expressionEn: "Please come to the podium for your presentation.",
+    expressionCn: "请到讲台前做你的展示。",
+    audioUrl: "/assets/audio/podium.mp3",
+    position: { x: 780, y: 510, width: 380, height: 220 }
+  },
+  {
+    id: "desk",
+    sceneId: "classroom",
+    cn: "课桌",
+    en: "desk",
+    phonetic: "/desk/",
+    exampleEn: "There is a book on the desk.",
+    exampleCn: "课桌上有一本书。",
+    expressionEn: "Can I put my bag under the desk?",
+    expressionCn: "我可以把包放在课桌下面吗？",
+    audioUrl: "/assets/audio/desk.mp3",
+    position: { x: 360, y: 720, width: 360, height: 210 }
+  },
+  {
+    id: "chair",
+    sceneId: "classroom",
+    cn: "椅子",
+    en: "chair",
+    phonetic: "/tʃer/",
+    exampleEn: "She is sitting on a chair.",
+    exampleCn: "她正坐在椅子上。",
+    expressionEn: "Is this chair taken?",
+    expressionCn: "这把椅子有人坐吗？",
+    audioUrl: "/assets/audio/chair.mp3",
+    position: { x: 760, y: 760, width: 210, height: 260 }
+  },
+  {
+    id: "backpack",
+    sceneId: "classroom",
+    cn: "书包",
+    en: "backpack",
+    phonetic: "/ˈbækpæk/",
+    exampleEn: "My backpack is under the desk.",
+    exampleCn: "我的书包在课桌下面。",
+    expressionEn: "I left my backpack in the classroom.",
+    expressionCn: "我把书包落在教室里了。",
+    audioUrl: "/assets/audio/backpack.mp3",
+    position: { x: 170, y: 805, width: 180, height: 210 }
+  },
+  {
+    id: "textbook",
+    sceneId: "classroom",
+    cn: "课本",
+    en: "textbook",
+    phonetic: "/ˈtekstbʊk/",
+    exampleEn: "Open your textbook to page ten.",
+    exampleCn: "把课本翻到第十页。",
+    expressionEn: "Which textbook do we need for this class?",
+    expressionCn: "这门课需要哪本课本？",
+    audioUrl: "/assets/audio/textbook.mp3",
+    position: { x: 430, y: 675, width: 190, height: 80 }
+  },
+  {
+    id: "notebook",
+    sceneId: "classroom",
+    cn: "笔记本",
+    en: "notebook",
+    phonetic: "/ˈnoʊtbʊk/",
+    exampleEn: "I write notes in my notebook.",
+    exampleCn: "我在笔记本里记笔记。",
+    expressionEn: "I forgot to bring my notebook.",
+    expressionCn: "我忘记带笔记本了。",
+    audioUrl: "/assets/audio/notebook.mp3",
+    position: { x: 1210, y: 720, width: 210, height: 90 }
+  },
+  {
+    id: "pencil",
+    sceneId: "classroom",
+    cn: "铅笔",
+    en: "pencil",
+    phonetic: "/ˈpensl/",
+    exampleEn: "I use a pencil to draw.",
+    exampleCn: "我用铅笔画画。",
+    expressionEn: "Do you have a pencil I can borrow?",
+    expressionCn: "你有铅笔可以借我吗？",
+    audioUrl: "/assets/audio/pencil.mp3",
+    position: { x: 625, y: 675, width: 120, height: 45 }
+  },
+  {
+    id: "pen",
+    sceneId: "classroom",
+    cn: "钢笔",
+    en: "pen",
+    phonetic: "/pen/",
+    exampleEn: "May I borrow your pen?",
+    exampleCn: "我可以借你的钢笔吗？",
+    expressionEn: "My pen is out of ink.",
+    expressionCn: "我的笔没墨水了。",
+    audioUrl: "/assets/audio/pen.mp3",
+    position: { x: 1435, y: 700, width: 125, height: 45 }
+  },
+  {
+    id: "eraser",
+    sceneId: "classroom",
+    cn: "橡皮",
+    en: "eraser",
+    phonetic: "/ɪˈreɪsər/",
+    exampleEn: "I need an eraser.",
+    exampleCn: "我需要一块橡皮。",
+    expressionEn: "Could I use your eraser for a second?",
+    expressionCn: "我可以用一下你的橡皮吗？",
+    audioUrl: "/assets/audio/eraser.mp3",
+    position: { x: 560, y: 735, width: 95, height: 55 }
+  },
+  {
+    id: "chalk",
+    sceneId: "classroom",
+    cn: "粉笔",
+    en: "chalk",
+    phonetic: "/tʃɔːk/",
+    exampleEn: "The teacher writes with chalk.",
+    exampleCn: "老师用粉笔写字。",
+    expressionEn: "There is no chalk left.",
+    expressionCn: "没有粉笔了。",
+    audioUrl: "/assets/audio/chalk.mp3",
+    position: { x: 735, y: 450, width: 160, height: 45 }
+  },
+  {
+    id: "ruler",
+    sceneId: "classroom",
+    cn: "尺子",
+    en: "ruler",
+    phonetic: "/ˈruːlər/",
+    exampleEn: "Use a ruler to draw a line.",
+    exampleCn: "用尺子画一条线。",
+    expressionEn: "I need a ruler to measure this.",
+    expressionCn: "我需要一把尺子量一下这个。",
+    audioUrl: "/assets/audio/ruler.mp3",
+    position: { x: 1180, y: 810, width: 230, height: 45 }
+  },
+  {
+    id: "window",
+    sceneId: "classroom",
+    cn: "窗户",
+    en: "window",
+    phonetic: "/ˈwɪndoʊ/",
+    exampleEn: "Please open the window.",
+    exampleCn: "请打开窗户。",
+    expressionEn: "Could you close the window?",
+    expressionCn: "你可以关一下窗户吗？",
+    audioUrl: "/assets/audio/window.mp3",
+    position: { x: 80, y: 190, width: 330, height: 360 }
+  },
+  {
+    id: "curtain",
+    sceneId: "classroom",
+    cn: "窗帘",
+    en: "curtain",
+    phonetic: "/ˈkɜːrtn/",
+    exampleEn: "The curtain is blue.",
+    exampleCn: "窗帘是蓝色的。",
+    expressionEn: "Could you pull the curtain?",
+    expressionCn: "你可以拉一下窗帘吗？",
+    audioUrl: "/assets/audio/curtain.mp3",
+    position: { x: 35, y: 155, width: 85, height: 430 }
+  },
+  {
+    id: "door",
+    sceneId: "classroom",
+    cn: "门",
+    en: "door",
+    phonetic: "/dɔːr/",
+    exampleEn: "Close the door, please.",
+    exampleCn: "请把门关上。",
+    expressionEn: "Could you leave the door open?",
+    expressionCn: "你可以让门开着吗？",
+    audioUrl: "/assets/audio/door.mp3",
+    position: { x: 1690, y: 250, width: 190, height: 560 }
+  },
+  {
+    id: "clock",
+    sceneId: "classroom",
+    cn: "时钟",
+    en: "clock",
+    phonetic: "/klɑːk/",
+    exampleEn: "The clock is on the wall.",
+    exampleCn: "时钟在墙上。",
+    expressionEn: "The clock is five minutes fast.",
+    expressionCn: "这个时钟快了五分钟。",
+    audioUrl: "/assets/audio/clock.mp3",
+    position: { x: 1370, y: 70, width: 150, height: 150 }
+  },
+  {
+    id: "socket",
+    sceneId: "classroom",
+    cn: "插座",
+    en: "socket",
+    phonetic: "/ˈsɑːkɪt/",
+    exampleEn: "Plug the charger into the socket.",
+    exampleCn: "把充电器插进插座。",
+    expressionEn: "Is there a socket near my seat?",
+    expressionCn: "我的座位附近有插座吗？",
+    audioUrl: "/assets/audio/socket.mp3",
+    position: { x: 1500, y: 610, width: 90, height: 80 }
+  },
+  {
+    id: "trash-can",
+    sceneId: "classroom",
+    cn: "垃圾桶",
+    en: "trash can",
+    phonetic: "/ˈtræʃ kæn/",
+    exampleEn: "Throw the paper into the trash can.",
+    exampleCn: "把纸扔进垃圾桶。",
+    expressionEn: "Where is the trash can?",
+    expressionCn: "垃圾桶在哪里？",
+    audioUrl: "/assets/audio/trash-can.mp3",
+    position: { x: 1570, y: 790, width: 170, height: 230 }
+  }
+];

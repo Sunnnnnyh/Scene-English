@@ -6,7 +6,7 @@
 
 ## 1. 当前阶段
 
-当前项目已完成阶段 0 / Step 0.3，已初始化微信小程序 TypeScript 工程，建立基础目录结构和全部规划页面占位，并配置基础开发质量工具。工程可以被微信开发者工具识别，所有已注册页面都能打开占位页；TypeScript、ESLint、Prettier 和 Vitest 命令均可运行。
+当前项目已完成阶段 1 / Step 1.3，已初始化微信小程序 TypeScript 工程，建立基础目录结构和全部规划页面占位，配置基础开发质量工具，并完成核心类型、场景数据和 Classroom 20 个单词静态数据。工程可以被微信开发者工具识别，所有已注册页面都能打开占位页；TypeScript、ESLint、Prettier 和 Vitest 命令均可运行。
 
 当前源码目录为：
 
@@ -305,6 +305,7 @@ $env:PATH = "D:\SceneEnglish\.tools\node-v24.11.1-win-x64;$env:PATH"
 - `scenes`：完整场景列表。
 - `availableScenes`：筛选出 `status === "available"` 的场景列表。
 - `comingSoonScenes`：筛选出 `status === "comingSoon"` 的场景列表。
+- `classroomWords`：Classroom 场景的 20 个单词数据。
 
 `tests/scenes.test.ts` 验证：
 
@@ -319,3 +320,55 @@ $env:PATH = "D:\SceneEnglish\.tools\node-v24.11.1-win-x64;$env:PATH"
 | `miniprogram/data/scenes.ts` | 定义 MVP 静态场景数据，并导出 available / coming-soon 场景列表。 | 阶段 1 / Step 1.2 |
 | `tests/scenes.test.ts` | 使用 Vitest 覆盖场景数据完整性和可进入状态规则。 | 阶段 1 / Step 1.2 |
 | `miniprogram/data/.gitkeep` | 已删除，因为 `miniprogram/data/` 目录已经包含真实场景数据模块。 | 阶段 1 / Step 1.2 |
+
+## 11. 阶段 1 / Step 1.3 教室单词数据更新
+
+`miniprogram/data/scenes.ts` 现在同时维护 Classroom 场景的 MVP 词表数据。`classroomWords` 是后续 `wordService`、单词卡、记忆模式、听力默写、口语练习和错题复习的静态数据来源。
+
+当前词表包含 20 个单词：
+
+- `blackboard`
+- `whiteboard`
+- `projector`
+- `podium`
+- `desk`
+- `chair`
+- `backpack`
+- `textbook`
+- `notebook`
+- `pencil`
+- `pen`
+- `eraser`
+- `chalk`
+- `ruler`
+- `window`
+- `curtain`
+- `door`
+- `clock`
+- `socket`
+- `trash-can`
+
+每个单词记录包含：
+
+- 基础内容：`id`、`sceneId`、`cn`、`en`、`phonetic`。
+- 学习内容：`exampleEn`、`exampleCn`、`expressionEn`、`expressionCn`。
+- 资源与交互：`audioUrl`、`position`。
+
+当前 `position` 坐标为基于 1920 × 1080 原始画布的临时合理值，后续在 Step 1.4 准备占位图和正式视觉资源后需要重新校准。
+
+`tests/scenes.test.ts` 已补充词表数据完整性验证：
+
+- Classroom 词表正好 20 个单词；
+- 单词 id 不重复；
+- 所有单词都属于 `classroom`；
+- 核心学习字段均非空；
+- 音频路径与单词 id 保持一致；
+- 热区宽高为正数；
+- Classroom `wordCount` 与 `classroomWords.length` 保持一致。
+
+文件变更记录补充：
+
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `miniprogram/data/scenes.ts` | 新增 `classroomWords`，定义 Classroom 20 个单词及其学习内容、音频路径和临时热区坐标。 | 阶段 1 / Step 1.3 |
+| `tests/scenes.test.ts` | 补充 Classroom 词表完整性测试，覆盖数量、唯一性、必填字段、音频路径、热区坐标和 `wordCount` 对齐。 | 阶段 1 / Step 1.3 |
