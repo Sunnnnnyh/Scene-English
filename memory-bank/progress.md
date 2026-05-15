@@ -83,3 +83,23 @@
   - 调试基础库 `3.15.2` 在当前微信开发者工具版本中会出现疑似工具内部 `WAServiceMainContext` timeout，开发阶段暂用 `3.14.3` 保持控制台干净。
   - 当前环境缺少全局 `npm`、`npx` 和 `tsc`，因此终端 TypeScript 编译验证将在 Step 0.3 配置开发质量工具时补齐。
   - 尚未开始 Step 0.2；在用户确认前不进入基础目录结构扩展。
+
+### 2026-05-15｜阶段 0 / Step 0.2 建立基础目录结构
+
+- 完成内容：
+  - 在 `miniprogram/` 下创建 `components`、`data`、`services`、`utils`、`types`、`assets` 等基础目录。
+  - 在 `miniprogram/assets/` 下创建 `images`、`audio`、`icons` 资源目录。
+  - 在根目录创建 `tests/` 目录。
+  - 创建并注册后续规划页面目录和最小占位页面：`scene`、`memory`、`listening-writing`、`listening-speaking`、`favorites`、`mistakes`、`review`、`me`。
+  - 更新 `miniprogram/app.json`，使所有规划页面都能被小程序路由识别。
+  - 将仓库配置 `project.config.json` 中的 AppID 改回 `touristappid`，避免 GitHub secret scanning 继续把测试号 AppID 标记为 secret；测试号 AppID 仅保留在被 Git 忽略的 `project.private.config.json` 中。
+- 验证结果：
+  - 本地 JSON 配置解析通过。
+  - 本地结构检查确认所有注册页面均存在 `.json`、`.ts`、`.wxml`、`.wxss` 四件套。
+  - 本地结构检查确认基础目录、资源目录和 `tests/` 均存在。
+  - 用户已在微信开发者工具中逐一访问所有页面路径，确认占位页都能打开。
+  - 用户确认重新编译通过。
+- 遗留问题：
+  - 当前仅创建页面占位和基础目录，尚未实现真实页面内容、导航、数据、服务层或测试环境。
+  - GitHub 已对历史提交中的测试号 AppID 发出 secret scanning 提示；后续需要在修复提交 push 后到 GitHub alert 页面将该提示标记为已处理。
+  - 尚未开始 Step 0.3。

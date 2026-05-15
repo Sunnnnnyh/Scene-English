@@ -1,6 +1,14 @@
 {
   "pages": [
-    "pages/index/index"
+    "pages/index/index",
+    "pages/scene/scene",
+    "pages/memory/memory",
+    "pages/listening-writing/listening-writing",
+    "pages/listening-speaking/listening-speaking",
+    "pages/favorites/favorites",
+    "pages/mistakes/mistakes",
+    "pages/review/review",
+    "pages/me/me"
   ],
   "window": {
     "backgroundColor": "#F7FBFF",

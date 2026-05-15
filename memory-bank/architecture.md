@@ -6,7 +6,7 @@
 
 ## 1. 当前阶段
 
-当前项目已完成阶段 0 / Step 0.1，初始化了最小微信小程序 TypeScript 工程。工程可以被微信开发者工具识别，并能运行首页占位页面。
+当前项目已完成阶段 0 / Step 0.2，已初始化微信小程序 TypeScript 工程，并建立基础目录结构和全部规划页面占位。工程可以被微信开发者工具识别，所有已注册页面都能打开占位页。
 
 当前源码目录为：
 
@@ -34,8 +34,26 @@ D:\SceneEnglish
         index.ts
         index.wxml
         index.wxss
+      scene/
+      memory/
+      listening-writing/
+      listening-speaking/
+      favorites/
+      mistakes/
+      review/
+      me/
+    components/
+    data/
+    services/
+    utils/
+    types/
+    assets/
+      images/
+      audio/
+      icons/
     typings/
       index.d.ts
+  tests/
 ```
 
 ---
@@ -193,3 +211,20 @@ data/scenes.ts + utils/storage.ts
 | `miniprogram/pages/index/index.ts` | 首页页面逻辑，提供 Step 0.1 占位展示数据 | 阶段 0 / Step 0.1 |
 | `miniprogram/pages/index/index.wxml` | 首页页面结构，展示最小工程初始化状态 | 阶段 0 / Step 0.1 |
 | `miniprogram/pages/index/index.wxss` | 首页页面样式，使用基础浅色 SceneEnglish 风格 | 阶段 0 / Step 0.1 |
+| `miniprogram/pages/scene/` | 场景学习首页占位页面目录 | 阶段 0 / Step 0.2 |
+| `miniprogram/pages/memory/` | 单词记忆模式占位页面目录 | 阶段 0 / Step 0.2 |
+| `miniprogram/pages/listening-writing/` | 听力 + 默写模式占位页面目录 | 阶段 0 / Step 0.2 |
+| `miniprogram/pages/listening-speaking/` | 听力 + 口语模式占位页面目录 | 阶段 0 / Step 0.2 |
+| `miniprogram/pages/favorites/` | 收藏夹占位页面目录 | 阶段 0 / Step 0.2 |
+| `miniprogram/pages/mistakes/` | 错题夹占位页面目录 | 阶段 0 / Step 0.2 |
+| `miniprogram/pages/review/` | 复习入口占位页面目录 | 阶段 0 / Step 0.2 |
+| `miniprogram/pages/me/` | 轻量个人页占位页面目录 | 阶段 0 / Step 0.2 |
+| `miniprogram/components/` | 后续通用组件目录，目前使用 `.gitkeep` 保留空目录 | 阶段 0 / Step 0.2 |
+| `miniprogram/data/` | 后续本地场景和单词数据目录，目前使用 `.gitkeep` 保留空目录 | 阶段 0 / Step 0.2 |
+| `miniprogram/services/` | 后续业务服务层目录，目前使用 `.gitkeep` 保留空目录 | 阶段 0 / Step 0.2 |
+| `miniprogram/utils/` | 后续工具函数目录，目前使用 `.gitkeep` 保留空目录 | 阶段 0 / Step 0.2 |
+| `miniprogram/types/` | 后续集中类型定义目录，目前使用 `.gitkeep` 保留空目录 | 阶段 0 / Step 0.2 |
+| `miniprogram/assets/images/` | 后续图片资源目录，目前使用 `.gitkeep` 保留空目录 | 阶段 0 / Step 0.2 |
+| `miniprogram/assets/audio/` | 后续音频资源目录，目前使用 `.gitkeep` 保留空目录 | 阶段 0 / Step 0.2 |
+| `miniprogram/assets/icons/` | 后续图标资源目录，目前使用 `.gitkeep` 保留空目录 | 阶段 0 / Step 0.2 |
+| `tests/` | 后续 Vitest 单元测试目录，目前使用 `.gitkeep` 保留空目录 | 阶段 0 / Step 0.2 |
