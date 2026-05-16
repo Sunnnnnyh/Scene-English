@@ -303,3 +303,24 @@
 - 遗留问题：
   - 当前只完成单词 service，尚未接入单词卡、记忆模式或练习页面。
   - 尚未开始 Step 2.6。
+
+### 2026-05-16 — 阶段 2 / Step 2.6 实现收藏服务
+
+- 完成内容：
+  - 新增 `miniprogram/services/favoriteService.ts`，封装收藏数据的读取、添加、取消和状态查询。
+  - 实现 `getFavorites`，从本地缓存读取收藏列表，空数据时返回空数组。
+  - 实现 `addFavorite`，添加收藏并立即写入 `sceneenglish:favorites` 本地缓存。
+  - 实现 `removeFavorite`，取消收藏并立即同步本地缓存。
+  - 实现 `isFavorite`，按 word id 查询收藏状态。
+  - 新增 `tests/favoriteService.test.ts`，覆盖空列表、添加收藏、立即写入缓存、重复收藏去重、收藏状态查询和取消收藏同步。
+- 验证结果：
+  - 新增测试先在 `miniprogram/services/favoriteService.ts` 不存在时失败，随后实现服务后通过。
+  - 本地已验证 TypeScript 小程序配置检查通过。
+  - 本地已验证 TypeScript 测试配置检查通过。
+  - 本地已验证 ESLint 通过。
+  - 本地已验证 Prettier 项目脚本范围检查通过。
+  - 本地已验证 Vitest 通过，显示 8 个测试文件、46 个测试用例通过。
+  - 用户已运行验证并确认通过。
+- 遗留问题：
+  - 当前只完成收藏 service，尚未接入单词卡或收藏夹页面。
+  - 尚未开始 Step 2.7。

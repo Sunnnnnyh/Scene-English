@@ -6,7 +6,7 @@
 
 ## 1. 当前阶段
 
-当前项目已完成阶段 2 / Step 2.5，已初始化微信小程序 TypeScript 工程，建立基础目录结构和全部规划页面占位，配置基础开发质量工具，完成核心类型、场景数据、Classroom 20 个单词静态数据、占位图片 / 音频资源，并实现本地缓存工具、字符串标准化工具、热区计算工具、场景服务和单词服务。工程可以被微信开发者工具识别，所有已注册页面都能打开占位页；TypeScript、ESLint、Prettier 和 Vitest 命令均可运行。
+当前项目已完成阶段 2 / Step 2.6，已初始化微信小程序 TypeScript 工程，建立基础目录结构和全部规划页面占位，配置基础开发质量工具，完成核心类型、场景数据、Classroom 20 个单词静态数据、占位图片 / 音频资源，并实现本地缓存工具、字符串标准化工具、热区计算工具、场景服务、单词服务和收藏服务。工程可以被微信开发者工具识别，所有已注册页面都能打开占位页；TypeScript、ESLint、Prettier 和 Vitest 命令均可运行。
 
 当前源码目录为：
 
@@ -576,3 +576,37 @@ $env:PATH = "D:\SceneEnglish\.tools\node-v24.11.1-win-x64;$env:PATH"
 |---|---|---|
 | `miniprogram/services/wordService.ts` | 封装按场景获取单词列表和按 word id 获取单词详情的读取能力。 | 阶段 2 / Step 2.5 |
 | `tests/wordService.test.ts` | 使用 Vitest 覆盖单词服务读取、实用表达字段保留和未知输入兜底行为。 | 阶段 2 / Step 2.5 |
+
+## 18. 阶段 2 / Step 2.6 收藏服务更新
+
+`miniprogram/services/favoriteService.ts` 现在是收藏数据的 service 层入口。后续单词卡和收藏夹页面应通过该服务统一读取和修改收藏状态，避免页面直接读写 `wx storage`。
+
+导出内容：
+
+- `getFavorites(adapter?)`：读取收藏列表；无缓存或异常数据时返回空数组。
+- `addFavorite(wordId, sceneId, adapter?)`：添加收藏并立即写入本地缓存。
+- `removeFavorite(wordId, adapter?)`：按 word id 取消收藏并立即写入本地缓存。
+- `isFavorite(wordId, adapter?)`：按 word id 查询收藏状态。
+
+当前规则：
+
+- 收藏数据写入 `sceneenglish:favorites`。
+- 同一单词只能收藏一次；重复收藏时保留首次收藏时间，不新增重复记录。
+- 添加和取消收藏后立即写入缓存，不依赖页面退出或后续统一保存。
+- service 支持注入 `StorageAdapter`，方便 Vitest 使用 fake storage，也保留微信小程序运行时默认 storage adapter。
+
+`tests/favoriteService.test.ts` 验证：
+
+- 初始收藏列表为空；
+- 添加收藏后返回包含 `wordId`、`sceneId` 和 `createdAt` 的收藏记录；
+- 添加收藏会立即写入 `sceneenglish:favorites`；
+- 重复收藏同一 word id 不会产生重复记录；
+- `isFavorite` 能正确反映收藏状态；
+- 取消收藏后列表和状态同步更新。
+
+文件变更记录补充：
+
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `miniprogram/services/favoriteService.ts` | 封装收藏列表读取、添加收藏、取消收藏和收藏状态查询，并通过 storage 工具持久化。 | 阶段 2 / Step 2.6 |
+| `tests/favoriteService.test.ts` | 使用 Vitest 覆盖收藏服务空状态、写入缓存、去重、状态查询和取消收藏同步行为。 | 阶段 2 / Step 2.6 |
