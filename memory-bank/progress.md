@@ -284,3 +284,22 @@
 - 遗留问题：
   - 当前只完成场景 service，尚未接入场景选择页。
   - 尚未开始 Step 2.5。
+
+### 2026-05-16 — 阶段 2 / Step 2.5 实现单词服务
+
+- 完成内容：
+  - 新增 `miniprogram/services/wordService.ts`，封装 Classroom 单词数据读取能力。
+  - 实现 `getWordsBySceneId`，支持按场景 id 获取单词列表；未知场景返回空数组。
+  - 实现 `getWordById`，支持按 word id 获取单词详情；未知单词返回 `undefined`。
+  - 新增 `tests/wordService.test.ts`，覆盖 Classroom 20 个单词、`projector` 完整学习字段、按 id 查询和未知输入兜底。
+- 验证结果：
+  - 新增测试先在 `miniprogram/services/wordService.ts` 不存在时失败，随后实现服务后通过。
+  - 本地已验证 TypeScript 小程序配置检查通过。
+  - 本地已验证 TypeScript 测试配置检查通过。
+  - 本地已验证 ESLint 通过。
+  - 本地已验证 Prettier 项目脚本范围检查通过。
+  - 本地已验证 Vitest 通过，显示 7 个测试文件、41 个测试用例通过。
+  - 用户已运行验证并确认通过。
+- 遗留问题：
+  - 当前只完成单词 service，尚未接入单词卡、记忆模式或练习页面。
+  - 尚未开始 Step 2.6。

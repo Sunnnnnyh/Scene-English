@@ -6,7 +6,7 @@
 
 ## 1. 当前阶段
 
-当前项目已完成阶段 2 / Step 2.4，已初始化微信小程序 TypeScript 工程，建立基础目录结构和全部规划页面占位，配置基础开发质量工具，完成核心类型、场景数据、Classroom 20 个单词静态数据、占位图片 / 音频资源，并实现本地缓存工具、字符串标准化工具、热区计算工具和场景服务。工程可以被微信开发者工具识别，所有已注册页面都能打开占位页；TypeScript、ESLint、Prettier 和 Vitest 命令均可运行。
+当前项目已完成阶段 2 / Step 2.5，已初始化微信小程序 TypeScript 工程，建立基础目录结构和全部规划页面占位，配置基础开发质量工具，完成核心类型、场景数据、Classroom 20 个单词静态数据、占位图片 / 音频资源，并实现本地缓存工具、字符串标准化工具、热区计算工具、场景服务和单词服务。工程可以被微信开发者工具识别，所有已注册页面都能打开占位页；TypeScript、ESLint、Prettier 和 Vitest 命令均可运行。
 
 当前源码目录为：
 
@@ -544,3 +544,35 @@ $env:PATH = "D:\SceneEnglish\.tools\node-v24.11.1-win-x64;$env:PATH"
 |---|---|---|
 | `miniprogram/services/sceneService.ts` | 封装场景列表、可学习场景、Coming soon 场景和按 id 获取场景详情的读取能力。 | 阶段 2 / Step 2.4 |
 | `tests/sceneService.test.ts` | 使用 Vitest 覆盖场景服务读取、筛选和未知 id 兜底行为。 | 阶段 2 / Step 2.4 |
+
+## 17. 阶段 2 / Step 2.5 单词服务更新
+
+`miniprogram/services/wordService.ts` 现在是单词数据读取的 service 层入口。后续单词卡、记忆模式、听力默写、口语练习和错题复习应优先通过该服务读取单词列表和单词详情，避免页面直接依赖 `data/scenes.ts` 的词表导出。
+
+导出内容：
+
+- `getWordsBySceneId(sceneId)`：按场景 id 返回对应单词列表；未知场景返回空数组。
+- `getWordById(wordId)`：按 word id 查找单词详情；未知单词返回 `undefined`。
+
+当前规则：
+
+- 服务层只读取本地静态词表，不依赖页面、不读写本地缓存。
+- Classroom 当前返回 20 个 MVP 单词。
+- 返回的单词数据保留 `expressionEn` 和 `expressionCn`，确保单词卡能展示实用表达。
+- 未知场景和未知单词使用明确兜底值，避免调用方误以为一定存在数据。
+
+`tests/wordService.test.ts` 验证：
+
+- Classroom 场景返回 20 个单词；
+- 返回单词都属于 `classroom`；
+- 可以按 `projector` 查询到完整学习字段，包括例句、音标、实用表达和音频路径；
+- 可以按 `trash-can` 查询跨列表单词；
+- 未知 scene id 返回空数组；
+- 未知 word id 返回 `undefined`。
+
+文件变更记录补充：
+
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `miniprogram/services/wordService.ts` | 封装按场景获取单词列表和按 word id 获取单词详情的读取能力。 | 阶段 2 / Step 2.5 |
+| `tests/wordService.test.ts` | 使用 Vitest 覆盖单词服务读取、实用表达字段保留和未知输入兜底行为。 | 阶段 2 / Step 2.5 |
