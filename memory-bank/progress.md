@@ -408,3 +408,25 @@
   - 当前只完成音频 service，尚未接入单词卡、收藏夹、听写或口语页面。
   - 当前音频资源仍为静音占位 mp3，后续用户测试前需要替换为真实单词发音。
   - 尚未开始 Step 2.11。
+
+### 2026-05-16 — 阶段 2 / Step 2.11 实现口语识别服务 mock
+
+- 完成内容：
+  - 新增 `miniprogram/services/speechService.ts`，封装 MVP 阶段的 mock 口语识别接口。
+  - 实现 `createSpeechService`，支持创建可配置默认识别场景的口语识别服务实例。
+  - 实现默认导出的 `speechService`，供后续 Listen + Speak 页面调用。
+  - 支持 `success`、`failure`、`empty` 三种 mock 识别场景，便于开发阶段稳定演示成功、失败和空结果流程。
+  - 支持调用时传入指定 `transcript`，用于模拟目标词匹配或识别为其他词的结果。
+  - 识别结果统一返回 `SpeechResult`，`provider` 固定为 `mock`，匹配判断复用拼写标准化工具以忽略大小写和首尾空格。
+  - 新增 `tests/speechService.test.ts`，覆盖目标词匹配通过、空结果失败、识别为其他词失败、固定成功 / 失败场景和默认服务实例。
+- 验证结果：
+  - 新增测试先在 `miniprogram/services/speechService.ts` 不存在时失败，随后实现服务后通过。
+  - 本地已验证 TypeScript 小程序配置检查通过。
+  - 本地已验证 TypeScript 测试配置检查通过。
+  - 本地已验证 ESLint 通过。
+  - 本地已验证 Prettier 项目脚本范围检查通过。
+  - 本地已验证 Vitest 通过，显示 13 个测试文件、77 个测试用例通过。
+  - 用户已确认 Step 2.11 验证通过。
+- 遗留问题：
+  - 当前只完成 mock ASR service，尚未接入 Listen + Speak 页面、录音流程或 Me 页面状态说明。
+  - 阶段 2 的工具函数与服务层已完成，下一步进入阶段 3 基础页面与导航。

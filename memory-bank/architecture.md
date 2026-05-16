@@ -6,7 +6,7 @@
 
 ## 1. 当前阶段
 
-当前项目已完成阶段 2 / Step 2.10，已初始化微信小程序 TypeScript 工程，建立基础目录结构和全部规划页面占位，配置基础开发质量工具，完成核心类型、场景数据、Classroom 20 个单词静态数据、占位图片 / 音频资源，并实现本地缓存工具、字符串标准化工具、热区计算工具、场景服务、单词服务、收藏服务、学习进度服务、错题服务、抽题服务和音频服务。工程可以被微信开发者工具识别，所有已注册页面都能打开占位页；TypeScript、ESLint、Prettier 和 Vitest 命令均可运行。
+当前项目已完成阶段 2 / Step 2.11，已初始化微信小程序 TypeScript 工程，建立基础目录结构和全部规划页面占位，配置基础开发质量工具，完成核心类型、场景数据、Classroom 20 个单词静态数据、占位图片 / 音频资源，并实现本地缓存工具、字符串标准化工具、热区计算工具、场景服务、单词服务、收藏服务、学习进度服务、错题服务、抽题服务、音频服务和 mock 口语识别服务。工程可以被微信开发者工具识别，所有已注册页面都能打开占位页；TypeScript、ESLint、Prettier 和 Vitest 命令均可运行。
 
 当前源码目录为：
 
@@ -759,3 +759,42 @@ $env:PATH = "D:\SceneEnglish\.tools\node-v24.11.1-win-x64;$env:PATH"
 |---|---|---|
 | `miniprogram/services/audioService.ts` | 封装单词音频播放、停止、重播、错误回调和页面离开释放能力，默认使用微信小程序 `wx.createInnerAudioContext`。 | 阶段 2 / Step 2.10 |
 | `tests/audioService.test.ts` | 使用 Vitest 和 fake audio context 覆盖音频服务播放、切换、重播、错误回调和释放行为。 | 阶段 2 / Step 2.10 |
+
+## 23. 阶段 2 / Step 2.11 口语识别服务更新
+
+`miniprogram/services/speechService.ts` 现在是 MVP 阶段口语识别流程的 service 层入口。后续 Listen + Speak 页面应通过该服务提交录音文件路径和目标单词，获取统一的识别结果；真实 ASR 接入时应优先替换该 service 的内部实现，避免改动页面流程。
+
+导出内容：
+
+- `MockSpeechScenario`：开发阶段可控 mock 场景，包含 `success`、`failure` 和 `empty`。
+- `SpeechRecognitionOptions`：单次识别选项，支持传入 `scenario` 或指定 `transcript`。
+- `SpeechServiceOptions`：创建服务时的配置，目前包含 `defaultScenario`。
+- `SpeechService`：统一定义 `recognizeWord(audioFilePath, targetWord, options?)` 能力。
+- `createSpeechService(options?)`：创建可配置默认 mock 场景的口语识别服务实例。
+- `speechService`：小程序运行时默认 mock 口语识别服务实例。
+
+当前规则：
+
+- MVP 阶段 `provider` 固定返回 `mock`。
+- `success` 场景默认返回目标词本身，并判定通过。
+- `failure` 场景默认返回 `unrecognized speech`，并判定失败。
+- `empty` 场景返回空字符串，并判定失败。
+- 调用方可以传入 `transcript` 精确模拟识别文本，便于测试目标词匹配、空结果和识别为其他词。
+- 识别匹配复用拼写标准化工具，忽略大小写和首尾空格；第一版不做复杂相似度判断。
+- service 不直接展示 toast 或 modal，也不向普通用户暴露 mock 概念；后续 Me 页面可用于展示开发 / 演示状态说明。
+
+`tests/speechService.test.ts` 验证：
+
+- 识别文本与目标词一致时通过；
+- 识别文本为空时失败；
+- 识别文本为其他词时失败；
+- 可以创建固定成功场景的服务实例；
+- 可以创建固定失败场景的服务实例；
+- 默认导出的 `speechService` 可返回 mock 识别结果。
+
+文件变更记录补充：
+
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `miniprogram/services/speechService.ts` | 封装 MVP 阶段 mock 口语识别接口，支持成功、失败、空结果和指定 transcript，并返回统一 `SpeechResult`。 | 阶段 2 / Step 2.11 |
+| `tests/speechService.test.ts` | 使用 Vitest 覆盖 mock 口语识别服务的通过、失败、空结果、可控演示场景和默认服务实例。 | 阶段 2 / Step 2.11 |
