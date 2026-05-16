@@ -324,3 +324,23 @@
 - 遗留问题：
   - 当前只完成收藏 service，尚未接入单词卡或收藏夹页面。
   - 尚未开始 Step 2.7。
+
+### 2026-05-16 — 阶段 2 / Step 2.7 实现学习进度服务
+
+- 完成内容：
+  - 新增 `miniprogram/services/progressService.ts`，封装场景学习进度读取和写入能力。
+  - 实现 `getSceneProgress`，支持按场景 id 获取学习进度，空数据时返回默认进度。
+  - 实现 `recordLearnedWord`，进入单词卡时可记录 learned word，并避免同一单词重复计数。
+  - 实现 `recordModeCompletion`，支持记录 Memory、Listen + Spell、Listen + Speak 三类模式完成次数。
+  - 新增 `tests/progressService.test.ts`，覆盖初始进度、记录已学单词、重复 learned 去重、三种完成次数累加和多场景进度隔离。
+- 验证结果：
+  - 新增测试先在 `miniprogram/services/progressService.ts` 不存在时失败，随后实现服务后通过。
+  - 本地已验证 TypeScript 小程序配置检查通过。
+  - 本地已验证 TypeScript 测试配置检查通过。
+  - 本地已验证 ESLint 通过。
+  - 本地已验证 Prettier 项目脚本范围检查通过。
+  - 本地已验证 Vitest 通过，显示 9 个测试文件、51 个测试用例通过。
+  - 用户已运行验证并确认通过。
+- 遗留问题：
+  - 当前只完成学习进度 service，尚未接入单词卡、记忆模式或场景学习首页。
+  - 尚未开始 Step 2.8。

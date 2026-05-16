@@ -6,7 +6,7 @@
 
 ## 1. 当前阶段
 
-当前项目已完成阶段 2 / Step 2.6，已初始化微信小程序 TypeScript 工程，建立基础目录结构和全部规划页面占位，配置基础开发质量工具，完成核心类型、场景数据、Classroom 20 个单词静态数据、占位图片 / 音频资源，并实现本地缓存工具、字符串标准化工具、热区计算工具、场景服务、单词服务和收藏服务。工程可以被微信开发者工具识别，所有已注册页面都能打开占位页；TypeScript、ESLint、Prettier 和 Vitest 命令均可运行。
+当前项目已完成阶段 2 / Step 2.7，已初始化微信小程序 TypeScript 工程，建立基础目录结构和全部规划页面占位，配置基础开发质量工具，完成核心类型、场景数据、Classroom 20 个单词静态数据、占位图片 / 音频资源，并实现本地缓存工具、字符串标准化工具、热区计算工具、场景服务、单词服务、收藏服务和学习进度服务。工程可以被微信开发者工具识别，所有已注册页面都能打开占位页；TypeScript、ESLint、Prettier 和 Vitest 命令均可运行。
 
 当前源码目录为：
 
@@ -610,3 +610,38 @@ $env:PATH = "D:\SceneEnglish\.tools\node-v24.11.1-win-x64;$env:PATH"
 |---|---|---|
 | `miniprogram/services/favoriteService.ts` | 封装收藏列表读取、添加收藏、取消收藏和收藏状态查询，并通过 storage 工具持久化。 | 阶段 2 / Step 2.6 |
 | `tests/favoriteService.test.ts` | 使用 Vitest 覆盖收藏服务空状态、写入缓存、去重、状态查询和取消收藏同步行为。 | 阶段 2 / Step 2.6 |
+
+## 19. 阶段 2 / Step 2.7 学习进度服务更新
+
+`miniprogram/services/progressService.ts` 现在是学习进度数据的 service 层入口。后续单词卡、记忆模式、听力默写、口语练习和场景学习首页应通过该服务记录已学单词、练习完成次数和读取 `Learned x / 20` 所需数据。
+
+导出内容：
+
+- `getSceneProgress(sceneId, adapter?)`：按场景 id 读取学习进度；无缓存时返回默认进度。
+- `recordLearnedWord(sceneId, wordId, adapter?)`：记录已学单词，并立即写入本地缓存。
+- `recordModeCompletion(sceneId, mode, adapter?)`：按学习模式累加完成次数，并立即写入本地缓存。
+
+当前规则：
+
+- 学习进度数据写入 `sceneenglish:progress`。
+- `Learned x / 20` 只依赖 `learnedWordIds` 的去重数量。
+- 同一单词重复记录 learned 不会重复计数。
+- `memory` 累加 `completedMemoryCount`。
+- `listeningWriting` 累加 `completedWritingCount`。
+- `listeningSpeaking` 累加 `completedSpeakingCount`。
+- service 支持注入 `StorageAdapter`，方便 Vitest 使用 fake storage，也保留微信小程序运行时默认 storage adapter。
+
+`tests/progressService.test.ts` 验证：
+
+- 初始场景进度为空学习列表和 0 次完成次数；
+- 记录 learned word 后会立即写入 `sceneenglish:progress`；
+- 重复记录同一 learned word 不会重复计数；
+- Memory、Listen + Spell、Listen + Speak 三类完成次数能分别累加；
+- 不同场景的进度相互隔离。
+
+文件变更记录补充：
+
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `miniprogram/services/progressService.ts` | 封装场景学习进度读取、记录已学单词和记录三类模式完成次数，并通过 storage 工具持久化。 | 阶段 2 / Step 2.7 |
+| `tests/progressService.test.ts` | 使用 Vitest 覆盖学习进度默认值、learned 去重、完成次数累加和多场景隔离行为。 | 阶段 2 / Step 2.7 |
