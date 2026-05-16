@@ -6,7 +6,7 @@
 
 ## 1. 当前阶段
 
-当前项目已完成阶段 2 / Step 2.9，已初始化微信小程序 TypeScript 工程，建立基础目录结构和全部规划页面占位，配置基础开发质量工具，完成核心类型、场景数据、Classroom 20 个单词静态数据、占位图片 / 音频资源，并实现本地缓存工具、字符串标准化工具、热区计算工具、场景服务、单词服务、收藏服务、学习进度服务、错题服务和抽题服务。工程可以被微信开发者工具识别，所有已注册页面都能打开占位页；TypeScript、ESLint、Prettier 和 Vitest 命令均可运行。
+当前项目已完成阶段 2 / Step 2.10，已初始化微信小程序 TypeScript 工程，建立基础目录结构和全部规划页面占位，配置基础开发质量工具，完成核心类型、场景数据、Classroom 20 个单词静态数据、占位图片 / 音频资源，并实现本地缓存工具、字符串标准化工具、热区计算工具、场景服务、单词服务、收藏服务、学习进度服务、错题服务、抽题服务和音频服务。工程可以被微信开发者工具识别，所有已注册页面都能打开占位页；TypeScript、ESLint、Prettier 和 Vitest 命令均可运行。
 
 当前源码目录为：
 
@@ -720,3 +720,42 @@ $env:PATH = "D:\SceneEnglish\.tools\node-v24.11.1-win-x64;$env:PATH"
 |---|---|---|
 | `miniprogram/services/quizService.ts` | 封装普通练习和错题专项练习的题组生成逻辑，输出可被听写、口语和错题专项页面复用的 `QuizRound`。 | 阶段 2 / Step 2.9 |
 | `tests/quizService.test.ts` | 使用 Vitest 覆盖普通练习抽题优先级、未学词补足、去重、少量词兜底、错题弱项优先和指定错误类型抽题。 | 阶段 2 / Step 2.9 |
+
+## 22. 阶段 2 / Step 2.10 音频服务更新
+
+`miniprogram/services/audioService.ts` 现在是单词音频播放的统一 service 层入口。后续单词卡、收藏夹、Listen + Spell、Listen + Speak 和错题专项练习页面应通过该服务播放音频，避免页面重复创建和管理 `InnerAudioContext`。
+
+导出内容：
+
+- `AudioErrorHandler`：音频播放错误回调类型。
+- `AudioPlaybackOptions`：播放选项，目前包含 `onError`。
+- `AudioContextLike`：音频上下文最小接口，便于在测试中注入 fake context。
+- `AudioContextFactory`：音频上下文创建函数类型。
+- `AudioService`：统一定义 `play`、`stop`、`replay` 和 `dispose` 能力。
+- `createAudioService(createContext?)`：创建可注入上下文工厂的音频服务实例。
+- `audioService`：小程序运行时默认音频服务实例，内部使用 `wx.createInnerAudioContext`。
+
+当前规则：
+
+- 默认音频服务从 `globalThis.wx.createInnerAudioContext` 创建微信小程序音频上下文。
+- 调用 `play(src)` 时会先停止并释放上一条音频上下文，再创建新上下文播放目标资源。
+- `replay()` 会停止当前音频后重新播放当前资源，不创建新上下文。
+- `stop()` 只停止当前音频，不释放上下文。
+- `dispose()` 停止并释放当前上下文，适合页面离开时调用。
+- 播放错误通过 `onError` 回调交给页面层处理，service 不直接展示 toast 或 modal。
+
+`tests/audioService.test.ts` 验证：
+
+- 可以播放指定单词音频路径；
+- 播放新音频前会停止并释放上一条音频；
+- 重播当前音频不会创建新上下文；
+- 异步播放错误会传给调用方；
+- 同步播放异常会传给调用方；
+- 页面离开时可停止并释放当前音频上下文。
+
+文件变更记录补充：
+
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `miniprogram/services/audioService.ts` | 封装单词音频播放、停止、重播、错误回调和页面离开释放能力，默认使用微信小程序 `wx.createInnerAudioContext`。 | 阶段 2 / Step 2.10 |
+| `tests/audioService.test.ts` | 使用 Vitest 和 fake audio context 覆盖音频服务播放、切换、重播、错误回调和释放行为。 | 阶段 2 / Step 2.10 |

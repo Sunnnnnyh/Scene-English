@@ -386,3 +386,25 @@
 - 遗留问题：
   - 当前只完成抽题 service，尚未接入听写、口语或错题专项练习页面。
   - 尚未开始 Step 2.10。
+
+### 2026-05-16 — 阶段 2 / Step 2.10 实现音频服务
+
+- 完成内容：
+  - 新增 `miniprogram/services/audioService.ts`，封装单词音频播放、停止、重播和释放能力。
+  - 实现 `createAudioService`，支持注入音频上下文工厂，便于 Vitest 使用 fake audio context，也保留微信小程序运行时默认 `wx.createInnerAudioContext`。
+  - 实现默认导出的 `audioService`，供后续单词卡、收藏夹、听写和口语页面统一播放单词音频。
+  - 播放新音频前会停止并释放当前音频上下文，避免多音频重叠。
+  - 播放失败支持通过 `onError` 回调传给页面，由页面展示轻提示。
+  - 新增 `tests/audioService.test.ts`，覆盖播放、切换音频、重播、播放错误回调、同步播放异常和页面离开时释放音频上下文。
+- 验证结果：
+  - 新增测试先在 `miniprogram/services/audioService.ts` 不存在时失败，随后实现服务后通过。
+  - 本地已验证 TypeScript 小程序配置检查通过。
+  - 本地已验证 TypeScript 测试配置检查通过。
+  - 本地已验证 ESLint 通过。
+  - 本地已验证 Prettier 项目脚本范围检查通过。
+  - 本地已验证 Vitest 通过，显示 12 个测试文件、71 个测试用例通过。
+  - 用户已确认 Step 2.10 验证通过。
+- 遗留问题：
+  - 当前只完成音频 service，尚未接入单词卡、收藏夹、听写或口语页面。
+  - 当前音频资源仍为静音占位 mp3，后续用户测试前需要替换为真实单词发音。
+  - 尚未开始 Step 2.11。
