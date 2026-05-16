@@ -35,6 +35,15 @@ describe("hotspot util", () => {
     );
   });
 
+  it("rejects non-positive base dimensions", () => {
+    expect(() => convertHotspotToPercent(hotspot, 0, 1080)).toThrow(
+      "Hotspot base dimensions must be greater than 0"
+    );
+    expect(() => convertHotspotToPercent(hotspot, 1920, 0)).toThrow(
+      "Hotspot base dimensions must be greater than 0"
+    );
+  });
+
   it("detects points inside a hotspot", () => {
     expect(isPointInHotspot({ x: 600, y: 330 }, hotspot)).toBe(true);
   });

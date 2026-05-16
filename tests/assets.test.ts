@@ -11,6 +11,20 @@ const resolveMiniProgramAsset = (assetPath: string) =>
   join(workspaceRoot, "miniprogram", assetPath.replace(/^\//, ""));
 
 describe("static assets", () => {
+  it("contains image assets for every referenced scene image path", () => {
+    const imagePaths = scenes.flatMap((scene) => [scene.coverImage, scene.sceneImage]);
+
+    for (const imagePath of imagePaths) {
+      const fullPath = resolveMiniProgramAsset(imagePath);
+
+      expect(existsSync(fullPath)).toBe(true);
+
+      const bytes = readFileSync(fullPath);
+      expect(bytes.length).toBeGreaterThan(0);
+      expect([...bytes.subarray(0, 8)]).toEqual([137, 80, 78, 71, 13, 10, 26, 10]);
+    }
+  });
+
   it("contains the classroom cover and scene placeholder images", () => {
     const classroom = scenes.find((scene) => scene.id === "classroom");
 

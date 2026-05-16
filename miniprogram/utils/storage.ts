@@ -35,7 +35,7 @@ const isLocalStore = <T>(value: unknown): value is LocalStore<T> => {
   const candidate = value as Partial<LocalStore<T>>;
 
   return (
-    typeof candidate.version === "number" &&
+    candidate.version === STORAGE_VERSION &&
     typeof candidate.updatedAt === "string" &&
     Object.prototype.hasOwnProperty.call(candidate, "data")
   );

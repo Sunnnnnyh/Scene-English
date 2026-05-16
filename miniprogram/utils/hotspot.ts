@@ -14,16 +14,26 @@ export type PercentHotspotPosition = {
 
 const toPercent = (value: number, base: number) => (value / base) * 100;
 
+const assertPositiveBaseDimensions = (baseWidth: number, baseHeight: number) => {
+  if (baseWidth <= 0 || baseHeight <= 0) {
+    throw new Error("Hotspot base dimensions must be greater than 0");
+  }
+};
+
 export const convertHotspotToPercent = (
   position: HotspotPosition,
   baseWidth: number,
   baseHeight: number
-): PercentHotspotPosition => ({
-  left: toPercent(position.x, baseWidth),
-  top: toPercent(position.y, baseHeight),
-  width: toPercent(position.width, baseWidth),
-  height: toPercent(position.height, baseHeight)
-});
+): PercentHotspotPosition => {
+  assertPositiveBaseDimensions(baseWidth, baseHeight);
+
+  return {
+    left: toPercent(position.x, baseWidth),
+    top: toPercent(position.y, baseHeight),
+    width: toPercent(position.width, baseWidth),
+    height: toPercent(position.height, baseHeight)
+  };
+};
 
 export const createHotspotStyle = (
   position: HotspotPosition,

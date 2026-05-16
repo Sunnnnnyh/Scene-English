@@ -7,6 +7,29 @@ import {
   scenes
 } from "../miniprogram/data/scenes";
 
+const expectedAmericanPhonetics: Record<string, string> = {
+  blackboard: "/ˈblæk.bɔːrd/",
+  whiteboard: "/ˈwaɪt.bɔːrd/",
+  projector: "/prəˈdʒek.tɚ/",
+  podium: "/ˈpoʊ.di.əm/",
+  desk: "/desk/",
+  chair: "/tʃer/",
+  backpack: "/ˈbæk.pæk/",
+  textbook: "/ˈtekst.bʊk/",
+  notebook: "/ˈnoʊt.bʊk/",
+  pencil: "/ˈpen.səl/",
+  pen: "/pen/",
+  eraser: "/ɪˈreɪ.sɚ/",
+  chalk: "/tʃɑːk/",
+  ruler: "/ˈruː.lɚ/",
+  window: "/ˈwɪn.doʊ/",
+  curtain: "/ˈkɝː.t̬ən/",
+  door: "/dɔːr/",
+  clock: "/klɑːk/",
+  socket: "/ˈsɑː.kɪt/",
+  "trash-can": "/ˈtræʃ ˌkæn/"
+};
+
 describe("scene data", () => {
   it("contains the MVP classroom scene and coming soon scenes", () => {
     expect(scenes.map((scene) => scene.id)).toEqual([
@@ -36,6 +59,16 @@ describe("scene data", () => {
     expect(comingSoonScenes.every((scene) => scene.status === "comingSoon")).toBe(true);
   });
 
+  it("uses a shared placeholder image for coming soon scenes", () => {
+    expect(
+      comingSoonScenes.every(
+        (scene) =>
+          scene.coverImage === "/assets/images/coming-soon-cover.png" &&
+          scene.sceneImage === "/assets/images/coming-soon-cover.png"
+      )
+    ).toBe(true);
+  });
+
   it("contains exactly 20 complete classroom words", () => {
     expect(classroomWords).toHaveLength(20);
     expect(new Set(classroomWords.map((word) => word.id)).size).toBe(20);
@@ -59,5 +92,11 @@ describe("scene data", () => {
     const classroom = scenes.find((scene) => scene.id === "classroom");
 
     expect(classroom?.wordCount).toBe(classroomWords.length);
+  });
+
+  it("keeps classroom phonetics aligned with the reviewed American IPA list", () => {
+    expect(Object.fromEntries(classroomWords.map((word) => [word.id, word.phonetic]))).toEqual(
+      expectedAmericanPhonetics
+    );
   });
 });

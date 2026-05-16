@@ -1,7 +1,7 @@
 {
   "appid": "touristappid",
   "compileType": "miniprogram",
-  "libVersion": "latest",
+  "libVersion": "3.14.3",
   "miniprogramRoot": "miniprogram/",
   "projectname": "SceneEnglish",
   "setting": {

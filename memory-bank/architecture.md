@@ -23,7 +23,6 @@ D:\SceneEnglish
   .prettierrc.json
   .prettierignore
   project.config.json
-  project.private.config.json
   memory-bank/
     design-document.md
     tech-stack.md

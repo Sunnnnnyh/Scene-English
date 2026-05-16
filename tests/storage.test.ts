@@ -81,6 +81,18 @@ describe("storage util", () => {
     });
   });
 
+  it("falls back to the default value when stored data uses an unsupported version", () => {
+    const wxStorage = createWxStorage();
+
+    wxStorage.setStorageSync("sceneenglish:favorites", {
+      version: 2,
+      updatedAt: "2026-05-15T08:00:00.000Z",
+      data: ["projector"]
+    });
+
+    expect(readStorage("favorites", [], wxStorage)).toEqual([]);
+  });
+
   it("falls back to the default value when wx storage throws", () => {
     const wxStorage = createWxStorage();
 
