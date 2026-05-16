@@ -6,7 +6,7 @@
 
 ## 1. 当前阶段
 
-当前项目已完成阶段 2 / Step 2.8，已初始化微信小程序 TypeScript 工程，建立基础目录结构和全部规划页面占位，配置基础开发质量工具，完成核心类型、场景数据、Classroom 20 个单词静态数据、占位图片 / 音频资源，并实现本地缓存工具、字符串标准化工具、热区计算工具、场景服务、单词服务、收藏服务、学习进度服务和错题服务。工程可以被微信开发者工具识别，所有已注册页面都能打开占位页；TypeScript、ESLint、Prettier 和 Vitest 命令均可运行。
+当前项目已完成阶段 2 / Step 2.9，已初始化微信小程序 TypeScript 工程，建立基础目录结构和全部规划页面占位，配置基础开发质量工具，完成核心类型、场景数据、Classroom 20 个单词静态数据、占位图片 / 音频资源，并实现本地缓存工具、字符串标准化工具、热区计算工具、场景服务、单词服务、收藏服务、学习进度服务、错题服务和抽题服务。工程可以被微信开发者工具识别，所有已注册页面都能打开占位页；TypeScript、ESLint、Prettier 和 Vitest 命令均可运行。
 
 当前源码目录为：
 
@@ -684,3 +684,39 @@ $env:PATH = "D:\SceneEnglish\.tools\node-v24.11.1-win-x64;$env:PATH"
 |---|---|---|
 | `miniprogram/services/mistakeService.ts` | 封装错题列表读取、错误记录、按错误类型更新掌握进度、弱项自动移除和手动移出能力，并通过 storage 工具持久化。 | 阶段 2 / Step 2.8 |
 | `tests/mistakeService.test.ts` | 使用 Vitest 覆盖错题服务记录、累计、分类型统计、掌握进度、自动移出和手动移出行为。 | 阶段 2 / Step 2.8 |
+
+## 21. 阶段 2 / Step 2.9 抽题服务更新
+
+`miniprogram/services/quizService.ts` 现在是练习题组生成的 service 层入口。后续 Listen + Spell、Listen + Speak 和错题专项练习页面应通过该服务生成 `QuizRound`，避免页面层重复实现抽题优先级和兜底规则。
+
+导出内容：
+
+- `DEFAULT_QUIZ_QUESTION_COUNT`：默认每轮 5 题。
+- `createPracticeQuizRound(params)`：生成普通练习题组。
+- `createMistakePracticeQuizRound(params)`：生成错题专项练习题组。
+
+当前规则：
+
+- 普通练习先按传入词表顺序选取已学词。
+- 已学词不足默认题量时，从未学词中按词表顺序补足。
+- 一轮内不重复选同一个单词，除非调用方传入的数据本身不足。
+- 总词量不足默认题量时，按实际可用词量生成较短题组。
+- 错题专项练习按低掌握进度、高错误次数、最近错误时间和词表顺序排序。
+- 错题专项练习支持通过 `targetMistakeType` 只生成某一类弱项题目。
+- 生成的题目使用现有 `QuizRound` 和 `QuizQuestion` 类型，`targetMistakeType` 会保留在错题专项题目中。
+
+`tests/quizService.test.ts` 验证：
+
+- 普通练习会优先抽取已学词；
+- 已学词不足时会从未学词补足；
+- 可用词足够时一轮内不重复；
+- 可用词不足 5 个时生成较短题组；
+- 错题专项练习按错误次数和掌握进度优先；
+- 可以按单一错误类型生成错题专项题目。
+
+文件变更记录补充：
+
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `miniprogram/services/quizService.ts` | 封装普通练习和错题专项练习的题组生成逻辑，输出可被听写、口语和错题专项页面复用的 `QuizRound`。 | 阶段 2 / Step 2.9 |
+| `tests/quizService.test.ts` | 使用 Vitest 覆盖普通练习抽题优先级、未学词补足、去重、少量词兜底、错题弱项优先和指定错误类型抽题。 | 阶段 2 / Step 2.9 |

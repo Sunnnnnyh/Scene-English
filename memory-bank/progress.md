@@ -365,3 +365,24 @@
 - 遗留问题：
   - 当前只完成错题 service，尚未接入听写、口语、错题夹或错题专项练习页面。
   - 尚未开始 Step 2.9。
+
+### 2026-05-16 — 阶段 2 / Step 2.9 实现抽题服务
+
+- 完成内容：
+  - 新增 `miniprogram/services/quizService.ts`，封装普通练习和错题专项练习的抽题逻辑。
+  - 实现 `DEFAULT_QUIZ_QUESTION_COUNT`，将默认题量统一为 5 题。
+  - 实现 `createPracticeQuizRound`，普通练习优先从已学词中抽题，已学词不足时从未学词补足；词量不足 5 个时按实际数量生成。
+  - 实现 `createMistakePracticeQuizRound`，错题专项练习按低掌握进度、高错误次数、最近错误时间和词表顺序生成题目。
+  - 支持按单一错误类型生成错题专项练习题目，例如只练 `click`、`spelling` 或 `speaking`。
+  - 新增 `tests/quizService.test.ts`，覆盖普通练习优先级、未学词补足、一轮内去重、少量词兜底、错题弱项优先和指定错误类型抽题。
+- 验证结果：
+  - 新增测试先在 `miniprogram/services/quizService.ts` 不存在时失败，随后实现服务后通过。
+  - 本地已验证 TypeScript 小程序配置检查通过。
+  - 本地已验证 TypeScript 测试配置检查通过。
+  - 本地已验证 ESLint 通过。
+  - 本地已验证 Prettier 项目脚本范围检查通过。
+  - 本地已验证 Vitest 通过，显示 11 个测试文件、65 个测试用例通过。
+  - 用户已运行验证并确认通过。
+- 遗留问题：
+  - 当前只完成抽题 service，尚未接入听写、口语或错题专项练习页面。
+  - 尚未开始 Step 2.10。
