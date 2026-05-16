@@ -6,7 +6,7 @@
 
 ## 1. 当前阶段
 
-当前项目已完成阶段 2 / Step 2.3，已初始化微信小程序 TypeScript 工程，建立基础目录结构和全部规划页面占位，配置基础开发质量工具，完成核心类型、场景数据、Classroom 20 个单词静态数据、占位图片 / 音频资源，并实现本地缓存工具、字符串标准化工具和热区计算工具。工程可以被微信开发者工具识别，所有已注册页面都能打开占位页；TypeScript、ESLint、Prettier 和 Vitest 命令均可运行。
+当前项目已完成阶段 2 / Step 2.4，已初始化微信小程序 TypeScript 工程，建立基础目录结构和全部规划页面占位，配置基础开发质量工具，完成核心类型、场景数据、Classroom 20 个单词静态数据、占位图片 / 音频资源，并实现本地缓存工具、字符串标准化工具、热区计算工具和场景服务。工程可以被微信开发者工具识别，所有已注册页面都能打开占位页；TypeScript、ESLint、Prettier 和 Vitest 命令均可运行。
 
 当前源码目录为：
 
@@ -512,3 +512,35 @@ $env:PATH = "D:\SceneEnglish\.tools\node-v24.11.1-win-x64;$env:PATH"
 |---|---|---|
 | `miniprogram/utils/hotspot.ts` | 实现场景热区百分比转换、样式字符串生成和点击命中判断。 | 阶段 2 / Step 2.3 |
 | `tests/hotspot.test.ts` | 使用 Vitest 覆盖热区坐标转换、样式生成和点击命中规则。 | 阶段 2 / Step 2.3 |
+
+## 16. 阶段 2 / Step 2.4 场景服务更新
+
+`miniprogram/services/sceneService.ts` 现在是场景数据读取的 service 层入口。后续场景选择页和场景学习首页应优先通过该服务读取场景列表和场景详情，避免页面直接依赖 `data/scenes.ts` 的筛选逻辑。
+
+导出内容：
+
+- `getScenes()`：返回全部 MVP 场景，并保持数据文件中的展示顺序。
+- `getAvailableScenes()`：返回可学习场景，目前只有 Classroom。
+- `getComingSoonScenes()`：返回不可进入的 Coming soon 场景。
+- `getSceneById(sceneId)`：按场景 id 查找场景详情；未知 id 返回 `undefined`，由页面或调用方决定兜底展示。
+
+当前规则：
+
+- 服务层只读取本地静态数据，不依赖页面、不读写本地缓存。
+- Classroom 是唯一 `available` 场景。
+- Lecture Hall、Dormitory、Cafeteria 保持 `comingSoon`，后续页面点击时只提示 `Coming soon`。
+
+`tests/sceneService.test.ts` 验证：
+
+- 全部场景按预期顺序返回；
+- Classroom 是唯一可学习场景；
+- 非 Classroom 场景都作为 Coming soon 返回；
+- 可以按 `classroom` 查询到场景详情；
+- 查询未知 scene id 时返回 `undefined`。
+
+文件变更记录补充：
+
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `miniprogram/services/sceneService.ts` | 封装场景列表、可学习场景、Coming soon 场景和按 id 获取场景详情的读取能力。 | 阶段 2 / Step 2.4 |
+| `tests/sceneService.test.ts` | 使用 Vitest 覆盖场景服务读取、筛选和未知 id 兜底行为。 | 阶段 2 / Step 2.4 |

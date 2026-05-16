@@ -263,3 +263,24 @@
   - 当前只完成热区计算工具，尚未接入场景页面或记忆模式页面。
   - 热区坐标仍依赖 Step 1.3 的临时数据，后续正式视觉资源确定后需要重新校准。
   - 尚未开始 Step 2.4。
+
+### 2026-05-16 — 阶段 2 / Step 2.4 实现场景服务
+
+- 完成内容：
+  - 新增 `miniprogram/services/sceneService.ts`，封装场景数据读取能力。
+  - 实现 `getScenes`，返回全部 MVP 场景并保持展示顺序。
+  - 实现 `getAvailableScenes`，返回可学习场景，目前只有 Classroom。
+  - 实现 `getComingSoonScenes`，返回 Lecture Hall、Dormitory、Cafeteria 三个 Coming soon 场景。
+  - 实现 `getSceneById`，支持按 scene id 查询场景详情，未知 id 返回 `undefined`。
+  - 新增 `tests/sceneService.test.ts`，覆盖全部场景、可学习场景、Coming soon 场景、按 id 查询和未知 id 兜底。
+- 验证结果：
+  - 新增测试先在 `miniprogram/services/sceneService.ts` 不存在时失败，随后实现服务后通过。
+  - 本地已验证 TypeScript 小程序配置检查通过。
+  - 本地已验证 TypeScript 测试配置检查通过。
+  - 本地已验证 ESLint 通过。
+  - 本地已验证 Prettier 项目脚本范围检查通过。
+  - 本地已验证 Vitest 通过，显示 6 个测试文件、36 个测试用例通过。
+  - 用户已运行验证并确认通过。
+- 遗留问题：
+  - 当前只完成场景 service，尚未接入场景选择页。
+  - 尚未开始 Step 2.5。
