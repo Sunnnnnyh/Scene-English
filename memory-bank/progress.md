@@ -344,3 +344,24 @@
 - 遗留问题：
   - 当前只完成学习进度 service，尚未接入单词卡、记忆模式或场景学习首页。
   - 尚未开始 Step 2.8。
+
+### 2026-05-16 — 阶段 2 / Step 2.8 实现错题服务
+
+- 完成内容：
+  - 新增 `miniprogram/services/mistakeService.ts`，封装错题列表读取、错误记录、答对后掌握进度更新和手动移出能力。
+  - 实现 `getMistakes`，从本地缓存读取错题列表，空数据时返回空数组。
+  - 实现 `recordMistake`，支持记录 `click`、`spelling`、`speaking` 三类错误，并按单词和错误类型累计错误次数。
+  - 实现 `recordMistakeCorrectAnswer`，支持同一错误类型答对 1 次后进度为 50%，连续答对 2 次后移除该弱项。
+  - 实现 `removeMistake`，支持手动移出整个错题单词。
+  - 新增 `tests/mistakeService.test.ts`，覆盖空列表、记录错误、重复错误计数、不同错误类型并存、掌握进度更新、弱项自动移除、单词自动移出和手动移出。
+- 验证结果：
+  - 新增测试先在 `miniprogram/services/mistakeService.ts` 不存在时失败，随后实现服务后通过。
+  - 本地已验证 TypeScript 小程序配置检查通过。
+  - 本地已验证 TypeScript 测试配置检查通过。
+  - 本地已验证 ESLint 通过。
+  - 本地已验证 Prettier 项目脚本范围检查通过。
+  - 本地已验证 Vitest 通过，显示 10 个测试文件、59 个测试用例通过。
+  - 用户已运行验证并确认通过。
+- 遗留问题：
+  - 当前只完成错题 service，尚未接入听写、口语、错题夹或错题专项练习页面。
+  - 尚未开始 Step 2.9。

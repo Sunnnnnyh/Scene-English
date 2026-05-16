@@ -6,7 +6,7 @@
 
 ## 1. 当前阶段
 
-当前项目已完成阶段 2 / Step 2.7，已初始化微信小程序 TypeScript 工程，建立基础目录结构和全部规划页面占位，配置基础开发质量工具，完成核心类型、场景数据、Classroom 20 个单词静态数据、占位图片 / 音频资源，并实现本地缓存工具、字符串标准化工具、热区计算工具、场景服务、单词服务、收藏服务和学习进度服务。工程可以被微信开发者工具识别，所有已注册页面都能打开占位页；TypeScript、ESLint、Prettier 和 Vitest 命令均可运行。
+当前项目已完成阶段 2 / Step 2.8，已初始化微信小程序 TypeScript 工程，建立基础目录结构和全部规划页面占位，配置基础开发质量工具，完成核心类型、场景数据、Classroom 20 个单词静态数据、占位图片 / 音频资源，并实现本地缓存工具、字符串标准化工具、热区计算工具、场景服务、单词服务、收藏服务、学习进度服务和错题服务。工程可以被微信开发者工具识别，所有已注册页面都能打开占位页；TypeScript、ESLint、Prettier 和 Vitest 命令均可运行。
 
 当前源码目录为：
 
@@ -645,3 +645,42 @@ $env:PATH = "D:\SceneEnglish\.tools\node-v24.11.1-win-x64;$env:PATH"
 |---|---|---|
 | `miniprogram/services/progressService.ts` | 封装场景学习进度读取、记录已学单词和记录三类模式完成次数，并通过 storage 工具持久化。 | 阶段 2 / Step 2.7 |
 | `tests/progressService.test.ts` | 使用 Vitest 覆盖学习进度默认值、learned 去重、完成次数累加和多场景隔离行为。 | 阶段 2 / Step 2.7 |
+
+## 20. 阶段 2 / Step 2.8 错题服务更新
+
+`miniprogram/services/mistakeService.ts` 现在是错题数据的 service 层入口。后续 Listen + Spell、Listen + Speak、错题夹和错题专项练习应通过该服务统一记录错误、更新掌握进度和移出错题。
+
+导出内容：
+
+- `getMistakes(adapter?)`：读取错题列表；无缓存或异常数据时返回空数组。
+- `recordMistake(wordId, sceneId, mistakeType, adapter?)`：记录一次 `click`、`spelling` 或 `speaking` 错误。
+- `recordMistakeCorrectAnswer(wordId, mistakeType, adapter?)`：记录某个错误类型的一次正确作答，并更新掌握进度。
+- `removeMistake(wordId, adapter?)`：手动移出整个错题单词。
+
+当前规则：
+
+- 错题数据写入 `sceneenglish:mistakes`。
+- 错题按单词累计，同时按 `click`、`spelling`、`speaking` 分别记录弱项。
+- 同一错误类型重复错误会增加该类型的 `mistakeCount`，并重置 `correctStreak` 和 `masteryProgress`。
+- 同一错误类型答对 1 次后 `correctStreak` 为 1，`masteryProgress` 为 50。
+- 同一错误类型连续答对 2 次后，该错误类型从该词的 `typeStats` 中移除。
+- 一个单词的所有错误类型都移除后，该单词自动从错题列表移除。
+- service 支持注入 `StorageAdapter`，方便 Vitest 使用 fake storage，也保留微信小程序运行时默认 storage adapter。
+
+`tests/mistakeService.test.ts` 验证：
+
+- 初始错题列表为空；
+- 记录错误后会立即写入 `sceneenglish:mistakes`；
+- 同一单词同一错误类型多次错误会增加错误次数；
+- 同一单词可以同时保留不同错误类型；
+- 同一错误类型答对 1 次后掌握进度为 50；
+- 同一错误类型连续答对 2 次后该弱项被移除；
+- 所有弱项都被移除后该单词自动离开错题列表；
+- 手动移出错题后列表同步更新。
+
+文件变更记录补充：
+
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `miniprogram/services/mistakeService.ts` | 封装错题列表读取、错误记录、按错误类型更新掌握进度、弱项自动移除和手动移出能力，并通过 storage 工具持久化。 | 阶段 2 / Step 2.8 |
+| `tests/mistakeService.test.ts` | 使用 Vitest 覆盖错题服务记录、累计、分类型统计、掌握进度、自动移出和手动移出行为。 | 阶段 2 / Step 2.8 |
