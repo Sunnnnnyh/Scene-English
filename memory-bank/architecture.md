@@ -6,7 +6,7 @@
 
 ## 1. 当前阶段
 
-当前项目已完成阶段 2 / Step 2.2，已初始化微信小程序 TypeScript 工程，建立基础目录结构和全部规划页面占位，配置基础开发质量工具，完成核心类型、场景数据、Classroom 20 个单词静态数据、占位图片 / 音频资源，并实现本地缓存工具和字符串标准化工具。工程可以被微信开发者工具识别，所有已注册页面都能打开占位页；TypeScript、ESLint、Prettier 和 Vitest 命令均可运行。
+当前项目已完成阶段 2 / Step 2.3，已初始化微信小程序 TypeScript 工程，建立基础目录结构和全部规划页面占位，配置基础开发质量工具，完成核心类型、场景数据、Classroom 20 个单词静态数据、占位图片 / 音频资源，并实现本地缓存工具、字符串标准化工具和热区计算工具。工程可以被微信开发者工具识别，所有已注册页面都能打开占位页；TypeScript、ESLint、Prettier 和 Vitest 命令均可运行。
 
 当前源码目录为：
 
@@ -479,3 +479,37 @@ $env:PATH = "D:\SceneEnglish\.tools\node-v24.11.1-win-x64;$env:PATH"
 |---|---|---|
 | `miniprogram/utils/normalize.ts` | 实现 Listen + Spell 拼写判断所需的标准化和匹配函数。 | 阶段 2 / Step 2.2 |
 | `tests/normalize.test.ts` | 使用 Vitest 覆盖拼写标准化、大小写、首尾空格和不同拼写判断规则。 | 阶段 2 / Step 2.2 |
+
+## 15. 阶段 2 / Step 2.3 热区计算工具更新
+
+`miniprogram/utils/hotspot.ts` 现在是场景图透明热区定位和点击判断的工具模块。后续场景页面、Memory Mode 或其他需要点击场景物品的页面应复用该模块，避免页面层重复计算坐标和边界。
+
+导出内容：
+
+- `Point`：表示点击点坐标。
+- `PercentHotspotPosition`：表示转换后的百分比热区位置。
+- `convertHotspotToPercent(position, baseWidth, baseHeight)`：将基于原始画布的 `x`、`y`、`width`、`height` 转换为百分比。
+- `createHotspotStyle(position, baseWidth, baseHeight)`：生成透明热区 `view` 可直接使用的 `left`、`top`、`width`、`height` 样式字符串。
+- `isPointInHotspot(point, position)`：判断点击点是否位于热区内，热区边界视为可点击。
+
+当前规则：
+
+- 热区数据仍来源于 `classroomWords.position`。
+- 百分比定位基于场景原始画布尺寸转换，适配后续响应式场景图。
+- 点击边界包含在热区内，避免用户点到物体边缘时被误判为未点击。
+
+`tests/hotspot.test.ts` 验证：
+
+- 原始画布坐标可转换为百分比；
+- 等比例缩放画布时转换结果保持一致；
+- 可生成透明热区 `view` 使用的样式字符串；
+- 热区内部点击返回 `true`；
+- 热区边界点击返回 `true`；
+- 热区外点击返回 `false`。
+
+文件变更记录补充：
+
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `miniprogram/utils/hotspot.ts` | 实现场景热区百分比转换、样式字符串生成和点击命中判断。 | 阶段 2 / Step 2.3 |
+| `tests/hotspot.test.ts` | 使用 Vitest 覆盖热区坐标转换、样式生成和点击命中规则。 | 阶段 2 / Step 2.3 |
