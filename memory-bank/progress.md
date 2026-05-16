@@ -430,3 +430,27 @@
 - 遗留问题：
   - 当前只完成 mock ASR service，尚未接入 Listen + Speak 页面、录音流程或 Me 页面状态说明。
   - 阶段 2 的工具函数与服务层已完成，下一步进入阶段 3 基础页面与导航。
+
+### 2026-05-16 — 阶段 3 / Step 3.1 实现场景选择页
+
+- 完成内容：
+  - 将首页从 Step 0.1 占位状态改为真实场景选择页。
+  - 首页通过 `sceneService` 读取场景数据，并展示 SceneEnglish 标识、页面标题、Classroom 主场景卡和 3 个 Coming soon 场景卡。
+  - 新增 `miniprogram/pages/index/indexViewModel.ts`，将首页展示数据和点击行为整理为可测试的 view model。
+  - Classroom 场景卡点击后跳转到 `/pages/scene/scene?sceneId=classroom`。
+  - Lecture Hall、Dormitory、Cafeteria 点击后只显示 `Coming soon` 轻提示，不发生页面跳转。
+  - 新增 `tests/indexViewModel.test.ts`，覆盖首页场景卡生成、Classroom 可跳转和 Coming soon 不可进入规则。
+- 验证结果：
+  - 新增测试先在 `miniprogram/pages/index/indexViewModel.ts` 不存在时失败，随后实现 view model 和页面接入后通过。
+  - 本地已验证 TypeScript 小程序配置检查通过。
+  - 本地已验证 TypeScript 测试配置检查通过。
+  - 本地已验证 ESLint 通过。
+  - 本地已验证 Prettier 项目脚本范围检查通过。
+  - 本地已验证 Vitest 通过，显示 14 个测试文件、79 个测试用例通过。
+  - 用户已在微信开发者工具中重新编译首页，确认首页显示 Classroom 和 3 个 Coming soon 卡片。
+  - 用户已确认点击 Classroom 可进入场景学习首页占位页。
+  - 用户已确认点击 Coming soon 场景只显示提示且不跳转。
+- 遗留问题：
+  - 当前场景学习首页仍为占位页，尚未展示 Classroom 名称、场景预览、已学习进度和模式入口。
+  - 尚未实现底部导航和基础页面间返回规则。
+  - 尚未开始 Step 3.2。

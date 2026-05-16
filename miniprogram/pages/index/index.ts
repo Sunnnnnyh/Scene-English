@@ -1,7 +1,38 @@
+import { getScenes } from "../../services/sceneService";
+import { createIndexViewModel, getIndexSceneAction } from "./indexViewModel";
+
+type SceneTapEvent = WechatMiniprogram.BaseEvent & {
+  currentTarget: {
+    dataset: {
+      sceneId?: string;
+    };
+  };
+};
+
+const scenes = getScenes();
+
 Page({
-  data: {
-    title: "SceneEnglish",
-    subtitle: "按真实场景学习英语单词",
-    status: "微信小程序 TypeScript 工程已初始化"
+  data: createIndexViewModel(scenes),
+
+  onSceneTap(event: SceneTapEvent) {
+    const { sceneId } = event.currentTarget.dataset;
+
+    if (!sceneId) {
+      return;
+    }
+
+    const action = getIndexSceneAction(sceneId, scenes);
+
+    if (action.type === "navigate") {
+      wx.navigateTo({
+        url: action.url
+      });
+      return;
+    }
+
+    wx.showToast({
+      title: action.message,
+      icon: "none"
+    });
   }
 });

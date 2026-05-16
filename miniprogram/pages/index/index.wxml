@@ -1,11 +1,55 @@
 <view class="page">
   <view class="hero">
-    <text class="eyebrow">MVP Classroom</text>
+    <text class="eyebrow">Scene-based vocabulary</text>
     <text class="title">{{title}}</text>
     <text class="subtitle">{{subtitle}}</text>
-    <view class="status-card">
-      <text class="status-title">Step 0.1</text>
-      <text class="status-copy">{{status}}</text>
+  </view>
+
+  <view class="section">
+    <text class="section-title">选择学习场景</text>
+    <view
+      wx:for="{{availableScenes}}"
+      wx:key="id"
+      class="scene-card scene-card-primary"
+      data-scene-id="{{item.id}}"
+      bindtap="onSceneTap"
+    >
+      <image class="scene-cover" src="{{item.coverImage}}" mode="aspectFill" />
+      <view class="scene-content">
+        <view>
+          <text class="scene-name-en">{{item.nameEn}}</text>
+          <text class="scene-name-cn">{{item.nameCn}}</text>
+        </view>
+        <view class="scene-meta-row">
+          <text class="scene-pill">{{item.wordCountLabel}}</text>
+          <text class="scene-action">{{item.actionLabel}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="section">
+    <text class="section-title">Coming soon</text>
+    <view
+      wx:for="{{comingSoonScenes}}"
+      wx:key="id"
+      class="scene-card scene-card-locked"
+      data-scene-id="{{item.id}}"
+      bindtap="onSceneTap"
+    >
+      <view class="coming-soon-mark">
+        <text>{{item.statusLabel}}</text>
+      </view>
+      <view class="scene-content">
+        <view>
+          <text class="scene-name-en">{{item.nameEn}}</text>
+          <text class="scene-name-cn">{{item.nameCn}}</text>
+        </view>
+        <view class="scene-meta-row">
+          <text class="scene-pill scene-pill-muted">{{item.wordCountLabel}}</text>
+          <text class="scene-action scene-action-muted">{{item.actionLabel}}</text>
+        </view>
+      </view>
     </view>
   </view>
 </view>

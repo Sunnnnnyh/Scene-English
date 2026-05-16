@@ -6,7 +6,7 @@
 
 ## 1. 当前阶段
 
-当前项目已完成阶段 2 / Step 2.11，已初始化微信小程序 TypeScript 工程，建立基础目录结构和全部规划页面占位，配置基础开发质量工具，完成核心类型、场景数据、Classroom 20 个单词静态数据、占位图片 / 音频资源，并实现本地缓存工具、字符串标准化工具、热区计算工具、场景服务、单词服务、收藏服务、学习进度服务、错题服务、抽题服务、音频服务和 mock 口语识别服务。工程可以被微信开发者工具识别，所有已注册页面都能打开占位页；TypeScript、ESLint、Prettier 和 Vitest 命令均可运行。
+当前项目已完成阶段 3 / Step 3.1，已初始化微信小程序 TypeScript 工程，建立基础目录结构和全部规划页面占位，配置基础开发质量工具，完成核心类型、场景数据、Classroom 20 个单词静态数据、占位图片 / 音频资源，并实现本地缓存工具、字符串标准化工具、热区计算工具、场景服务、单词服务、收藏服务、学习进度服务、错题服务、抽题服务、音频服务和 mock 口语识别服务。首页已接入场景选择页，可以展示 Classroom 主场景和 Lecture Hall、Dormitory、Cafeteria 三个 Coming soon 场景；Classroom 可进入场景学习首页占位页，Coming soon 场景只提示不跳转。工程可以被微信开发者工具识别，所有已注册页面都能打开；TypeScript、ESLint、Prettier 和 Vitest 命令均可运行。
 
 当前源码目录为：
 
@@ -798,3 +798,38 @@ $env:PATH = "D:\SceneEnglish\.tools\node-v24.11.1-win-x64;$env:PATH"
 |---|---|---|
 | `miniprogram/services/speechService.ts` | 封装 MVP 阶段 mock 口语识别接口，支持成功、失败、空结果和指定 transcript，并返回统一 `SpeechResult`。 | 阶段 2 / Step 2.11 |
 | `tests/speechService.test.ts` | 使用 Vitest 覆盖 mock 口语识别服务的通过、失败、空结果、可控演示场景和默认服务实例。 | 阶段 2 / Step 2.11 |
+
+## 24. 阶段 3 / Step 3.1 场景选择页更新
+
+`miniprogram/pages/index/` 现在是 MVP 首页和场景选择页，不再只是工程初始化占位页。首页通过 `sceneService` 获取场景数据，并通过 `indexViewModel` 将场景列表整理为页面可直接渲染的数据。
+
+当前首页职责：
+
+- 展示 SceneEnglish 标识和“按真实场景学习英语单词”的产品说明。
+- 展示 Classroom 主场景卡，包括封面图、中英文名称和 `20 words`。
+- 展示 Lecture Hall、Dormitory、Cafeteria 三个 Coming soon 卡片。
+- 点击 Classroom 时跳转到 `/pages/scene/scene?sceneId=classroom`。
+- 点击 Coming soon 场景时显示 `Coming soon`，不发生页面跳转。
+
+`miniprogram/pages/index/indexViewModel.ts` 负责：
+
+- `createIndexViewModel(scenes)`：根据场景数据生成首页展示模型，区分可学习场景和 Coming soon 场景。
+- `getIndexSceneAction(sceneId, scenes)`：根据场景状态返回点击行为，可学习场景返回 `navigate`，Coming soon 或未知场景返回 `toast`。
+
+`tests/indexViewModel.test.ts` 验证：
+
+- 首页 view model 会从场景数据生成 1 个 Classroom 卡片和 3 个 Coming soon 卡片；
+- Classroom 卡片包含 `20 words` 和 `Start learning`；
+- Coming soon 场景的状态为 `Coming soon`；
+- Classroom 点击行为为跳转到场景学习首页；
+- Lecture Hall 等未开放场景点击行为为 `Coming soon` 提示。
+
+文件变更记录补充：
+
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `miniprogram/pages/index/index.ts` | 接入首页 view model，处理场景卡点击；Classroom 跳转，Coming soon 显示轻提示。 | 阶段 3 / Step 3.1 |
+| `miniprogram/pages/index/index.wxml` | 将首页结构从初始化占位替换为场景选择页，展示 Classroom 和 Coming soon 场景卡。 | 阶段 3 / Step 3.1 |
+| `miniprogram/pages/index/index.wxss` | 为场景选择页补充基础浅色 UI、场景卡、状态标签和按钮样式。 | 阶段 3 / Step 3.1 |
+| `miniprogram/pages/index/indexViewModel.ts` | 封装首页展示模型和场景点击行为，便于自动测试页面业务规则。 | 阶段 3 / Step 3.1 |
+| `tests/indexViewModel.test.ts` | 使用 Vitest 覆盖首页场景卡生成和 Classroom / Coming soon 点击规则。 | 阶段 3 / Step 3.1 |
