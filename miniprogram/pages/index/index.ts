@@ -23,8 +23,8 @@ Page({
 
     const action = getIndexSceneAction(sceneId, scenes);
 
-    if (action.type === "navigate") {
-      wx.navigateTo({
+    if (action.type === "switchTab") {
+      wx.switchTab({
         url: action.url
       });
       return;

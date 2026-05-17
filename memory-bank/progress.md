@@ -478,3 +478,27 @@
   - 收藏夹和错题夹入口位置需要在后续全局导航、Review 或 Me 页面步骤中重新确定。
   - 当前场景首页仍使用低保真占位场景图；后续视觉精修阶段需要替换正式插画并重新校准热区。
   - 尚未开始 Step 3.3。
+
+### 2026-05-17 — 阶段 3 / Step 3.3 实现页面间返回和基础导航
+
+- 完成内容：
+  - 在 `miniprogram/app.json` 中新增 Home / Learn / Review / Me 底部导航。
+  - 明确 Home 与 Learn 的信息架构边界：Home 用于选择学习场景；Learn 是当前学习场景的学习首页。MVP 阶段只有 Classroom，因此直接点击 Learn 时默认进入 Classroom 学习首页。
+  - 将首页 Classroom 场景卡行为调整为切换到 Learn tab，避免对 tabBar 页面使用 `navigateTo`。
+  - 为单词记忆、听力 + 默写、听力 + 口语三个学习占位页补充返回 Classroom 的入口。
+  - 在 Review 页预留收藏夹和错题夹两个全局复习入口，不再从具体场景学习首页进入。
+  - 将 Me 页从占位页调整为轻量个人页，展示昵称占位、已学单词数、收藏数、错题数和 `Mock ASR enabled` 状态。
+  - 修复微信开发者工具中 Review 页运行时报 `reviewViewModel.js is not defined` 的问题：页面运行时不再依赖新建 helper 模块，避免小程序 require 找不到未编译的辅助模块。
+  - 新增底部导航、学习占位页返回、Review 入口和 Me 页统计相关 Vitest 测试。
+- 验证结果：
+  - 新增测试先在 tabBar、学习页返回入口、Review view model 和 Me view model 不存在或行为不匹配时失败，随后实现后通过。
+  - 本地已验证 `npm run typecheck` 通过。
+  - 本地已验证 `npm run lint` 通过。
+  - 本地已验证 `npm run format:check` 通过。
+  - 本地已验证 `npm test` 通过，显示 19 个测试文件、88 个测试用例通过。
+  - 用户已在微信开发者工具中验证 Step 3.3 通过。
+- 遗留问题：
+  - 当前 Learn tab 在 MVP 阶段固定展示 Classroom；后续多场景开放后，可升级为读取最近学习场景或提示用户从 Home 选择场景。
+  - 收藏夹和错题夹页面仍为占位页，后续将在阶段 5 和阶段 7 分别实现真实列表能力。
+  - 三个学习模式页面仍为占位页，尚未进入记忆模式、听写或口语练习真实流程。
+  - 尚未开始 Step 4.1。

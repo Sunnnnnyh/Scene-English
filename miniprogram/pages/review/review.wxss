@@ -1,20 +1,75 @@
-.placeholder-page {
+.review-page {
   min-height: 100vh;
   box-sizing: border-box;
   padding: 64rpx 40rpx;
   background: #f7fbff;
 }
 
-.placeholder-title {
+.review-header {
+  display: flex;
+  flex-direction: column;
+  gap: 18rpx;
+}
+
+.review-title {
   display: block;
   color: #19324d;
   font-size: 40rpx;
   font-weight: 800;
 }
 
-.placeholder-copy {
+.review-subtitle {
   display: block;
-  margin-top: 20rpx;
   color: #45647f;
   font-size: 28rpx;
+  line-height: 1.5;
+}
+
+.review-list {
+  margin-top: 42rpx;
+}
+
+.review-entry {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24rpx;
+  min-height: 148rpx;
+  margin-bottom: 24rpx;
+  padding: 28rpx;
+  border: 2rpx solid #19324d;
+  border-radius: 24rpx;
+  background: #ffffff;
+}
+
+.review-entry-copy {
+  min-width: 0;
+}
+
+.review-entry-title {
+  display: block;
+  color: #19324d;
+  font-size: 32rpx;
+  font-weight: 800;
+}
+
+.review-entry-description {
+  display: block;
+  margin-top: 10rpx;
+  color: #45647f;
+  font-size: 24rpx;
+  line-height: 1.45;
+}
+
+.review-entry-action {
+  flex-shrink: 0;
+  min-width: 128rpx;
+  box-sizing: border-box;
+  padding: 12rpx 18rpx;
+  border-radius: 999rpx;
+  background: #f38d68;
+  color: #ffffff;
+  font-size: 24rpx;
+  font-weight: 800;
+  text-align: center;
 }

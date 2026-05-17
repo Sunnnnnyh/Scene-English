@@ -1,9 +1,25 @@
-import { getFavorites } from "../../services/favoriteService";
-import { getMistakes } from "../../services/mistakeService";
-import { getSceneProgress } from "../../services/progressService";
 import type { Favorite, Mistake, UserProgress } from "../../types";
 
-function createPageData(progress: UserProgress, favorites: Favorite[], mistakes: Mistake[]) {
+export type MeStat = {
+  label: string;
+  value: string;
+};
+
+export type MeViewModel = {
+  title: string;
+  nickname: string;
+  stats: MeStat[];
+  asrStatus: {
+    label: string;
+    value: string;
+  };
+};
+
+export function createMeViewModel(
+  progress: UserProgress,
+  favorites: Favorite[],
+  mistakes: Mistake[]
+): MeViewModel {
   return {
     title: "我的",
     nickname: "SceneEnglish Learner",
@@ -27,11 +43,3 @@ function createPageData(progress: UserProgress, favorites: Favorite[], mistakes:
     }
   };
 }
-
-Page({
-  data: createPageData(getSceneProgress("classroom"), getFavorites(), getMistakes()),
-
-  onShow() {
-    this.setData(createPageData(getSceneProgress("classroom"), getFavorites(), getMistakes()));
-  }
-});

@@ -28,10 +28,10 @@ describe("index page view model", () => {
     );
   });
 
-  it("allows Classroom to navigate and blocks coming soon scenes", () => {
+  it("allows Classroom to switch to the Learn tab and blocks coming soon scenes", () => {
     expect(getIndexSceneAction("classroom", getScenes())).toEqual({
-      type: "navigate",
-      url: "/pages/scene/scene?sceneId=classroom"
+      type: "switchTab",
+      url: "/pages/scene/scene"
     });
     expect(getIndexSceneAction("lecture-hall", getScenes())).toEqual({
       type: "toast",

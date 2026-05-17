@@ -1,13 +1,21 @@
-type ReviewEntryTapEvent = WechatMiniprogram.BaseEvent & {
-  currentTarget: {
-    dataset: {
-      url?: string;
-    };
-  };
+export type ReviewEntryId = "favorites" | "mistakes";
+
+export type ReviewEntry = {
+  id: ReviewEntryId;
+  title: string;
+  description: string;
+  actionLabel: string;
+  url: string;
 };
 
-Page({
-  data: {
+export type ReviewViewModel = {
+  title: string;
+  subtitle: string;
+  reviewEntries: ReviewEntry[];
+};
+
+export function createReviewViewModel(): ReviewViewModel {
+  return {
     title: "复习",
     subtitle: "把收藏和错题集中放在全局复习入口里。",
     reviewEntries: [
@@ -26,15 +34,5 @@ Page({
         url: "/pages/mistakes/mistakes"
       }
     ]
-  },
-
-  onReviewEntryTap(event: ReviewEntryTapEvent) {
-    const { url } = event.currentTarget.dataset;
-
-    if (!url) {
-      return;
-    }
-
-    wx.navigateTo({ url });
-  }
-});
+  };
+}

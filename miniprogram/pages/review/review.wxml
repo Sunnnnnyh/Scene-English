@@ -1,4 +1,22 @@
-<view class="placeholder-page">
-  <text class="placeholder-title">{{title}}</text>
-  <text class="placeholder-copy">{{description}}</text>
+<view class="review-page">
+  <view class="review-header">
+    <text class="review-title">{{title}}</text>
+    <text class="review-subtitle">{{subtitle}}</text>
+  </view>
+
+  <view class="review-list">
+    <view
+      wx:for="{{reviewEntries}}"
+      wx:key="id"
+      class="review-entry"
+      data-url="{{item.url}}"
+      bindtap="onReviewEntryTap"
+    >
+      <view class="review-entry-copy">
+        <text class="review-entry-title">{{item.title}}</text>
+        <text class="review-entry-description">{{item.description}}</text>
+      </view>
+      <text class="review-entry-action">{{item.actionLabel}}</text>
+    </view>
+  </view>
 </view>

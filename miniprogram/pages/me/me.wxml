@@ -1,4 +1,18 @@
-<view class="placeholder-page">
-  <text class="placeholder-title">{{title}}</text>
-  <text class="placeholder-copy">{{description}}</text>
+<view class="me-page">
+  <view class="profile-card">
+    <text class="me-title">{{title}}</text>
+    <text class="nickname">{{nickname}}</text>
+  </view>
+
+  <view class="stats-grid">
+    <view wx:for="{{stats}}" wx:key="label" class="stat-card">
+      <text class="stat-value">{{item.value}}</text>
+      <text class="stat-label">{{item.label}}</text>
+    </view>
+  </view>
+
+  <view class="status-card">
+    <text class="status-label">{{asrStatus.label}}</text>
+    <text class="status-value">{{asrStatus.value}}</text>
+  </view>
 </view>

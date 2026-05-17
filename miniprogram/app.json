@@ -17,6 +17,30 @@
     "navigationBarTextStyle": "black",
     "navigationBarTitleText": "SceneEnglish"
   },
+  "tabBar": {
+    "color": "#5D7892",
+    "selectedColor": "#E8754F",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "Home"
+      },
+      {
+        "pagePath": "pages/scene/scene",
+        "text": "Learn"
+      },
+      {
+        "pagePath": "pages/review/review",
+        "text": "Review"
+      },
+      {
+        "pagePath": "pages/me/me",
+        "text": "Me"
+      }
+    ]
+  },
   "style": "v2",
   "sitemapLocation": "sitemap.json"
 }

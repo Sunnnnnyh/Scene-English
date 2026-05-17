@@ -18,3 +18,14 @@
   color: #45647f;
   font-size: 28rpx;
 }
+
+.back-button {
+  margin: 40rpx 0 0;
+  min-height: 88rpx;
+  border: 2rpx solid #19324d;
+  border-radius: 999rpx;
+  background: #f38d68;
+  color: #ffffff;
+  font-size: 28rpx;
+  font-weight: 800;
+}

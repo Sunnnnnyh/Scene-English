@@ -1,4 +1,5 @@
 <view class="placeholder-page">
   <text class="placeholder-title">{{title}}</text>
   <text class="placeholder-copy">{{description}}</text>
+  <button class="back-button" bindtap="onBackToScene">{{backLabel}}</button>
 </view>

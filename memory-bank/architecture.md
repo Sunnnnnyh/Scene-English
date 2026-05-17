@@ -6,7 +6,7 @@
 
 ## 1. 当前阶段
 
-当前项目已完成阶段 3 / Step 3.2，已初始化微信小程序 TypeScript 工程，建立基础目录结构和全部规划页面占位，配置基础开发质量工具，完成核心类型、场景数据、Classroom 20 个单词静态数据、占位图片 / 音频资源，并实现本地缓存工具、字符串标准化工具、热区计算工具、场景服务、单词服务、收藏服务、学习进度服务、错题服务、抽题服务、音频服务和 mock 口语识别服务。首页已接入场景选择页，可以展示 Classroom 主场景和 Lecture Hall、Dormitory、Cafeteria 三个 Coming soon 场景；Classroom 可进入场景学习首页，查看场景预览、学习进度和三个学习模式入口，Coming soon 场景只提示不跳转。工程可以被微信开发者工具识别，所有已注册页面都能打开；TypeScript、ESLint、Prettier 和 Vitest 命令均可运行。
+当前项目已完成阶段 3 / Step 3.3，已初始化微信小程序 TypeScript 工程，建立基础目录结构和全部规划页面占位，配置基础开发质量工具，完成核心类型、场景数据、Classroom 20 个单词静态数据、占位图片 / 音频资源，并实现本地缓存工具、字符串标准化工具、热区计算工具、场景服务、单词服务、收藏服务、学习进度服务、错题服务、抽题服务、音频服务和 mock 口语识别服务。首页已接入场景选择页，可以展示 Classroom 主场景和 Lecture Hall、Dormitory、Cafeteria 三个 Coming soon 场景；底部导航已包含 Home / Learn / Review / Me。Home 负责选择学习场景，Learn 负责进入当前学习场景；MVP 阶段只有 Classroom，因此直接点击 Learn 默认进入 Classroom 学习首页。Classroom 学习首页可查看场景预览、学习进度和三个学习模式入口，Coming soon 场景只提示不跳转。Review 页已预留收藏夹和错题夹全局入口，Me 页已展示本地轻量统计和 mock ASR 状态。工程可以被微信开发者工具识别，所有已注册页面都能打开；TypeScript、ESLint、Prettier 和 Vitest 命令均可运行。
 
 当前源码目录为：
 
@@ -875,3 +875,58 @@ $env:PATH = "D:\SceneEnglish\.tools\node-v24.11.1-win-x64;$env:PATH"
 | `miniprogram/pages/scene/scene.wxss` | 为场景学习首页补充基础浅色 UI、场景预览、进度条和等高学习模式卡片样式。 | 阶段 3 / Step 3.2 |
 | `miniprogram/pages/scene/sceneViewModel.ts` | 封装场景学习首页展示模型、学习进度展示和学习模式入口路由。 | 阶段 3 / Step 3.2 |
 | `tests/sceneViewModel.test.ts` | 使用 Vitest 覆盖场景学习首页 view model、进度计算、学习模式路由和收藏夹 / 错题夹不在场景页展示的规则。 | 阶段 3 / Step 3.2 |
+
+## 26. 阶段 3 / Step 3.3 基础导航与全局入口更新
+
+`miniprogram/app.json` 现在定义 Home / Learn / Review / Me 四个底部导航入口。当前信息架构约定为：
+
+- Home：场景选择页，展示 Classroom 和 Coming soon 场景。
+- Learn：当前学习场景的学习首页。MVP 只有 Classroom，因此直接进入 Learn 时显示 Classroom 学习首页。
+- Review：跨场景复习入口，集中承载收藏夹和错题夹入口。
+- Me：轻量个人页，不做登录，只展示本地学习统计和 mock ASR 状态。
+
+当前页面职责变化：
+
+- 首页 Classroom 场景卡通过 `wx.switchTab` 进入 Learn tab，不再使用 `navigateTo` 进入 tabBar 页面。
+- 单词记忆、听力 + 默写、听力 + 口语三个学习占位页提供返回 Classroom 的按钮，当前返回动作为 `wx.switchTab({ url: "/pages/scene/scene" })`。
+- Review 页展示收藏夹和错题夹两个全局入口，点击后分别进入 `/pages/favorites/favorites` 和 `/pages/mistakes/mistakes`。
+- Me 页通过 `progressService`、`favoriteService` 和 `mistakeService` 读取本地数据，展示已学单词数、收藏数、错题数和 `Mock ASR enabled`。
+
+运行时注意事项：
+
+- Review / Me / 三个学习占位页当前不依赖新增页面 helper 模块，避免微信开发者工具运行时报辅助模块未编译或未定义。
+- 与页面展示规则相关的辅助 view model 测试仍保留在 Vitest 中，用于约束 Step 3.3 的导航与轻量页面规则。
+
+`tests/navigation.test.ts`、`tests/learningPageViewModel.test.ts`、`tests/reviewViewModel.test.ts` 和 `tests/meViewModel.test.ts` 验证：
+
+- `app.json` 注册 Home / Learn / Review / Me 四个底部 tab；
+- 学习占位页有返回 Classroom 的 switchTab 行为；
+- Review 页预留收藏夹和错题夹全局入口；
+- Me 页统计来自本地进度、收藏和错题数据。
+
+文件变更记录补充：
+
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `miniprogram/app.json` | 新增 Home / Learn / Review / Me 底部导航配置。 | 阶段 3 / Step 3.3 |
+| `miniprogram/pages/index/index.ts` | 将 Classroom 场景卡行为调整为 `wx.switchTab` 进入 Learn tab。 | 阶段 3 / Step 3.3 |
+| `miniprogram/pages/index/indexViewModel.ts` | 将 Classroom 点击动作建模为 `switchTab`，匹配 tabBar 页面导航规则。 | 阶段 3 / Step 3.3 |
+| `miniprogram/pages/memory/memory.ts` | 为单词记忆占位页补充返回 Classroom 的页面数据和交互。 | 阶段 3 / Step 3.3 |
+| `miniprogram/pages/memory/memory.wxml` | 为单词记忆占位页补充返回 Classroom 按钮。 | 阶段 3 / Step 3.3 |
+| `miniprogram/pages/memory/memory.wxss` | 为单词记忆占位页补充返回按钮样式。 | 阶段 3 / Step 3.3 |
+| `miniprogram/pages/listening-writing/listening-writing.ts` | 为听力 + 默写占位页补充返回 Classroom 的页面数据和交互。 | 阶段 3 / Step 3.3 |
+| `miniprogram/pages/listening-writing/listening-writing.wxml` | 为听力 + 默写占位页补充返回 Classroom 按钮。 | 阶段 3 / Step 3.3 |
+| `miniprogram/pages/listening-writing/listening-writing.wxss` | 为听力 + 默写占位页补充返回按钮样式。 | 阶段 3 / Step 3.3 |
+| `miniprogram/pages/listening-speaking/listening-speaking.ts` | 为听力 + 口语占位页补充返回 Classroom 的页面数据和交互。 | 阶段 3 / Step 3.3 |
+| `miniprogram/pages/listening-speaking/listening-speaking.wxml` | 为听力 + 口语占位页补充返回 Classroom 按钮。 | 阶段 3 / Step 3.3 |
+| `miniprogram/pages/listening-speaking/listening-speaking.wxss` | 为听力 + 口语占位页补充返回按钮样式。 | 阶段 3 / Step 3.3 |
+| `miniprogram/pages/review/review.ts` | 将 Review 从占位页调整为全局复习入口页，处理收藏夹和错题夹跳转。 | 阶段 3 / Step 3.3 |
+| `miniprogram/pages/review/review.wxml` | 展示收藏夹和错题夹两个全局复习入口。 | 阶段 3 / Step 3.3 |
+| `miniprogram/pages/review/review.wxss` | 为 Review 全局入口页补充基础浅色 UI 和入口卡片样式。 | 阶段 3 / Step 3.3 |
+| `miniprogram/pages/me/me.ts` | 接入本地进度、收藏和错题数据，生成轻量个人页统计。 | 阶段 3 / Step 3.3 |
+| `miniprogram/pages/me/me.wxml` | 展示昵称占位、本地统计和 mock ASR 状态。 | 阶段 3 / Step 3.3 |
+| `miniprogram/pages/me/me.wxss` | 为 Me 轻量个人页补充统计卡和状态卡样式。 | 阶段 3 / Step 3.3 |
+| `tests/navigation.test.ts` | 使用 Vitest 覆盖底部导航配置。 | 阶段 3 / Step 3.3 |
+| `tests/learningPageViewModel.test.ts` | 使用 Vitest 覆盖学习占位页返回 Classroom 的规则。 | 阶段 3 / Step 3.3 |
+| `tests/reviewViewModel.test.ts` | 使用 Vitest 覆盖 Review 全局入口结构。 | 阶段 3 / Step 3.3 |
+| `tests/meViewModel.test.ts` | 使用 Vitest 覆盖 Me 页轻量统计模型。 | 阶段 3 / Step 3.3 |

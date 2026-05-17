@@ -1,20 +1,80 @@
-.placeholder-page {
+.me-page {
   min-height: 100vh;
   box-sizing: border-box;
   padding: 64rpx 40rpx;
   background: #f7fbff;
 }
 
-.placeholder-title {
+.profile-card {
+  padding: 32rpx;
+  border: 2rpx solid #19324d;
+  border-radius: 24rpx;
+  background: #ffffff;
+}
+
+.me-title {
   display: block;
   color: #19324d;
   font-size: 40rpx;
   font-weight: 800;
 }
 
-.placeholder-copy {
+.nickname {
   display: block;
   margin-top: 20rpx;
   color: #45647f;
   font-size: 28rpx;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18rpx;
+  margin-top: 28rpx;
+}
+
+.stat-card {
+  min-height: 132rpx;
+  box-sizing: border-box;
+  padding: 24rpx 12rpx;
+  border: 2rpx solid #19324d;
+  border-radius: 22rpx;
+  background: #fff4df;
+  text-align: center;
+}
+
+.stat-value {
+  display: block;
+  color: #e8754f;
+  font-size: 40rpx;
+  font-weight: 800;
+}
+
+.stat-label {
+  display: block;
+  margin-top: 8rpx;
+  color: #45647f;
+  font-size: 22rpx;
+}
+
+.status-card {
+  margin-top: 28rpx;
+  padding: 28rpx;
+  border: 2rpx solid #19324d;
+  border-radius: 24rpx;
+  background: #ffffff;
+}
+
+.status-label {
+  display: block;
+  color: #19324d;
+  font-size: 28rpx;
+  font-weight: 800;
+}
+
+.status-value {
+  display: block;
+  margin-top: 10rpx;
+  color: #45647f;
+  font-size: 26rpx;
 }
