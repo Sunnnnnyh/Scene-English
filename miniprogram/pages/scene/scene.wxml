@@ -46,12 +46,17 @@
         <image class="scene-image" src="{{sceneImage}}" mode="aspectFill" />
         <block wx:for="{{memoryHotspots}}" wx:key="wordId">
           <view
-            class="memory-hotspot"
+            class="memory-hotspot {{showMemoryGuide && item.wordId === memoryGuideWordId ? 'memory-hotspot--guided' : ''}}"
             style="{{item.style}}"
             data-word-id="{{item.wordId}}"
             catchtap="onMemoryHotspotTap"
           ></view>
         </block>
+        <view wx:if="{{showMemoryGuide}}" class="memory-guide">
+          <text class="memory-guide-title">试试看</text>
+          <text class="memory-guide-text">点一点教室里的物品，看看它用英语怎么说</text>
+          <button class="memory-guide-close" bindtap="onDismissMemoryGuide">我知道了</button>
+        </view>
       </view>
 
       <view class="mode-page-panel">

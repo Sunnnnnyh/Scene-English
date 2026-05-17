@@ -1,6 +1,7 @@
 import { getSceneProgress } from "../../services/progressService";
 import { getSceneById } from "../../services/sceneService";
 import { getWordsBySceneId } from "../../services/wordService";
+import { completeMemoryGuide, shouldShowMemoryGuide } from "../../services/onboardingService";
 import {
   createSceneViewModel,
   getSceneEntryAction,
@@ -76,6 +77,7 @@ Page({
       activeMode: action.mode,
       selectedModeTitle: selectedMode?.title ?? "",
       selectedModeSubtitle: selectedMode?.subtitle ?? "",
+      showMemoryGuide: action.mode === "memory" ? shouldShowMemoryGuide() : false,
       selectedMemoryWordId: "",
       selectedMemoryWordLabel: ""
     });
@@ -86,8 +88,20 @@ Page({
       activeMode: "",
       selectedModeTitle: "",
       selectedModeSubtitle: "",
+      showMemoryGuide: false,
       selectedMemoryWordId: "",
       selectedMemoryWordLabel: ""
+    });
+  },
+
+  completeMemoryGuideIfNeeded() {
+    if (!this.data.showMemoryGuide) {
+      return;
+    }
+
+    completeMemoryGuide();
+    this.setData({
+      showMemoryGuide: false
     });
   },
 
@@ -106,6 +120,11 @@ Page({
       selectedMemoryWordId: wordId,
       selectedMemoryWordLabel: selectedHotspot?.label ?? wordId
     });
+    this.completeMemoryGuideIfNeeded();
+  },
+
+  onDismissMemoryGuide() {
+    this.completeMemoryGuideIfNeeded();
   },
 
   onMemoryBlankTap() {

@@ -579,3 +579,24 @@
   - 当前热区坐标仍基于低保真占位图，后续替换正式教室图片后需要重新校准 20 个物品热区。
   - 当前点击热区只显示识别结果，尚未弹出完整单词卡。
   - 尚未开始 Step 4.3。
+
+### 2026-05-17 — 阶段 4 / Step 4.3 实现首次轻引导
+
+- 完成内容：
+  - 新增 `miniprogram/services/onboardingService.ts`，通过 `sceneenglish:onboarding` 本地缓存记录 Memory Mode 首次引导完成状态。
+  - 在 Learn tab 内联 Memory 视图中接入首次轻引导：首次进入单词记忆模式时显示提示，并高亮 `projector` 热区。
+  - 用户点击任意热区或点击“我知道了”后，会写入 `memoryGuideCompleted: true`，后续再次进入单词记忆模式不再重复展示。
+  - 在 `miniprogram/pages/scene/sceneViewModel.ts` 中补充 Memory 引导默认展示字段和 `projector` 引导目标。
+  - 在 `miniprogram/pages/scene/scene.wxml` 和 `scene.wxss` 中补充引导浮层、关闭按钮和引导热区高亮样式。
+  - 新增 `tests/onboardingService.test.ts` 和 `tests/sceneMemoryGuide.test.ts`，覆盖引导缓存状态、首次展示规则、引导 UI 绑定和完成状态写入入口。
+- 验证结果：
+  - 新增测试先在 `onboardingService` 不存在、页面无引导字段和 WXML 无引导层时失败，随后实现后通过。
+  - 本地已验证 `npm run typecheck` 通过。
+  - 本地已验证 `npm run lint` 通过。
+  - 本地已验证 `npm run format:check` 通过。
+  - 本地已验证 `npm test` 通过，显示 27 个测试文件、101 个测试用例通过。
+  - 用户已在微信开发者工具中验证 Step 4.3 通过。
+- 遗留问题：
+  - 当前点击热区后仍只显示识别结果，完整单词卡尚未接入。
+  - Step 4.3 的引导点击完成后暂不弹出完整单词卡；单词卡将在 Step 4.4 实现。
+  - 尚未开始 Step 4.4。

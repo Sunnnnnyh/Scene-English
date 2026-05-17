@@ -6,7 +6,7 @@
 
 ## 1. 当前阶段
 
-当前项目已完成阶段 4 / Step 4.2，并完成 Learn tab 学习模式内联切换体验修复。项目已初始化微信小程序 TypeScript 工程，建立基础目录结构和全部规划页面占位，配置基础开发质量工具，完成核心类型、场景数据、Classroom 20 个单词静态数据、占位图片 / 音频资源，并实现本地缓存工具、字符串标准化工具、热区计算工具、场景服务、单词服务、收藏服务、学习进度服务、错题服务、抽题服务、音频服务和 mock 口语识别服务。首页已接入场景选择页，可以展示 Classroom 主场景和 Lecture Hall、Dormitory、Cafeteria 三个 Coming soon 场景；底部导航已包含 Home / Learn / Review / Me。Home 负责选择学习场景，Learn 负责进入当前学习场景；MVP 阶段只有 Classroom，因此直接点击 Learn 默认进入 Classroom 学习首页。Classroom 学习首页可查看场景预览、学习进度和三个学习模式入口，Coming soon 场景只提示不跳转。点击学习模式入口时，当前采用 Learn tab 内部状态切换，不再 `navigateTo` 普通页面，从而避免底部 tabBar 在过渡中消失。Review 页已预留收藏夹和错题夹全局入口，Me 页已展示本地轻量统计和 mock ASR 状态。Memory Mode 当前优先在 Learn tab 内联视图中推进：已能稳定展示 Classroom 场景图，并根据 Classroom 20 个单词数据覆盖透明热区；点击热区可以识别对应英文单词，点击空白区域只给轻提示。完整单词卡、首次引导、音频播放、收藏和已学记录仍在后续步骤实现。工程可以被微信开发者工具识别，所有已注册页面都能打开；TypeScript、ESLint、Prettier 和 Vitest 命令均可运行。
+当前项目已完成阶段 4 / Step 4.3，并完成 Learn tab 学习模式内联切换体验修复。项目已初始化微信小程序 TypeScript 工程，建立基础目录结构和全部规划页面占位，配置基础开发质量工具，完成核心类型、场景数据、Classroom 20 个单词静态数据、占位图片 / 音频资源，并实现本地缓存工具、字符串标准化工具、热区计算工具、场景服务、单词服务、收藏服务、学习进度服务、错题服务、抽题服务、音频服务和 mock 口语识别服务。首页已接入场景选择页，可以展示 Classroom 主场景和 Lecture Hall、Dormitory、Cafeteria 三个 Coming soon 场景；底部导航已包含 Home / Learn / Review / Me。Home 负责选择学习场景，Learn 负责进入当前学习场景；MVP 阶段只有 Classroom，因此直接点击 Learn 默认进入 Classroom 学习首页。Classroom 学习首页可查看场景预览、学习进度和三个学习模式入口，Coming soon 场景只提示不跳转。点击学习模式入口时，当前采用 Learn tab 内部状态切换，不再 `navigateTo` 普通页面，从而避免底部 tabBar 在过渡中消失。Review 页已预留收藏夹和错题夹全局入口，Me 页已展示本地轻量统计和 mock ASR 状态。Memory Mode 当前优先在 Learn tab 内联视图中推进：已能稳定展示 Classroom 场景图，并根据 Classroom 20 个单词数据覆盖透明热区；点击热区可以识别对应英文单词，点击空白区域只给轻提示。首次进入单词记忆模式时会展示一次性轻引导，高亮 `projector` 并通过 `sceneenglish:onboarding` 本地缓存记录完成状态。完整单词卡、音频播放、收藏和已学记录仍在后续步骤实现。工程可以被微信开发者工具识别，所有已注册页面都能打开；TypeScript、ESLint、Prettier 和 Vitest 命令均可运行。
 
 当前源码目录为：
 
@@ -1011,3 +1011,43 @@ Memory Mode 的透明热区当前优先接入 `miniprogram/pages/scene/` 的 Lea
 | `miniprogram/pages/scene/scene.wxml` | 在 Learn tab 内联 Memory 场景图上覆盖透明热区。 | 阶段 4 / Step 4.2 |
 | `miniprogram/pages/scene/scene.wxss` | 为 Memory 透明热区补充绝对定位和按下态调试反馈样式。 | 阶段 4 / Step 4.2 |
 | `tests/sceneMemoryHotspots.test.ts` | 使用 Vitest 约束 Memory 热区数据生成、WXML 覆盖层绑定和空白点击行为。 | 阶段 4 / Step 4.2 |
+
+## 29. 阶段 4 / Step 4.3 首次轻引导更新
+
+Memory Mode 现在接入一次性轻引导，用于帮助首次进入单词记忆模式的用户理解“场景图里的物品可以点击”。该能力继续落在 Learn tab 内联 Memory 视图中，保持底部 tabBar 可见。
+
+当前职责：
+
+- `onboardingService` 负责读取和写入 `sceneenglish:onboarding` 本地缓存。
+- `shouldShowMemoryGuide()` 根据 `memoryGuideCompleted` 判断是否需要展示 Memory 引导。
+- `completeMemoryGuide()` 将 `memoryGuideCompleted` 写为 `true`，并更新 `updatedAt`。
+- `sceneViewModel` 提供 `showMemoryGuide` 默认值和 `memoryGuideWordId: "projector"`，作为页面初始状态和高亮目标。
+- `scene.ts` 在用户进入 Memory 模式时读取引导状态；用户点击任意热区或点击“我知道了”后完成引导并写入本地缓存。
+- `scene.wxml` 在 Memory 场景图上展示引导浮层，并对 `projector` 热区追加高亮样式。
+- `scene.wxss` 定义引导热区高亮、引导浮层、提示文案和关闭按钮样式。
+
+运行时注意事项：
+
+- 当前 Step 4.3 只负责引导用户点击，不实现完整单词卡；点击热区后仍沿用 Step 4.2 的“已识别：英文单词”反馈。
+- 引导状态写入本地缓存后，后续再次进入 Memory 模式不再重复展示。
+- 如果开发者需要重新验证首次引导，应在微信开发者工具中清空本地缓存，或移除 `sceneenglish:onboarding`。
+
+`tests/onboardingService.test.ts` 和 `tests/sceneMemoryGuide.test.ts` 验证：
+
+- 空缓存时 Memory 引导应展示；
+- 完成引导后会写入 `sceneenglish:onboarding`；
+- 完成后再次读取时不再展示；
+- Memory 视图包含引导浮层、关闭按钮和 `projector` 高亮绑定；
+- `scene.ts` 会调用 onboarding service 读取和完成引导。
+
+文件变更记录补充：
+
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `miniprogram/services/onboardingService.ts` | 封装首次引导状态读取、判断和完成写入，当前用于 Memory Mode 一次性轻引导。 | 阶段 4 / Step 4.3 |
+| `miniprogram/pages/scene/sceneViewModel.ts` | 为 Learn tab 内联 Memory 视图补充引导默认状态和 `projector` 引导目标。 | 阶段 4 / Step 4.3 |
+| `miniprogram/pages/scene/scene.ts` | 在进入 Memory 模式时读取引导状态，并在点击热区或关闭引导时写入完成状态。 | 阶段 4 / Step 4.3 |
+| `miniprogram/pages/scene/scene.wxml` | 在 Learn tab 内联 Memory 视图中渲染首次引导浮层、关闭按钮和引导热区高亮绑定。 | 阶段 4 / Step 4.3 |
+| `miniprogram/pages/scene/scene.wxss` | 为首次轻引导补充高亮热区、引导浮层和关闭按钮样式。 | 阶段 4 / Step 4.3 |
+| `tests/onboardingService.test.ts` | 使用 Vitest 覆盖 Memory 引导首次展示、完成状态写入和后续不再展示。 | 阶段 4 / Step 4.3 |
+| `tests/sceneMemoryGuide.test.ts` | 使用 Vitest 约束 Learn tab Memory 引导 UI、`projector` 高亮目标和 onboarding service 调用。 | 阶段 4 / Step 4.3 |

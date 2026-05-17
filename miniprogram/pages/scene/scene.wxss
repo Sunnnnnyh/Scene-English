@@ -160,6 +160,53 @@
   background: rgba(255, 148, 111, 0.22);
 }
 
+.memory-hotspot--guided {
+  border: 4rpx solid #ff7f5f;
+  border-radius: 999rpx;
+  background: rgba(255, 148, 111, 0.26);
+  box-shadow: 0 0 0 12rpx rgba(255, 148, 111, 0.18);
+}
+
+.memory-guide {
+  position: absolute;
+  right: 24rpx;
+  bottom: 24rpx;
+  z-index: 3;
+  box-sizing: border-box;
+  max-width: 420rpx;
+  padding: 22rpx 24rpx;
+  border: 3rpx solid #19324d;
+  border-radius: 22rpx;
+  background: #fff4df;
+  box-shadow: 0 14rpx 30rpx rgba(25, 50, 77, 0.14);
+}
+
+.memory-guide-title {
+  display: block;
+  color: #19324d;
+  font-size: 26rpx;
+  font-weight: 800;
+}
+
+.memory-guide-text {
+  display: block;
+  margin-top: 8rpx;
+  color: #45647f;
+  font-size: 24rpx;
+  line-height: 1.45;
+}
+
+.memory-guide-close {
+  margin: 18rpx 0 0;
+  min-height: 64rpx;
+  border: 2rpx solid #19324d;
+  border-radius: 999rpx;
+  background: #ffffff;
+  color: #19324d;
+  font-size: 24rpx;
+  font-weight: 800;
+}
+
 .mode-page-panel {
   margin-top: 28rpx;
   padding: 24rpx;

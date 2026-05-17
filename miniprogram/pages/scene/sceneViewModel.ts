@@ -30,6 +30,8 @@ export type SceneViewModel = {
   selectedModeTitle: string;
   selectedModeSubtitle: string;
   memoryHotspots: SceneMemoryHotspot[];
+  showMemoryGuide: boolean;
+  memoryGuideWordId: Word["id"];
   selectedMemoryWordId: string;
   selectedMemoryWordLabel: string;
 };
@@ -90,6 +92,8 @@ export function createSceneViewModel(
     selectedModeTitle: "",
     selectedModeSubtitle: "",
     memoryHotspots,
+    showMemoryGuide: false,
+    memoryGuideWordId: "projector",
     selectedMemoryWordId: "",
     selectedMemoryWordLabel: ""
   };
