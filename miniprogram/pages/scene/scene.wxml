@@ -1,4 +1,36 @@
-<view class="placeholder-page">
-  <text class="placeholder-title">{{title}}</text>
-  <text class="placeholder-copy">{{description}}</text>
+<view class="scene-page">
+  <view class="scene-header">
+    <view>
+      <text class="scene-kicker">Classroom Scene</text>
+      <text class="scene-title">{{title}}</text>
+    </view>
+    <text class="scene-count">{{progressLabel}}</text>
+  </view>
+
+  <view class="scene-preview">
+    <image class="scene-image" src="{{sceneImage}}" mode="aspectFill" />
+  </view>
+
+  <view class="progress-section">
+    <view class="progress-track">
+      <view class="progress-fill" style="width: {{progressPercent}}%;"></view>
+    </view>
+  </view>
+
+  <view class="mode-section">
+    <text class="section-title">学习模式</text>
+    <block wx:for="{{modeEntries}}" wx:key="id">
+      <view
+        class="mode-entry {{item.isRecommended ? 'mode-entry--recommended' : ''}}"
+        data-entry-id="{{item.id}}"
+        bindtap="onEntryTap"
+      >
+        <view class="mode-copy">
+          <text class="mode-title">{{item.title}}</text>
+          <text class="mode-subtitle">{{item.subtitle}}</text>
+        </view>
+        <text class="mode-action">{{item.actionLabel}}</text>
+      </view>
+    </block>
+  </view>
 </view>

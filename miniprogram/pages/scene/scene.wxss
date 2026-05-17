@@ -1,20 +1,131 @@
-.placeholder-page {
-  min-height: 100vh;
+.scene-page {
+  height: 100vh;
+  overflow: hidden;
   box-sizing: border-box;
-  padding: 64rpx 40rpx;
+  padding: 48rpx 32rpx 80rpx;
   background: #f7fbff;
 }
 
-.placeholder-title {
+.scene-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24rpx;
+}
+
+.scene-kicker {
   display: block;
+  color: #5d7892;
+  font-size: 24rpx;
+  font-weight: 700;
+}
+
+.scene-title {
+  display: block;
+  margin-top: 8rpx;
   color: #19324d;
-  font-size: 40rpx;
+  font-size: 42rpx;
   font-weight: 800;
 }
 
-.placeholder-copy {
+.scene-count {
+  flex-shrink: 0;
+  color: #e8754f;
+  font-size: 24rpx;
+  font-weight: 800;
+}
+
+.scene-preview {
+  margin-top: 36rpx;
+  overflow: hidden;
+  border: 3rpx solid #19324d;
+  border-radius: 24rpx;
+  background: #eaf5ff;
+  box-shadow: 0 16rpx 32rpx rgba(25, 50, 77, 0.08);
+}
+
+.scene-image {
   display: block;
-  margin-top: 20rpx;
+  width: 100%;
+  height: 392rpx;
+}
+
+.progress-section {
+  margin-top: 24rpx;
+}
+
+.progress-track {
+  overflow: hidden;
+  height: 16rpx;
+  border: 2rpx solid #19324d;
+  border-radius: 999rpx;
+  background: #ffffff;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 999rpx;
+  background: #ff946f;
+}
+
+.mode-section {
+  margin-top: 52rpx;
+}
+
+.section-title {
+  display: block;
+  margin-bottom: 20rpx;
+  color: #19324d;
+  font-size: 30rpx;
+  font-weight: 800;
+}
+
+.mode-entry {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24rpx;
+  min-height: 152rpx;
+  margin-top: 24rpx;
+  padding: 28rpx 26rpx;
+  border: 3rpx solid #19324d;
+  border-radius: 22rpx;
+  background: #ffffff;
+}
+
+.mode-entry--recommended {
+  background: #fff4df;
+}
+
+.mode-copy {
+  min-width: 0;
+}
+
+.mode-title {
+  display: block;
+  color: #19324d;
+  font-size: 30rpx;
+  font-weight: 800;
+}
+
+.mode-subtitle {
+  display: block;
+  margin-top: 8rpx;
   color: #45647f;
-  font-size: 28rpx;
+  font-size: 24rpx;
+  line-height: 1.45;
+}
+
+.mode-action {
+  flex-shrink: 0;
+  min-width: 184rpx;
+  box-sizing: border-box;
+  padding: 12rpx 16rpx;
+  border: 2rpx solid #19324d;
+  border-radius: 999rpx;
+  background: #ffffff;
+  color: #19324d;
+  font-size: 22rpx;
+  font-weight: 800;
+  text-align: center;
 }

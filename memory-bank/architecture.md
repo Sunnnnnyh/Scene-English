@@ -6,7 +6,7 @@
 
 ## 1. 当前阶段
 
-当前项目已完成阶段 3 / Step 3.1，已初始化微信小程序 TypeScript 工程，建立基础目录结构和全部规划页面占位，配置基础开发质量工具，完成核心类型、场景数据、Classroom 20 个单词静态数据、占位图片 / 音频资源，并实现本地缓存工具、字符串标准化工具、热区计算工具、场景服务、单词服务、收藏服务、学习进度服务、错题服务、抽题服务、音频服务和 mock 口语识别服务。首页已接入场景选择页，可以展示 Classroom 主场景和 Lecture Hall、Dormitory、Cafeteria 三个 Coming soon 场景；Classroom 可进入场景学习首页占位页，Coming soon 场景只提示不跳转。工程可以被微信开发者工具识别，所有已注册页面都能打开；TypeScript、ESLint、Prettier 和 Vitest 命令均可运行。
+当前项目已完成阶段 3 / Step 3.2，已初始化微信小程序 TypeScript 工程，建立基础目录结构和全部规划页面占位，配置基础开发质量工具，完成核心类型、场景数据、Classroom 20 个单词静态数据、占位图片 / 音频资源，并实现本地缓存工具、字符串标准化工具、热区计算工具、场景服务、单词服务、收藏服务、学习进度服务、错题服务、抽题服务、音频服务和 mock 口语识别服务。首页已接入场景选择页，可以展示 Classroom 主场景和 Lecture Hall、Dormitory、Cafeteria 三个 Coming soon 场景；Classroom 可进入场景学习首页，查看场景预览、学习进度和三个学习模式入口，Coming soon 场景只提示不跳转。工程可以被微信开发者工具识别，所有已注册页面都能打开；TypeScript、ESLint、Prettier 和 Vitest 命令均可运行。
 
 当前源码目录为：
 
@@ -833,3 +833,45 @@ $env:PATH = "D:\SceneEnglish\.tools\node-v24.11.1-win-x64;$env:PATH"
 | `miniprogram/pages/index/index.wxss` | 为场景选择页补充基础浅色 UI、场景卡、状态标签和按钮样式。 | 阶段 3 / Step 3.1 |
 | `miniprogram/pages/index/indexViewModel.ts` | 封装首页展示模型和场景点击行为，便于自动测试页面业务规则。 | 阶段 3 / Step 3.1 |
 | `tests/indexViewModel.test.ts` | 使用 Vitest 覆盖首页场景卡生成和 Classroom / Coming soon 点击规则。 | 阶段 3 / Step 3.1 |
+
+## 25. 阶段 3 / Step 3.2 场景学习首页更新
+
+`miniprogram/pages/scene/` 现在是 Classroom 场景学习首页，不再是占位页。该页面承接首页的 Classroom 场景卡，负责展示当前场景信息、学习进度和场景内学习模式入口。
+
+当前场景学习首页职责：
+
+- 读取页面参数 `sceneId`，默认使用 `classroom`。
+- 通过 `sceneService` 获取场景详情；未知或未开放场景显示 `Coming soon` 轻提示。
+- 通过 `progressService` 读取当前场景学习进度，展示 `Learned x / 20` 和进度条。
+- 展示 Classroom 场景预览图。
+- 展示三个学习模式入口：单词记忆、听力 + 默写、听力 + 口语。
+- 单词记忆作为推荐入口使用视觉状态突出，但三种学习模式卡片尺寸保持一致。
+- 点击学习模式入口时跳转到对应页面，并携带 `sceneId=classroom`。
+
+当前信息架构判断：
+
+- 收藏夹和错题夹不再放在具体场景学习首页中。
+- 收藏夹和错题夹属于跨场景复习资产，后续应放到首页、Review 或 Me 等全局入口中处理。
+- 当前 Step 3.2 只完成场景内学习路径入口，不提前实现全局复习入口的位置调整。
+
+`miniprogram/pages/scene/sceneViewModel.ts` 负责：
+
+- `createSceneViewModel(scene, progress)`：根据场景和学习进度生成页面展示模型。
+- `getSceneEntryAction(entryId, sceneId)`：根据学习模式生成目标页面路由。
+
+`tests/sceneViewModel.test.ts` 验证：
+
+- Classroom 页面模型包含场景标题、场景图、`Learned 0 / 20` 和 0% 进度。
+- 进度会根据 `learnedWordIds` 数量计算，例如 3 / 20 对应 15%。
+- 三个学习模式入口分别跳转到 memory、listening-writing 和 listening-speaking 页面。
+- 场景首页模型不包含收藏夹 / 错题夹入口。
+
+文件变更记录补充：
+
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `miniprogram/pages/scene/scene.ts` | 接入场景详情、学习进度和场景首页 view model，处理三个学习模式入口跳转。 | 阶段 3 / Step 3.2 |
+| `miniprogram/pages/scene/scene.wxml` | 将场景学习首页从占位结构替换为 Classroom 预览、进度和三个学习模式入口。 | 阶段 3 / Step 3.2 |
+| `miniprogram/pages/scene/scene.wxss` | 为场景学习首页补充基础浅色 UI、场景预览、进度条和等高学习模式卡片样式。 | 阶段 3 / Step 3.2 |
+| `miniprogram/pages/scene/sceneViewModel.ts` | 封装场景学习首页展示模型、学习进度展示和学习模式入口路由。 | 阶段 3 / Step 3.2 |
+| `tests/sceneViewModel.test.ts` | 使用 Vitest 覆盖场景学习首页 view model、进度计算、学习模式路由和收藏夹 / 错题夹不在场景页展示的规则。 | 阶段 3 / Step 3.2 |
