@@ -1,8 +1,9 @@
 .scene-page {
-  height: 100vh;
-  overflow: hidden;
   box-sizing: border-box;
-  padding: 48rpx 32rpx 80rpx;
+  height: 100vh;
+  overflow-y: auto;
+  padding: 42rpx 32rpx 112rpx;
+  padding-bottom: calc(112rpx + env(safe-area-inset-bottom));
   background: #f7fbff;
 }
 
@@ -36,7 +37,7 @@
 }
 
 .scene-preview {
-  margin-top: 36rpx;
+  margin-top: 30rpx;
   overflow: hidden;
   border: 3rpx solid #19324d;
   border-radius: 24rpx;
@@ -47,11 +48,11 @@
 .scene-image {
   display: block;
   width: 100%;
-  height: 392rpx;
+  height: 380rpx;
 }
 
 .progress-section {
-  margin-top: 24rpx;
+  margin-top: 20rpx;
 }
 
 .progress-track {
@@ -69,12 +70,12 @@
 }
 
 .mode-section {
-  margin-top: 52rpx;
+  margin-top: 40rpx;
 }
 
 .section-title {
   display: block;
-  margin-bottom: 20rpx;
+  margin-bottom: 16rpx;
   color: #19324d;
   font-size: 30rpx;
   font-weight: 800;
@@ -85,9 +86,10 @@
   align-items: center;
   justify-content: space-between;
   gap: 24rpx;
-  min-height: 152rpx;
-  margin-top: 24rpx;
-  padding: 28rpx 26rpx;
+  box-sizing: border-box;
+  min-height: 142rpx;
+  margin-top: 18rpx;
+  padding: 22rpx 24rpx;
   border: 3rpx solid #19324d;
   border-radius: 22rpx;
   background: #ffffff;
@@ -110,17 +112,17 @@
 
 .mode-subtitle {
   display: block;
-  margin-top: 8rpx;
+  margin-top: 6rpx;
   color: #45647f;
-  font-size: 24rpx;
-  line-height: 1.45;
+  font-size: 23rpx;
+  line-height: 1.4;
 }
 
 .mode-action {
   flex-shrink: 0;
-  min-width: 184rpx;
+  min-width: 176rpx;
   box-sizing: border-box;
-  padding: 12rpx 16rpx;
+  padding: 11rpx 16rpx;
   border: 2rpx solid #19324d;
   border-radius: 999rpx;
   background: #ffffff;

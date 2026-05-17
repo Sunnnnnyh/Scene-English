@@ -896,6 +896,7 @@ $env:PATH = "D:\SceneEnglish\.tools\node-v24.11.1-win-x64;$env:PATH"
 
 - Review / Me / 三个学习占位页当前不依赖新增页面 helper 模块，避免微信开发者工具运行时报辅助模块未编译或未定义。
 - 与页面展示规则相关的辅助 view model 测试仍保留在 Vitest 中，用于约束 Step 3.3 的导航与轻量页面规则。
+- Learn tab 使用 `miniprogram/pages/scene/scene.wxss` 中的固定高度布局承载 Classroom 学习首页；页面主体尽量保持一屏展示，同时外层容器允许 `overflow-y: auto`，用于适配小屏和特殊机型，避免底部 tabBar 遮挡学习模式入口。
 
 `tests/navigation.test.ts`、`tests/learningPageViewModel.test.ts`、`tests/reviewViewModel.test.ts` 和 `tests/meViewModel.test.ts` 验证：
 
@@ -930,3 +931,4 @@ $env:PATH = "D:\SceneEnglish\.tools\node-v24.11.1-win-x64;$env:PATH"
 | `tests/learningPageViewModel.test.ts` | 使用 Vitest 覆盖学习占位页返回 Classroom 的规则。 | 阶段 3 / Step 3.3 |
 | `tests/reviewViewModel.test.ts` | 使用 Vitest 覆盖 Review 全局入口结构。 | 阶段 3 / Step 3.3 |
 | `tests/meViewModel.test.ts` | 使用 Vitest 覆盖 Me 页轻量统计模型。 | 阶段 3 / Step 3.3 |
+| `tests/sceneLayout.test.ts` | 使用 Vitest 约束 Learn tab 的场景首页布局：页面外层允许纵向滚动、保留底部安全区，并固定当前场景图和学习模式卡片尺寸。 | Learn 页底部导航适配修复 |
