@@ -558,3 +558,24 @@
   - 当前三种模式的 tab 内视图仍是基础占位状态；后续 Step 4.2 起会优先在 Learn tab 内继续补真实 Memory Mode 交互。
   - 独立学习模式页面后续可按实际架构需要逐步清理或复用，但本次最小修复不处理。
   - 尚未开始 Step 4.2。
+
+### 2026-05-17 — 阶段 4 / Step 4.2 实现透明热区覆盖
+
+- 完成内容：
+  - 将 Memory Mode 的透明热区接入 Learn tab 内联单词记忆视图，保持底部 Home / Learn / Review / Me tabBar 可见。
+  - 在 `miniprogram/pages/scene/sceneViewModel.ts` 中根据 Classroom 场景尺寸和 20 个单词热区坐标生成百分比定位的 `memoryHotspots`。
+  - 在 `miniprogram/pages/scene/scene.wxml` 中为 Memory 模式场景图覆盖透明 `view` 热区，并使用 `catchtap` 防止热区点击冒泡成空白点击。
+  - 在 `miniprogram/pages/scene/scene.ts` 中新增热区点击和空白点击处理：点击热区显示识别到的英文单词，点击空白区域只给轻提示。
+  - 在 `miniprogram/pages/scene/scene.wxss` 中为透明热区补充绝对定位和按下态调试反馈样式。
+  - 新增 `tests/sceneMemoryHotspots.test.ts`，约束 Classroom 20 个热区数据、百分比样式、热区绑定和空白点击绑定。
+- 验证结果：
+  - 新增测试先在 `memoryHotspots` 和 Memory 模式热区覆盖层不存在时失败，随后实现后通过。
+  - 本地已验证 `npm run typecheck` 通过。
+  - 本地已验证 `npm run lint` 通过。
+  - 本地已验证 `npm run format:check` 通过。
+  - 本地已验证 `npm test` 通过，显示 25 个测试文件、96 个测试用例通过。
+  - 用户已在微信开发者工具中验证 Step 4.2 通过。
+- 遗留问题：
+  - 当前热区坐标仍基于低保真占位图，后续替换正式教室图片后需要重新校准 20 个物品热区。
+  - 当前点击热区只显示识别结果，尚未弹出完整单词卡。
+  - 尚未开始 Step 4.3。

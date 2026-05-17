@@ -6,7 +6,7 @@
 
 ## 1. 当前阶段
 
-当前项目已完成阶段 4 / Step 4.1，并完成 Learn tab 学习模式内联切换体验修复。项目已初始化微信小程序 TypeScript 工程，建立基础目录结构和全部规划页面占位，配置基础开发质量工具，完成核心类型、场景数据、Classroom 20 个单词静态数据、占位图片 / 音频资源，并实现本地缓存工具、字符串标准化工具、热区计算工具、场景服务、单词服务、收藏服务、学习进度服务、错题服务、抽题服务、音频服务和 mock 口语识别服务。首页已接入场景选择页，可以展示 Classroom 主场景和 Lecture Hall、Dormitory、Cafeteria 三个 Coming soon 场景；底部导航已包含 Home / Learn / Review / Me。Home 负责选择学习场景，Learn 负责进入当前学习场景；MVP 阶段只有 Classroom，因此直接点击 Learn 默认进入 Classroom 学习首页。Classroom 学习首页可查看场景预览、学习进度和三个学习模式入口，Coming soon 场景只提示不跳转。点击学习模式入口时，当前采用 Learn tab 内部状态切换，不再 `navigateTo` 普通页面，从而避免底部 tabBar 在过渡中消失。Review 页已预留收藏夹和错题夹全局入口，Me 页已展示本地轻量统计和 mock ASR 状态。单词记忆页已开始承载真实 Memory Mode 流程的第一步，可以稳定展示 Classroom 场景图并保留返回 Classroom 的入口；热区覆盖、点击识别和单词卡仍在后续步骤实现。工程可以被微信开发者工具识别，所有已注册页面都能打开；TypeScript、ESLint、Prettier 和 Vitest 命令均可运行。
+当前项目已完成阶段 4 / Step 4.2，并完成 Learn tab 学习模式内联切换体验修复。项目已初始化微信小程序 TypeScript 工程，建立基础目录结构和全部规划页面占位，配置基础开发质量工具，完成核心类型、场景数据、Classroom 20 个单词静态数据、占位图片 / 音频资源，并实现本地缓存工具、字符串标准化工具、热区计算工具、场景服务、单词服务、收藏服务、学习进度服务、错题服务、抽题服务、音频服务和 mock 口语识别服务。首页已接入场景选择页，可以展示 Classroom 主场景和 Lecture Hall、Dormitory、Cafeteria 三个 Coming soon 场景；底部导航已包含 Home / Learn / Review / Me。Home 负责选择学习场景，Learn 负责进入当前学习场景；MVP 阶段只有 Classroom，因此直接点击 Learn 默认进入 Classroom 学习首页。Classroom 学习首页可查看场景预览、学习进度和三个学习模式入口，Coming soon 场景只提示不跳转。点击学习模式入口时，当前采用 Learn tab 内部状态切换，不再 `navigateTo` 普通页面，从而避免底部 tabBar 在过渡中消失。Review 页已预留收藏夹和错题夹全局入口，Me 页已展示本地轻量统计和 mock ASR 状态。Memory Mode 当前优先在 Learn tab 内联视图中推进：已能稳定展示 Classroom 场景图，并根据 Classroom 20 个单词数据覆盖透明热区；点击热区可以识别对应英文单词，点击空白区域只给轻提示。完整单词卡、首次引导、音频播放、收藏和已学记录仍在后续步骤实现。工程可以被微信开发者工具识别，所有已注册页面都能打开；TypeScript、ESLint、Prettier 和 Vitest 命令均可运行。
 
 当前源码目录为：
 
@@ -977,3 +977,37 @@ $env:PATH = "D:\SceneEnglish\.tools\node-v24.11.1-win-x64;$env:PATH"
 | `tests/memoryLayout.test.ts` | 使用 Vitest 约束 Memory 页面场景图布局和底部返回按钮规则。 | 阶段 4 / Step 4.1 |
 | `tests/memoryRuntime.test.ts` | 使用 Vitest 约束 `memory.ts` 不依赖新增页面 helper，防止微信运行时 helper 模块缺失回归。 | 阶段 4 / Step 4.1 |
 | `tests/memoryViewModel.test.ts` | 使用 Vitest 覆盖 Memory 页面 Step 4.1 展示模型。 | 阶段 4 / Step 4.1 |
+
+## 28. 阶段 4 / Step 4.2 透明热区覆盖更新
+
+Memory Mode 的透明热区当前优先接入 `miniprogram/pages/scene/` 的 Learn tab 内联模式视图，而不是继续扩展独立 `miniprogram/pages/memory/` 页面。这样可以延续已验证通过的交互方向：点击学习模式后仍停留在 Learn tab 内，底部 tabBar 不消失。
+
+当前职责：
+
+- `sceneViewModel` 根据当前 Classroom 场景的 `baseWidth`、`baseHeight` 和 20 个单词的 `position` 生成 `memoryHotspots`。
+- 每个 `memoryHotspots` 项包含 `wordId`、英文 `label` 和可直接用于 WXML 的百分比定位样式。
+- Memory 内联视图在场景图上覆盖透明 `view` 热区。
+- 点击热区时通过 `wordId` 识别单词，并在当前 Step 中显示“已识别：英文单词”。
+- 点击场景图空白区域只显示轻提示，不弹出单词卡，也不记录错题。
+
+运行时注意事项：
+
+- 热区使用 `catchtap="onMemoryHotspotTap"`，避免热区点击继续冒泡触发空白区域提示。
+- 当前热区仍基于低保真占位图和临时坐标，只用于跑通功能闭环；后续替换正式教室图片后，需要同步更新图片画布尺寸和 20 个物品热区坐标。
+- 本步骤只完成点击识别，不实现完整单词卡；单词卡将在后续 Step 4.4 接入。
+
+`tests/sceneMemoryHotspots.test.ts` 验证：
+
+- Classroom 会生成 20 个透明热区；
+- 代表性物品 `projector` 的 `wordId`、英文 label 和百分比定位样式正确；
+- Memory 内联视图中存在 `memoryHotspots` 循环、`data-word-id`、热区 `catchtap` 和空白区域 `bindtap`。
+
+文件变更记录补充：
+
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `miniprogram/pages/scene/sceneViewModel.ts` | 为 Learn tab 内联 Memory 视图生成 20 个透明热区展示数据。 | 阶段 4 / Step 4.2 |
+| `miniprogram/pages/scene/scene.ts` | 接入 Classroom 单词数据，处理 Memory 热区点击和空白区域点击反馈。 | 阶段 4 / Step 4.2 |
+| `miniprogram/pages/scene/scene.wxml` | 在 Learn tab 内联 Memory 场景图上覆盖透明热区。 | 阶段 4 / Step 4.2 |
+| `miniprogram/pages/scene/scene.wxss` | 为 Memory 透明热区补充绝对定位和按下态调试反馈样式。 | 阶段 4 / Step 4.2 |
+| `tests/sceneMemoryHotspots.test.ts` | 使用 Vitest 约束 Memory 热区数据生成、WXML 覆盖层绑定和空白点击行为。 | 阶段 4 / Step 4.2 |

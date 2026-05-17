@@ -144,6 +144,22 @@
   margin-top: 34rpx;
 }
 
+.memory-scene-preview {
+  position: relative;
+}
+
+.memory-hotspot {
+  position: absolute;
+  z-index: 2;
+  box-sizing: border-box;
+  background: rgba(255, 148, 111, 0);
+}
+
+.memory-hotspot:active {
+  border: 2rpx solid rgba(25, 50, 77, 0.35);
+  background: rgba(255, 148, 111, 0.22);
+}
+
 .mode-page-panel {
   margin-top: 28rpx;
   padding: 24rpx;

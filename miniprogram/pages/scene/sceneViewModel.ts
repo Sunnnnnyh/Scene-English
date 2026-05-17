@@ -1,4 +1,5 @@
-import type { Scene, StudyMode, UserProgress } from "../../types";
+import type { Scene, StudyMode, UserProgress, Word } from "../../types";
+import { createHotspotStyle } from "../../utils/hotspot";
 
 export type SceneEntryId = StudyMode;
 
@@ -8,6 +9,12 @@ export type SceneModeEntry = {
   subtitle: string;
   actionLabel: string;
   isRecommended: boolean;
+};
+
+export type SceneMemoryHotspot = {
+  wordId: Word["id"];
+  label: Word["en"];
+  style: string;
 };
 
 export type SceneViewModel = {
@@ -22,6 +29,9 @@ export type SceneViewModel = {
   activeMode: "" | SceneEntryId;
   selectedModeTitle: string;
   selectedModeSubtitle: string;
+  memoryHotspots: SceneMemoryHotspot[];
+  selectedMemoryWordId: string;
+  selectedMemoryWordLabel: string;
 };
 
 export type SceneEntryAction = {
@@ -53,10 +63,19 @@ const modeEntries: SceneModeEntry[] = [
   }
 ];
 
-export function createSceneViewModel(scene: Scene, progress: UserProgress): SceneViewModel {
+export function createSceneViewModel(
+  scene: Scene,
+  progress: UserProgress,
+  words: Word[] = []
+): SceneViewModel {
   const learnedCount = progress.learnedWordIds.length;
   const progressPercent =
     scene.wordCount > 0 ? Math.round((learnedCount / scene.wordCount) * 100) : 0;
+  const memoryHotspots = words.map((word) => ({
+    wordId: word.id,
+    label: word.en,
+    style: createHotspotStyle(word.position, scene.baseWidth, scene.baseHeight)
+  }));
 
   return {
     sceneId: scene.id,
@@ -69,7 +88,10 @@ export function createSceneViewModel(scene: Scene, progress: UserProgress): Scen
     modeEntries,
     activeMode: "",
     selectedModeTitle: "",
-    selectedModeSubtitle: ""
+    selectedModeSubtitle: "",
+    memoryHotspots,
+    selectedMemoryWordId: "",
+    selectedMemoryWordLabel: ""
   };
 }
 

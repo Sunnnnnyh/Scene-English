@@ -41,13 +41,36 @@
     <text class="scene-title">{{selectedModeTitle}}</text>
     <text class="mode-page-subtitle">{{selectedModeSubtitle}}</text>
 
-    <view class="scene-preview mode-page-preview">
-      <image class="scene-image" src="{{sceneImage}}" mode="aspectFill" />
-    </view>
+    <block wx:if="{{activeMode === 'memory'}}">
+      <view class="scene-preview mode-page-preview memory-scene-preview" bindtap="onMemoryBlankTap">
+        <image class="scene-image" src="{{sceneImage}}" mode="aspectFill" />
+        <block wx:for="{{memoryHotspots}}" wx:key="wordId">
+          <view
+            class="memory-hotspot"
+            style="{{item.style}}"
+            data-word-id="{{item.wordId}}"
+            catchtap="onMemoryHotspotTap"
+          ></view>
+        </block>
+      </view>
 
-    <view class="mode-page-panel">
-      <text class="mode-page-note">当前先保持基础模式视图，后续步骤会继续接入具体练习交互。</text>
-    </view>
+      <view class="mode-page-panel">
+        <text wx:if="{{selectedMemoryWordLabel}}" class="mode-page-note">
+          已识别：{{selectedMemoryWordLabel}}
+        </text>
+        <text wx:else class="mode-page-note">点一点教室里的物品，先确认热区是否对得上。</text>
+      </view>
+    </block>
+
+    <block wx:else>
+      <view class="scene-preview mode-page-preview">
+        <image class="scene-image" src="{{sceneImage}}" mode="aspectFill" />
+      </view>
+
+      <view class="mode-page-panel">
+        <text class="mode-page-note">当前先保持基础模式视图，后续步骤会继续接入具体练习交互。</text>
+      </view>
+    </block>
 
     <button class="back-button" bindtap="onBackToSceneHome">返回 Classroom</button>
   </block>
