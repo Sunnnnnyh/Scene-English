@@ -19,11 +19,14 @@ export type SceneViewModel = {
   progressLabel: string;
   progressPercent: number;
   modeEntries: SceneModeEntry[];
+  activeMode: "" | SceneEntryId;
+  selectedModeTitle: string;
+  selectedModeSubtitle: string;
 };
 
 export type SceneEntryAction = {
-  type: "navigate";
-  url: string;
+  type: "selectMode";
+  mode: SceneEntryId;
 };
 
 const modeEntries: SceneModeEntry[] = [
@@ -63,19 +66,16 @@ export function createSceneViewModel(scene: Scene, progress: UserProgress): Scen
     sceneImage: scene.sceneImage,
     progressLabel: `Learned ${learnedCount} / ${scene.wordCount}`,
     progressPercent,
-    modeEntries
+    modeEntries,
+    activeMode: "",
+    selectedModeTitle: "",
+    selectedModeSubtitle: ""
   };
 }
 
-export function getSceneEntryAction(entryId: SceneEntryId, sceneId: Scene["id"]): SceneEntryAction {
-  const routes: Record<SceneEntryId, string> = {
-    memory: "/pages/memory/memory",
-    listeningWriting: "/pages/listening-writing/listening-writing",
-    listeningSpeaking: "/pages/listening-speaking/listening-speaking"
-  };
-
+export function getSceneEntryAction(entryId: SceneEntryId): SceneEntryAction {
   return {
-    type: "navigate",
-    url: `${routes[entryId]}?sceneId=${sceneId}`
+    type: "selectMode",
+    mode: entryId
   };
 }

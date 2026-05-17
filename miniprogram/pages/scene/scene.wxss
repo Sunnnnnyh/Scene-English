@@ -131,3 +131,41 @@
   font-weight: 800;
   text-align: center;
 }
+
+.mode-page-subtitle {
+  display: block;
+  margin-top: 22rpx;
+  color: #45647f;
+  font-size: 28rpx;
+  line-height: 1.5;
+}
+
+.mode-page-preview {
+  margin-top: 34rpx;
+}
+
+.mode-page-panel {
+  margin-top: 28rpx;
+  padding: 24rpx;
+  border: 3rpx solid #19324d;
+  border-radius: 22rpx;
+  background: #ffffff;
+}
+
+.mode-page-note {
+  display: block;
+  color: #45647f;
+  font-size: 26rpx;
+  line-height: 1.5;
+}
+
+.back-button {
+  margin: 40rpx 0 0;
+  min-height: 88rpx;
+  border: 2rpx solid #19324d;
+  border-radius: 999rpx;
+  background: #f38d68;
+  color: #ffffff;
+  font-size: 28rpx;
+  font-weight: 800;
+}

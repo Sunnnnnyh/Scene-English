@@ -55,10 +55,21 @@ Page({
       return;
     }
 
-    const action = getSceneEntryAction(entryId, sceneId);
+    const action = getSceneEntryAction(entryId);
+    const selectedMode = this.data.modeEntries.find((entry) => entry.id === action.mode);
 
-    wx.navigateTo({
-      url: action.url
+    this.setData({
+      activeMode: action.mode,
+      selectedModeTitle: selectedMode?.title ?? "",
+      selectedModeSubtitle: selectedMode?.subtitle ?? ""
+    });
+  },
+
+  onBackToSceneHome() {
+    this.setData({
+      activeMode: "",
+      selectedModeTitle: "",
+      selectedModeSubtitle: ""
     });
   }
 });

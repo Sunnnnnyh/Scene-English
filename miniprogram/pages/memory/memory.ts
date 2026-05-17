@@ -1,12 +1,18 @@
+import { getSceneById } from "../../services/sceneService";
+import type { Scene } from "../../types";
+
 type MemoryPageOptions = {
   sceneId?: string;
 };
 
-function createMemoryPageData(sceneId: string) {
+function createMemoryPageData(scene: Scene) {
   return {
-    sceneId,
-    title: "单词记忆模式",
-    description: "Memory Mode 占位页面",
+    sceneId: scene.id,
+    title: "单词记忆",
+    subtitle: "观察教室里的物品，准备建立物品与英文单词的连接。",
+    sceneName: `${scene.nameCn} ${scene.nameEn}`,
+    sceneImage: scene.sceneImage,
+    imageAspectRatio: `${scene.baseWidth / 120} / ${scene.baseHeight / 120}`,
     backLabel: "返回 Classroom",
     backAction: {
       type: "switchTab",
@@ -15,11 +21,23 @@ function createMemoryPageData(sceneId: string) {
   };
 }
 
+const defaultScene = getSceneById("classroom");
+
 Page({
-  data: createMemoryPageData("classroom"),
+  data: defaultScene ? createMemoryPageData(defaultScene) : {},
 
   onLoad(options: MemoryPageOptions) {
-    this.setData(createMemoryPageData(options.sceneId ?? "classroom"));
+    const scene = getSceneById(options.sceneId ?? "classroom");
+
+    if (!scene || scene.status !== "available") {
+      wx.showToast({
+        title: "Coming soon",
+        icon: "none"
+      });
+      return;
+    }
+
+    this.setData(createMemoryPageData(scene));
   },
 
   onBackToScene() {

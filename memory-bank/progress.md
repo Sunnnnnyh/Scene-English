@@ -516,3 +516,45 @@
   - 用户已在微信开发者工具中验证通过。
 - 遗留问题：
   - 该调整只处理 Learn 页在底部 tabBar 下的布局适配；后续阶段 9.4 仍需要在更多机型和真机上做完整移动端视觉适配。
+
+### 2026-05-17 — 阶段 4 / Step 4.1 实现场景图展示
+
+- 完成内容：
+  - 将 `miniprogram/pages/memory/` 从学习模式占位页调整为单词记忆模式的场景图展示页。
+  - 页面读取 Classroom 场景数据，展示 `教室 Classroom`、`单词记忆`、说明文案和 Classroom 场景图。
+  - 使用稳定的 16:9 场景图容器和 `aspectFit` 图片模式，避免当前占位图在常见手机宽度下变形。
+  - 保留底部 `返回 Classroom` 主按钮，移除右上角重复返回按钮。
+  - 新增 `miniprogram/pages/memory/memoryViewModel.ts`，仅供 Vitest 约束 Step 4.1 的页面展示模型；小程序运行时 `memory.ts` 不依赖该 helper，避免微信开发者工具运行时报 `memoryViewModel.js is not defined`。
+  - 新增 `tests/memoryLayout.test.ts`、`tests/memoryRuntime.test.ts` 和 `tests/memoryViewModel.test.ts`，覆盖场景图布局、运行时依赖边界和页面展示模型。
+- 验证结果：
+  - 新增测试先在页面仍为占位结构、`memoryViewModel` 不存在、以及 `memory.ts` 依赖新增 helper 时失败，随后实现和运行时修复后通过。
+  - 本地已验证 `npm run typecheck` 通过。
+  - 本地已验证 `npm run lint` 通过。
+  - 本地已验证 `npm run format:check` 通过。
+  - 本地已验证 `npm test` 通过，显示 23 个测试文件、93 个测试用例通过。
+  - 用户已在微信开发者工具中验证 Step 4.1 通过。
+- 遗留问题：
+  - 当前只展示场景图，尚未实现透明热区覆盖、点击识别、单词卡、首次引导、音频播放、收藏或已学记录。
+  - 当前仍使用低保真占位场景图；后续替换正式图片后，需要重新校准热区和必要的局部布局。
+  - 尚未开始 Step 4.2。
+
+### 2026-05-17 — Learn tab 学习模式内联切换体验修复
+
+- 完成内容：
+  - 根据用户反馈修复点击学习模式卡片时底部 tabBar 先消失、再进入普通页面造成的交互不顺畅问题。
+  - 将 `miniprogram/pages/scene/scene.ts` 中的学习模式入口行为从 `wx.navigateTo` 改为当前 Learn tab 内部状态切换。
+  - 点击单词记忆、听力 + 默写、听力 + 口语后，当前页面设置 `activeMode` 并展示对应模式的基础视图，底部 Home / Learn / Review / Me tabBar 保持可见。
+  - 新增页面内 `返回 Classroom` 按钮，用于从当前模式视图切回 Classroom 学习首页。
+  - 暂时保留 `pages/memory`、`pages/listening-writing` 和 `pages/listening-speaking` 三个独立页面文件，不在本次最小修复中删除或大范围重构。
+  - 新增 `tests/sceneInlineMode.test.ts`，约束 Learn tab 学习模式入口不再使用 `wx.navigateTo`。
+- 验证结果：
+  - 新增测试先在 `scene.ts` 仍使用 `wx.navigateTo`、`sceneViewModel` 仍返回 `navigate` 动作时失败，随后改为 tab 内 `selectMode` 行为后通过。
+  - 本地已验证 `npm run typecheck` 通过。
+  - 本地已验证 `npm run lint` 通过。
+  - 本地已验证 `npm run format:check` 通过。
+  - 本地已验证 `npm test` 通过，显示 24 个测试文件、94 个测试用例通过。
+  - 用户已在微信开发者工具中验证该体验修复通过。
+- 遗留问题：
+  - 当前三种模式的 tab 内视图仍是基础占位状态；后续 Step 4.2 起会优先在 Learn tab 内继续补真实 Memory Mode 交互。
+  - 独立学习模式页面后续可按实际架构需要逐步清理或复用，但本次最小修复不处理。
+  - 尚未开始 Step 4.2。

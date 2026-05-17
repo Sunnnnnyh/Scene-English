@@ -1,5 +1,12 @@
-<view class="placeholder-page">
-  <text class="placeholder-title">{{title}}</text>
-  <text class="placeholder-copy">{{description}}</text>
+<view class="memory-page">
+  <text class="memory-kicker">{{sceneName}}</text>
+  <text class="memory-title">{{title}}</text>
+
+  <text class="memory-subtitle">{{subtitle}}</text>
+
+  <view class="memory-scene-frame">
+    <image class="memory-scene-image" src="{{sceneImage}}" mode="aspectFit" />
+  </view>
+
   <button class="back-button" bindtap="onBackToScene">{{backLabel}}</button>
 </view>

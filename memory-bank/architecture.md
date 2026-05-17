@@ -6,7 +6,7 @@
 
 ## 1. 当前阶段
 
-当前项目已完成阶段 3 / Step 3.3，已初始化微信小程序 TypeScript 工程，建立基础目录结构和全部规划页面占位，配置基础开发质量工具，完成核心类型、场景数据、Classroom 20 个单词静态数据、占位图片 / 音频资源，并实现本地缓存工具、字符串标准化工具、热区计算工具、场景服务、单词服务、收藏服务、学习进度服务、错题服务、抽题服务、音频服务和 mock 口语识别服务。首页已接入场景选择页，可以展示 Classroom 主场景和 Lecture Hall、Dormitory、Cafeteria 三个 Coming soon 场景；底部导航已包含 Home / Learn / Review / Me。Home 负责选择学习场景，Learn 负责进入当前学习场景；MVP 阶段只有 Classroom，因此直接点击 Learn 默认进入 Classroom 学习首页。Classroom 学习首页可查看场景预览、学习进度和三个学习模式入口，Coming soon 场景只提示不跳转。Review 页已预留收藏夹和错题夹全局入口，Me 页已展示本地轻量统计和 mock ASR 状态。工程可以被微信开发者工具识别，所有已注册页面都能打开；TypeScript、ESLint、Prettier 和 Vitest 命令均可运行。
+当前项目已完成阶段 4 / Step 4.1，并完成 Learn tab 学习模式内联切换体验修复。项目已初始化微信小程序 TypeScript 工程，建立基础目录结构和全部规划页面占位，配置基础开发质量工具，完成核心类型、场景数据、Classroom 20 个单词静态数据、占位图片 / 音频资源，并实现本地缓存工具、字符串标准化工具、热区计算工具、场景服务、单词服务、收藏服务、学习进度服务、错题服务、抽题服务、音频服务和 mock 口语识别服务。首页已接入场景选择页，可以展示 Classroom 主场景和 Lecture Hall、Dormitory、Cafeteria 三个 Coming soon 场景；底部导航已包含 Home / Learn / Review / Me。Home 负责选择学习场景，Learn 负责进入当前学习场景；MVP 阶段只有 Classroom，因此直接点击 Learn 默认进入 Classroom 学习首页。Classroom 学习首页可查看场景预览、学习进度和三个学习模式入口，Coming soon 场景只提示不跳转。点击学习模式入口时，当前采用 Learn tab 内部状态切换，不再 `navigateTo` 普通页面，从而避免底部 tabBar 在过渡中消失。Review 页已预留收藏夹和错题夹全局入口，Me 页已展示本地轻量统计和 mock ASR 状态。单词记忆页已开始承载真实 Memory Mode 流程的第一步，可以稳定展示 Classroom 场景图并保留返回 Classroom 的入口；热区覆盖、点击识别和单词卡仍在后续步骤实现。工程可以被微信开发者工具识别，所有已注册页面都能打开；TypeScript、ESLint、Prettier 和 Vitest 命令均可运行。
 
 当前源码目录为：
 
@@ -888,7 +888,9 @@ $env:PATH = "D:\SceneEnglish\.tools\node-v24.11.1-win-x64;$env:PATH"
 当前页面职责变化：
 
 - 首页 Classroom 场景卡通过 `wx.switchTab` 进入 Learn tab，不再使用 `navigateTo` 进入 tabBar 页面。
-- 单词记忆、听力 + 默写、听力 + 口语三个学习占位页提供返回 Classroom 的按钮，当前返回动作为 `wx.switchTab({ url: "/pages/scene/scene" })`。
+- Learn tab 中单词记忆、听力 + 默写、听力 + 口语三个学习模式入口不再 `navigateTo` 独立普通页面，而是在 `pages/scene/scene` 内设置 `activeMode` 并切换当前 tab 内的模式视图，避免底部 tabBar 过渡消失。
+- 当前 tab 内模式视图提供 `返回 Classroom` 按钮，返回动作为清空 `activeMode` 并回到 Classroom 学习首页。
+- 单词记忆、听力 + 默写、听力 + 口语三个独立页面文件暂时保留，避免本次体验修复扩大为大范围页面重构。
 - Review 页展示收藏夹和错题夹两个全局入口，点击后分别进入 `/pages/favorites/favorites` 和 `/pages/mistakes/mistakes`。
 - Me 页通过 `progressService`、`favoriteService` 和 `mistakeService` 读取本地数据，展示已学单词数、收藏数、错题数和 `Mock ASR enabled`。
 
@@ -896,12 +898,13 @@ $env:PATH = "D:\SceneEnglish\.tools\node-v24.11.1-win-x64;$env:PATH"
 
 - Review / Me / 三个学习占位页当前不依赖新增页面 helper 模块，避免微信开发者工具运行时报辅助模块未编译或未定义。
 - 与页面展示规则相关的辅助 view model 测试仍保留在 Vitest 中，用于约束 Step 3.3 的导航与轻量页面规则。
-- Learn tab 使用 `miniprogram/pages/scene/scene.wxss` 中的固定高度布局承载 Classroom 学习首页；页面主体尽量保持一屏展示，同时外层容器允许 `overflow-y: auto`，用于适配小屏和特殊机型，避免底部 tabBar 遮挡学习模式入口。
+- Learn tab 使用 `miniprogram/pages/scene/scene.wxss` 中的固定高度布局承载 Classroom 学习首页和当前 tab 内模式视图；页面主体尽量保持一屏展示，同时外层容器允许 `overflow-y: auto`，用于适配小屏和特殊机型，避免底部 tabBar 遮挡学习模式入口。
 
-`tests/navigation.test.ts`、`tests/learningPageViewModel.test.ts`、`tests/reviewViewModel.test.ts` 和 `tests/meViewModel.test.ts` 验证：
+`tests/navigation.test.ts`、`tests/learningPageViewModel.test.ts`、`tests/reviewViewModel.test.ts`、`tests/meViewModel.test.ts` 和 `tests/sceneInlineMode.test.ts` 验证：
 
 - `app.json` 注册 Home / Learn / Review / Me 四个底部 tab；
-- 学习占位页有返回 Classroom 的 switchTab 行为；
+- Learn tab 学习模式入口不再使用 `wx.navigateTo`，而是在当前 tab 内切换 `activeMode`；
+- 学习占位页仍保留返回 Classroom 的 switchTab 行为；
 - Review 页预留收藏夹和错题夹全局入口；
 - Me 页统计来自本地进度、收藏和错题数据。
 
@@ -932,3 +935,45 @@ $env:PATH = "D:\SceneEnglish\.tools\node-v24.11.1-win-x64;$env:PATH"
 | `tests/reviewViewModel.test.ts` | 使用 Vitest 覆盖 Review 全局入口结构。 | 阶段 3 / Step 3.3 |
 | `tests/meViewModel.test.ts` | 使用 Vitest 覆盖 Me 页轻量统计模型。 | 阶段 3 / Step 3.3 |
 | `tests/sceneLayout.test.ts` | 使用 Vitest 约束 Learn tab 的场景首页布局：页面外层允许纵向滚动、保留底部安全区，并固定当前场景图和学习模式卡片尺寸。 | Learn 页底部导航适配修复 |
+| `miniprogram/pages/scene/scene.ts` | 将 Learn tab 学习模式入口从 `wx.navigateTo` 改为当前 tab 内设置 `activeMode`，并提供返回 Classroom 首页的状态切换。 | Learn tab 学习模式内联切换体验修复 |
+| `miniprogram/pages/scene/scene.wxml` | 为 Learn tab 增加 Classroom 首页和当前模式视图的条件渲染结构。 | Learn tab 学习模式内联切换体验修复 |
+| `miniprogram/pages/scene/scene.wxss` | 为 Learn tab 当前模式视图补充基础样式和返回按钮样式。 | Learn tab 学习模式内联切换体验修复 |
+| `miniprogram/pages/scene/sceneViewModel.ts` | 将学习模式入口动作从普通页面 `navigate` 调整为当前 tab 内 `selectMode`。 | Learn tab 学习模式内联切换体验修复 |
+| `tests/sceneInlineMode.test.ts` | 使用 Vitest 约束 Learn tab 学习模式入口不再调用 `wx.navigateTo`，防止底部 tabBar 过渡消失问题回归。 | Learn tab 学习模式内联切换体验修复 |
+
+## 27. 阶段 4 / Step 4.1 单词记忆页场景图展示更新
+
+`miniprogram/pages/memory/` 现在是单词记忆模式的第一步页面，不再只是占位页。当前 Step 4.1 只负责稳定展示 Classroom 场景图，并为后续透明热区覆盖、首次引导和单词卡弹层预留页面基础。
+
+当前页面职责：
+
+- 读取页面参数 `sceneId`，默认使用 `classroom`。
+- 通过 `sceneService` 获取场景详情；未知或未开放场景显示 `Coming soon` 轻提示。
+- 展示 `教室 Classroom`、`单词记忆`、简短说明文案和 Classroom 场景图。
+- 使用 16:9 场景图容器与 `aspectFit` 图片模式，保证当前低保真占位图在常见手机宽度下不变形。
+- 保留底部 `返回 Classroom` 主按钮，返回动作为 `wx.switchTab({ url: "/pages/scene/scene" })`。
+
+运行时注意事项：
+
+- `memory.ts` 当前保持页面运行时自包含，不依赖新增页面 helper 模块，避免微信开发者工具运行时报辅助模块未编译或未定义。
+- `miniprogram/pages/memory/memoryViewModel.ts` 只用于 Vitest 约束 Step 4.1 的展示模型，当前不由小程序页面运行时直接 import。
+- 当前页面文案避免提示“点击物品”，因为透明热区和点击识别将在 Step 4.2 才接入。
+
+`tests/memoryLayout.test.ts`、`tests/memoryRuntime.test.ts` 和 `tests/memoryViewModel.test.ts` 验证：
+
+- Memory 页面使用稳定的场景图容器和 `aspectFit` 图片模式；
+- Memory 页面只保留底部返回按钮，不再显示右上角重复返回按钮；
+- `memory.ts` 不直接依赖 `./memoryViewModel`，避免小程序运行时 helper 模块缺失；
+- 展示模型包含 Classroom 场景名称、场景图路径、16:9 图片比例和返回 Classroom 的 switchTab 行为。
+
+文件变更记录补充：
+
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `miniprogram/pages/memory/memory.ts` | 将单词记忆页从占位逻辑调整为读取 Classroom 场景并生成场景图展示数据，同时保持运行时不依赖新增页面 helper。 | 阶段 4 / Step 4.1 |
+| `miniprogram/pages/memory/memory.wxml` | 将单词记忆页结构替换为场景名称、标题、说明文案、16:9 场景图和底部返回按钮。 | 阶段 4 / Step 4.1 |
+| `miniprogram/pages/memory/memory.wxss` | 为单词记忆页补充基础浅色 UI、稳定 16:9 场景图容器和底部返回按钮样式。 | 阶段 4 / Step 4.1 |
+| `miniprogram/pages/memory/memoryViewModel.ts` | 为 Vitest 提供单词记忆页 Step 4.1 展示模型约束；当前不由小程序运行时直接依赖。 | 阶段 4 / Step 4.1 |
+| `tests/memoryLayout.test.ts` | 使用 Vitest 约束 Memory 页面场景图布局和底部返回按钮规则。 | 阶段 4 / Step 4.1 |
+| `tests/memoryRuntime.test.ts` | 使用 Vitest 约束 `memory.ts` 不依赖新增页面 helper，防止微信运行时 helper 模块缺失回归。 | 阶段 4 / Step 4.1 |
+| `tests/memoryViewModel.test.ts` | 使用 Vitest 覆盖 Memory 页面 Step 4.1 展示模型。 | 阶段 4 / Step 4.1 |

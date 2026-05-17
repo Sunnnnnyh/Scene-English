@@ -1,36 +1,54 @@
 <view class="scene-page">
-  <view class="scene-header">
-    <view>
-      <text class="scene-kicker">Classroom Scene</text>
-      <text class="scene-title">{{title}}</text>
-    </view>
-    <text class="scene-count">{{progressLabel}}</text>
-  </view>
-
-  <view class="scene-preview">
-    <image class="scene-image" src="{{sceneImage}}" mode="aspectFill" />
-  </view>
-
-  <view class="progress-section">
-    <view class="progress-track">
-      <view class="progress-fill" style="width: {{progressPercent}}%;"></view>
-    </view>
-  </view>
-
-  <view class="mode-section">
-    <text class="section-title">学习模式</text>
-    <block wx:for="{{modeEntries}}" wx:key="id">
-      <view
-        class="mode-entry {{item.isRecommended ? 'mode-entry--recommended' : ''}}"
-        data-entry-id="{{item.id}}"
-        bindtap="onEntryTap"
-      >
-        <view class="mode-copy">
-          <text class="mode-title">{{item.title}}</text>
-          <text class="mode-subtitle">{{item.subtitle}}</text>
-        </view>
-        <text class="mode-action">{{item.actionLabel}}</text>
+  <block wx:if="{{!activeMode}}">
+    <view class="scene-header">
+      <view>
+        <text class="scene-kicker">Classroom Scene</text>
+        <text class="scene-title">{{title}}</text>
       </view>
-    </block>
-  </view>
+      <text class="scene-count">{{progressLabel}}</text>
+    </view>
+
+    <view class="scene-preview">
+      <image class="scene-image" src="{{sceneImage}}" mode="aspectFill" />
+    </view>
+
+    <view class="progress-section">
+      <view class="progress-track">
+        <view class="progress-fill" style="width: {{progressPercent}}%;"></view>
+      </view>
+    </view>
+
+    <view class="mode-section">
+      <text class="section-title">学习模式</text>
+      <block wx:for="{{modeEntries}}" wx:key="id">
+        <view
+          class="mode-entry {{item.isRecommended ? 'mode-entry--recommended' : ''}}"
+          data-entry-id="{{item.id}}"
+          bindtap="onEntryTap"
+        >
+          <view class="mode-copy">
+            <text class="mode-title">{{item.title}}</text>
+            <text class="mode-subtitle">{{item.subtitle}}</text>
+          </view>
+          <text class="mode-action">{{item.actionLabel}}</text>
+        </view>
+      </block>
+    </view>
+  </block>
+
+  <block wx:if="{{activeMode}}">
+    <text class="scene-kicker">{{title}}</text>
+    <text class="scene-title">{{selectedModeTitle}}</text>
+    <text class="mode-page-subtitle">{{selectedModeSubtitle}}</text>
+
+    <view class="scene-preview mode-page-preview">
+      <image class="scene-image" src="{{sceneImage}}" mode="aspectFill" />
+    </view>
+
+    <view class="mode-page-panel">
+      <text class="mode-page-note">当前先保持基础模式视图，后续步骤会继续接入具体练习交互。</text>
+    </view>
+
+    <button class="back-button" bindtap="onBackToSceneHome">返回 Classroom</button>
+  </block>
 </view>

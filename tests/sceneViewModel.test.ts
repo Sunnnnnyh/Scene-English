@@ -57,18 +57,18 @@ describe("scene page view model", () => {
     expect(viewModel.progressPercent).toBe(15);
   });
 
-  it("maps scene entries to their page routes", () => {
-    expect(getSceneEntryAction("memory", "classroom")).toEqual({
-      type: "navigate",
-      url: "/pages/memory/memory?sceneId=classroom"
+  it("maps scene entries to in-tab mode selection actions", () => {
+    expect(getSceneEntryAction("memory")).toEqual({
+      type: "selectMode",
+      mode: "memory"
     });
-    expect(getSceneEntryAction("listeningWriting", "classroom")).toEqual({
-      type: "navigate",
-      url: "/pages/listening-writing/listening-writing?sceneId=classroom"
+    expect(getSceneEntryAction("listeningWriting")).toEqual({
+      type: "selectMode",
+      mode: "listeningWriting"
     });
-    expect(getSceneEntryAction("listeningSpeaking", "classroom")).toEqual({
-      type: "navigate",
-      url: "/pages/listening-speaking/listening-speaking?sceneId=classroom"
+    expect(getSceneEntryAction("listeningSpeaking")).toEqual({
+      type: "selectMode",
+      mode: "listeningSpeaking"
     });
   });
 });

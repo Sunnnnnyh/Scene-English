@@ -1,22 +1,48 @@
-.placeholder-page {
+.memory-page {
   min-height: 100vh;
   box-sizing: border-box;
-  padding: 64rpx 40rpx;
+  padding: 48rpx 32rpx 64rpx;
   background: #f7fbff;
 }
 
-.placeholder-title {
+.memory-kicker {
   display: block;
+  color: #5d7892;
+  font-size: 24rpx;
+  font-weight: 700;
+}
+
+.memory-title {
+  display: block;
+  margin-top: 8rpx;
   color: #19324d;
   font-size: 40rpx;
   font-weight: 800;
 }
 
-.placeholder-copy {
+.memory-subtitle {
   display: block;
-  margin-top: 20rpx;
+  margin-top: 22rpx;
   color: #45647f;
   font-size: 28rpx;
+  line-height: 1.5;
+}
+
+.memory-scene-frame {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  margin-top: 34rpx;
+  overflow: hidden;
+  border: 3rpx solid #19324d;
+  border-radius: 24rpx;
+  background: #eaf5ff;
+  box-shadow: 0 16rpx 32rpx rgba(25, 50, 77, 0.08);
+}
+
+.memory-scene-image {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 .back-button {
