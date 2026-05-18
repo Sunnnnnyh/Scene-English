@@ -17,6 +17,16 @@ export type SceneMemoryHotspot = {
   style: string;
 };
 
+export type SceneMemoryWordCard = {
+  wordId: Word["id"];
+  en: Word["en"];
+  cn: Word["cn"];
+  phonetic: Word["phonetic"];
+  expressionEn: Word["expressionEn"];
+  expressionCn: Word["expressionCn"];
+  showExpressionCn: boolean;
+};
+
 export type SceneViewModel = {
   sceneId: Scene["id"];
   title: string;
@@ -31,9 +41,10 @@ export type SceneViewModel = {
   selectedModeSubtitle: string;
   memoryHotspots: SceneMemoryHotspot[];
   showMemoryGuide: boolean;
+  showMemoryTranslationGuide: boolean;
   memoryGuideWordId: Word["id"];
   selectedMemoryWordId: string;
-  selectedMemoryWordLabel: string;
+  selectedMemoryWordCard: SceneMemoryWordCard | null;
 };
 
 export type SceneEntryAction = {
@@ -93,9 +104,22 @@ export function createSceneViewModel(
     selectedModeSubtitle: "",
     memoryHotspots,
     showMemoryGuide: false,
+    showMemoryTranslationGuide: false,
     memoryGuideWordId: "projector",
     selectedMemoryWordId: "",
-    selectedMemoryWordLabel: ""
+    selectedMemoryWordCard: null
+  };
+}
+
+export function createMemoryWordCard(word: Word): SceneMemoryWordCard {
+  return {
+    wordId: word.id,
+    en: word.en,
+    cn: word.cn,
+    phonetic: word.phonetic,
+    expressionEn: word.expressionEn,
+    expressionCn: word.expressionCn,
+    showExpressionCn: false
   };
 }
 

@@ -21,8 +21,8 @@ describe("wordService", () => {
       phonetic: "/prəˈdʒek.tɚ/",
       exampleEn: "The teacher is using the projector.",
       exampleCn: "老师正在使用投影仪。",
-      expressionEn: "Could you turn on the projector?",
-      expressionCn: "可以打开投影仪吗？",
+      expressionEn: "The projector needs to be adjusted before everyone can see the slide clearly.",
+      expressionCn: "投影仪需要先调一下，大家才能看清幻灯片。",
       audioUrl: "/assets/audio/projector.mp3"
     });
   });

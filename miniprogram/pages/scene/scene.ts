@@ -1,11 +1,17 @@
 import { getSceneProgress } from "../../services/progressService";
 import { getSceneById } from "../../services/sceneService";
-import { getWordsBySceneId } from "../../services/wordService";
-import { completeMemoryGuide, shouldShowMemoryGuide } from "../../services/onboardingService";
+import { getWordById, getWordsBySceneId } from "../../services/wordService";
 import {
+  completeMemoryGuide,
+  completeMemoryTranslationGuide,
+  shouldShowMemoryGuide,
+  shouldShowMemoryTranslationGuide
+} from "../../services/onboardingService";
+import {
+  createMemoryWordCard,
   createSceneViewModel,
   getSceneEntryAction,
-  type SceneMemoryHotspot,
+  type SceneMemoryWordCard,
   type SceneEntryId,
   type SceneViewModel
 } from "./sceneViewModel";
@@ -26,6 +32,14 @@ type MemoryHotspotTapEvent = WechatMiniprogram.BaseEvent & {
   currentTarget: {
     dataset: {
       wordId?: string;
+    };
+  };
+};
+
+type MemoryTranslationTapEvent = WechatMiniprogram.BaseEvent & {
+  currentTarget: {
+    dataset: {
+      translationType?: "expression";
     };
   };
 };
@@ -78,8 +92,9 @@ Page({
       selectedModeTitle: selectedMode?.title ?? "",
       selectedModeSubtitle: selectedMode?.subtitle ?? "",
       showMemoryGuide: action.mode === "memory" ? shouldShowMemoryGuide() : false,
+      showMemoryTranslationGuide: false,
       selectedMemoryWordId: "",
-      selectedMemoryWordLabel: ""
+      selectedMemoryWordCard: null
     });
   },
 
@@ -89,8 +104,9 @@ Page({
       selectedModeTitle: "",
       selectedModeSubtitle: "",
       showMemoryGuide: false,
+      showMemoryTranslationGuide: false,
       selectedMemoryWordId: "",
-      selectedMemoryWordLabel: ""
+      selectedMemoryWordCard: null
     });
   },
 
@@ -112,19 +128,49 @@ Page({
       return;
     }
 
-    const selectedHotspot = (this.data.memoryHotspots as SceneMemoryHotspot[]).find(
-      (hotspot) => hotspot.wordId === wordId
-    );
+    const selectedWord = getWordById(wordId);
 
     this.setData({
       selectedMemoryWordId: wordId,
-      selectedMemoryWordLabel: selectedHotspot?.label ?? wordId
+      selectedMemoryWordCard: selectedWord ? createMemoryWordCard(selectedWord) : null,
+      showMemoryTranslationGuide: selectedWord ? shouldShowMemoryTranslationGuide() : false
     });
     this.completeMemoryGuideIfNeeded();
   },
 
   onDismissMemoryGuide() {
     this.completeMemoryGuideIfNeeded();
+  },
+
+  onToggleMemoryTranslation(event: MemoryTranslationTapEvent) {
+    const { translationType } = event.currentTarget.dataset;
+    const selectedMemoryWordCard = this.data.selectedMemoryWordCard as SceneMemoryWordCard | null;
+
+    if (!selectedMemoryWordCard || !translationType) {
+      return;
+    }
+
+    const shouldCompleteTranslationGuide = this.data.showMemoryTranslationGuide;
+
+    if (shouldCompleteTranslationGuide) {
+      completeMemoryTranslationGuide();
+    }
+
+    this.setData({
+      selectedMemoryWordCard: {
+        ...selectedMemoryWordCard,
+        showExpressionCn: !selectedMemoryWordCard.showExpressionCn
+      },
+      showMemoryTranslationGuide: false
+    });
+  },
+
+  onCloseMemoryWordCard() {
+    this.setData({
+      selectedMemoryWordId: "",
+      selectedMemoryWordCard: null,
+      showMemoryTranslationGuide: false
+    });
   },
 
   onMemoryBlankTap() {

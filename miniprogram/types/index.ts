@@ -121,5 +121,6 @@ export type LocalStore<T> = {
 
 export type OnboardingState = {
   memoryGuideCompleted: boolean;
+  memoryTranslationGuideCompleted: boolean;
   updatedAt: ISODateString;
 };

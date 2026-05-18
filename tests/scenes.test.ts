@@ -99,4 +99,23 @@ describe("scene data", () => {
       expectedAmericanPhonetics
     );
   });
+
+  it("keeps useful expressions distinct from basic examples", () => {
+    for (const word of classroomWords) {
+      expect(word.expressionEn).not.toBe(word.exampleEn);
+      expect(word.expressionEn.split(" ").length).toBeGreaterThan(word.exampleEn.split(" ").length);
+    }
+  });
+
+  it("keeps useful expressions varied instead of making them all questions", () => {
+    const questionExpressions = classroomWords.filter((word) =>
+      word.expressionEn.trim().endsWith("?")
+    );
+    const questionTranslations = classroomWords.filter((word) =>
+      word.expressionCn.trim().endsWith("？")
+    );
+
+    expect(questionExpressions.length).toBeLessThanOrEqual(8);
+    expect(questionTranslations.length).toBeLessThanOrEqual(8);
+  });
 });

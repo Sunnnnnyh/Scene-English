@@ -2,8 +2,10 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   completeMemoryGuide,
+  completeMemoryTranslationGuide,
   getOnboardingState,
-  shouldShowMemoryGuide
+  shouldShowMemoryGuide,
+  shouldShowMemoryTranslationGuide
 } from "../miniprogram/services/onboardingService";
 
 type TestWxStorage = {
@@ -37,9 +39,11 @@ describe("onboarding service", () => {
 
     expect(getOnboardingState(wxStorage)).toEqual({
       memoryGuideCompleted: false,
+      memoryTranslationGuideCompleted: false,
       updatedAt: ""
     });
     expect(shouldShowMemoryGuide(wxStorage)).toBe(true);
+    expect(shouldShowMemoryTranslationGuide(wxStorage)).toBe(true);
   });
 
   it("persists Memory guide completion and stops showing it", () => {
@@ -52,9 +56,27 @@ describe("onboarding service", () => {
       updatedAt: "2026-05-17T10:00:00.000Z",
       data: {
         memoryGuideCompleted: true,
+        memoryTranslationGuideCompleted: false,
         updatedAt: "2026-05-17T10:00:00.000Z"
       }
     });
     expect(shouldShowMemoryGuide(wxStorage)).toBe(false);
+  });
+
+  it("persists Memory translation guide completion and stops showing it", () => {
+    const wxStorage = createWxStorage();
+
+    completeMemoryTranslationGuide(wxStorage);
+
+    expect(wxStorage.setStorageSync).toHaveBeenCalledWith("sceneenglish:onboarding", {
+      version: 1,
+      updatedAt: "2026-05-17T10:00:00.000Z",
+      data: {
+        memoryGuideCompleted: false,
+        memoryTranslationGuideCompleted: true,
+        updatedAt: "2026-05-17T10:00:00.000Z"
+      }
+    });
+    expect(shouldShowMemoryTranslationGuide(wxStorage)).toBe(false);
   });
 });

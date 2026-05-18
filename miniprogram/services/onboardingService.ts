@@ -3,11 +3,15 @@ import { readStorage, type StorageAdapter, writeStorage } from "../utils/storage
 
 const defaultOnboardingState: OnboardingState = {
   memoryGuideCompleted: false,
+  memoryTranslationGuideCompleted: false,
   updatedAt: ""
 };
 
 export function getOnboardingState(adapter?: StorageAdapter): OnboardingState {
-  return readStorage("onboarding", defaultOnboardingState, adapter);
+  return {
+    ...defaultOnboardingState,
+    ...readStorage("onboarding", defaultOnboardingState, adapter)
+  };
 }
 
 export function shouldShowMemoryGuide(adapter?: StorageAdapter): boolean {
@@ -18,6 +22,22 @@ export function completeMemoryGuide(adapter?: StorageAdapter): OnboardingState {
   const completedState: OnboardingState = {
     ...getOnboardingState(adapter),
     memoryGuideCompleted: true,
+    updatedAt: new Date().toISOString()
+  };
+
+  writeStorage("onboarding", completedState, adapter);
+
+  return completedState;
+}
+
+export function shouldShowMemoryTranslationGuide(adapter?: StorageAdapter): boolean {
+  return !getOnboardingState(adapter).memoryTranslationGuideCompleted;
+}
+
+export function completeMemoryTranslationGuide(adapter?: StorageAdapter): OnboardingState {
+  const completedState: OnboardingState = {
+    ...getOnboardingState(adapter),
+    memoryTranslationGuideCompleted: true,
     updatedAt: new Date().toISOString()
   };
 

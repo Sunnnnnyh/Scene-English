@@ -59,11 +59,41 @@
         </view>
       </view>
 
-      <view class="mode-page-panel">
-        <text wx:if="{{selectedMemoryWordLabel}}" class="mode-page-note">
-          已识别：{{selectedMemoryWordLabel}}
-        </text>
-        <text wx:else class="mode-page-note">点一点教室里的物品，先确认热区是否对得上。</text>
+      <view wx:if="{{selectedMemoryWordCard}}" class="memory-word-card">
+        <view class="memory-word-card__panel">
+          <view class="memory-word-card__header">
+            <view>
+              <text class="memory-word-card__word">{{selectedMemoryWordCard.en}}</text>
+              <text class="memory-word-card__phonetic">{{selectedMemoryWordCard.phonetic}}</text>
+            </view>
+            <view class="memory-word-card__close" bindtap="onCloseMemoryWordCard">
+              <text class="memory-word-card__close-icon">×</text>
+            </view>
+          </view>
+
+          <text class="memory-word-card__cn">{{selectedMemoryWordCard.cn}}</text>
+
+          <view wx:if="{{showMemoryTranslationGuide}}" class="memory-translation-guide">
+            点英文句子可以展开中文，再点一次收起。
+          </view>
+
+          <view class="memory-word-card__section">
+            <text class="memory-word-card__label">Useful expression</text>
+            <text
+              class="memory-word-card__line"
+              data-translation-type="expression"
+              bindtap="onToggleMemoryTranslation"
+            >
+              {{selectedMemoryWordCard.expressionEn}}
+            </text>
+            <text
+              wx:if="{{selectedMemoryWordCard.showExpressionCn}}"
+              class="memory-word-card__translation"
+            >
+              {{selectedMemoryWordCard.expressionCn}}
+            </text>
+          </view>
+        </view>
       </view>
     </block>
 
