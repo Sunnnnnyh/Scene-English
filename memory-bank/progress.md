@@ -624,3 +624,24 @@
   - 当前单词卡尚未接入音频播放、收藏状态和已学记录；后续 Step 4.5 和 Step 4.6 继续实现。
   - 当前热区坐标仍基于低保真占位图，后续替换正式教室图片后需要重新校准 20 个物品热区。
   - 尚未开始 Step 4.5。
+
+### 2026-05-18 — 阶段 4 / Step 4.5 实现单词卡音频播放
+
+- 完成内容：
+  - 在 Learn tab 内联 Memory 单词卡的音标旁新增圆形播放按钮。
+  - `SceneMemoryWordCard` 新增 `audioUrl`，由 `createMemoryWordCard(word)` 从单词数据中带出。
+  - 点击播放按钮时，页面使用 `wx.createInnerAudioContext()` 播放当前单词音频路径。
+  - 播放新单词前会释放旧音频上下文；关闭单词卡、返回 Classroom、页面隐藏和页面卸载时会停止或释放当前音频。
+  - 播放失败时显示轻提示“音频暂时无法播放”，不阻塞用户继续查看单词卡。
+  - 根据微信开发者工具运行时报错，移除了 scene 页面对 `../../services/audioService` 的运行时 import，改为在 `scene.ts` 内部管理当前音频上下文，避免页面脚本因 helper module 缺失而中断注册。
+  - 补充 `tests/sceneMemoryWordCard.test.ts`，约束音频按钮、`audioUrl` 展示状态、播放方法、停止/释放方法和运行时依赖边界。
+- 验证结果：
+  - 本地已验证 `npm test -- tests/sceneMemoryWordCard.test.ts` 通过。
+  - 本地已验证 `npm run typecheck` 通过。
+  - 本地已验证 `npm run format:check` 通过。
+  - 本地已验证 `npm run lint` 通过。
+  - 本地已验证 `npm test` 通过，显示 28 个测试文件、109 个测试用例通过。
+  - 用户已在微信开发者工具中验证：页面不再报 `services/audioService` 模块缺失错误，音频按钮交互通过。
+- 遗留问题：
+  - 当前 `miniprogram/assets/audio/*.mp3` 仍是静音占位音频，因此点击播放按钮没有可听声音是预期现象；后续用户测试前需要替换为真实单词发音文件。
+  - Step 4.5 不接入收藏状态和已学记录；收藏、已学进度将在 Step 4.6 继续实现。

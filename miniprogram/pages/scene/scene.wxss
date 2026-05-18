@@ -255,10 +255,40 @@
 
 .memory-word-card__phonetic {
   display: block;
-  margin-top: 8rpx;
   color: #5d7892;
   font-size: 24rpx;
   line-height: 1.35;
+}
+
+.memory-word-card__pronunciation {
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+  margin-top: 8rpx;
+}
+
+.memory-word-card__audio {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48rpx;
+  height: 48rpx;
+  border: 2rpx solid #19324d;
+  border-radius: 50%;
+  background: #eaf5ff;
+  color: #19324d;
+}
+
+.memory-word-card__audio:active {
+  background: #fff4df;
+}
+
+.memory-word-card__audio-icon {
+  display: block;
+  padding-left: 3rpx;
+  font-size: 24rpx;
+  line-height: 1;
 }
 
 .memory-word-card__close {

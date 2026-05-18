@@ -48,6 +48,7 @@ describe("scene page Memory word card", () => {
       en: "projector",
       phonetic: projector.phonetic,
       cn: projector.cn,
+      audioUrl: "/assets/audio/projector.mp3",
       expressionEn: "The projector needs to be adjusted before everyone can see the slide clearly.",
       expressionCn: projector.expressionCn,
       showExpressionCn: false
@@ -77,6 +78,8 @@ describe("scene page Memory word card", () => {
     expect(sceneMarkup).toContain("{{selectedMemoryWordCard.en}}");
     expect(sceneMarkup).toContain("{{selectedMemoryWordCard.cn}}");
     expect(sceneMarkup).toContain("{{selectedMemoryWordCard.phonetic}}");
+    expect(sceneMarkup).toContain('bindtap="onPlayMemoryWordAudio"');
+    expect(sceneMarkup).toContain("memory-word-card__audio");
     expect(sceneMarkup).toContain("{{selectedMemoryWordCard.expressionEn}}");
     expect(sceneMarkup).toContain("selectedMemoryWordCard.showExpressionCn");
     expect(sceneMarkup).toContain('data-translation-type="expression"');
@@ -96,6 +99,14 @@ describe("scene page Memory word card", () => {
   });
 
   it("connects hotspot taps to word lookup and card interactions", () => {
+    expect(sceneScript).not.toContain("../../services/audioService");
+    expect(sceneScript).toContain("createInnerAudioContext");
+    expect(sceneScript).toContain("playMemoryWordAudio");
+    expect(sceneScript).toContain("stopMemoryWordAudio");
+    expect(sceneScript).toContain("onPlayMemoryWordAudio");
+    expect(sceneScript).toContain("selectedMemoryWordCard.audioUrl");
+    expect(sceneScript).toContain("音频暂时无法播放");
+    expect(sceneScript).toContain("onUnload");
     expect(sceneScript).toContain("getWordById");
     expect(sceneScript).toContain("createMemoryWordCard");
     expect(sceneScript).toContain("shouldShowMemoryTranslationGuide");
@@ -112,6 +123,7 @@ describe("scene page Memory word card", () => {
 
     expect(sceneStyles).toContain(".memory-word-card");
     expect(sceneStyles).toContain(".memory-word-card__panel");
+    expect(sceneStyles).toContain(".memory-word-card__audio");
     expect(sceneStyles).toContain(".memory-word-card__close");
     expect(wordCardRule).toContain("margin-top: 24rpx;");
     expect(sceneStyles).toContain("width: 40rpx;");

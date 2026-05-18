@@ -22,6 +22,7 @@ export type SceneMemoryWordCard = {
   en: Word["en"];
   cn: Word["cn"];
   phonetic: Word["phonetic"];
+  audioUrl: Word["audioUrl"];
   expressionEn: Word["expressionEn"];
   expressionCn: Word["expressionCn"];
   showExpressionCn: boolean;
@@ -117,6 +118,7 @@ export function createMemoryWordCard(word: Word): SceneMemoryWordCard {
     en: word.en,
     cn: word.cn,
     phonetic: word.phonetic,
+    audioUrl: word.audioUrl,
     expressionEn: word.expressionEn,
     expressionCn: word.expressionCn,
     showExpressionCn: false

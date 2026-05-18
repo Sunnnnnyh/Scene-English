@@ -44,6 +44,50 @@ type MemoryTranslationTapEvent = WechatMiniprogram.BaseEvent & {
   };
 };
 
+let memoryWordAudioContext: WechatMiniprogram.InnerAudioContext | undefined;
+
+function stopMemoryWordAudio() {
+  if (!memoryWordAudioContext) {
+    return;
+  }
+
+  try {
+    memoryWordAudioContext.stop();
+  } catch {
+    // Best-effort cleanup; playback errors are surfaced from play callbacks.
+  }
+}
+
+function releaseMemoryWordAudio() {
+  if (!memoryWordAudioContext) {
+    return;
+  }
+
+  stopMemoryWordAudio();
+
+  try {
+    memoryWordAudioContext.destroy();
+  } catch {
+    // Best-effort cleanup when the page unloads or a new word starts.
+  }
+
+  memoryWordAudioContext = undefined;
+}
+
+function playMemoryWordAudio(src: SceneMemoryWordCard["audioUrl"], onError: () => void) {
+  releaseMemoryWordAudio();
+
+  try {
+    const audioContext = wx.createInnerAudioContext();
+    memoryWordAudioContext = audioContext;
+    audioContext.src = src;
+    audioContext.onError(onError);
+    audioContext.play();
+  } catch {
+    onError();
+  }
+}
+
 const defaultScene = getSceneById("classroom");
 const defaultProgress = {
   sceneId: "classroom",
@@ -99,6 +143,8 @@ Page({
   },
 
   onBackToSceneHome() {
+    stopMemoryWordAudio();
+
     this.setData({
       activeMode: "",
       selectedModeTitle: "",
@@ -166,11 +212,36 @@ Page({
   },
 
   onCloseMemoryWordCard() {
+    stopMemoryWordAudio();
+
     this.setData({
       selectedMemoryWordId: "",
       selectedMemoryWordCard: null,
       showMemoryTranslationGuide: false
     });
+  },
+
+  onPlayMemoryWordAudio() {
+    const selectedMemoryWordCard = this.data.selectedMemoryWordCard as SceneMemoryWordCard | null;
+
+    if (!selectedMemoryWordCard) {
+      return;
+    }
+
+    playMemoryWordAudio(selectedMemoryWordCard.audioUrl, () => {
+      wx.showToast({
+        title: "音频暂时无法播放",
+        icon: "none"
+      });
+    });
+  },
+
+  onHide() {
+    stopMemoryWordAudio();
+  },
+
+  onUnload() {
+    releaseMemoryWordAudio();
   },
 
   onMemoryBlankTap() {

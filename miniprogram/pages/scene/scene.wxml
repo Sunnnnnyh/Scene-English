@@ -64,7 +64,12 @@
           <view class="memory-word-card__header">
             <view>
               <text class="memory-word-card__word">{{selectedMemoryWordCard.en}}</text>
-              <text class="memory-word-card__phonetic">{{selectedMemoryWordCard.phonetic}}</text>
+              <view class="memory-word-card__pronunciation">
+                <text class="memory-word-card__phonetic">{{selectedMemoryWordCard.phonetic}}</text>
+                <view class="memory-word-card__audio" bindtap="onPlayMemoryWordAudio">
+                  <text class="memory-word-card__audio-icon">▶</text>
+                </view>
+              </view>
             </view>
             <view class="memory-word-card__close" bindtap="onCloseMemoryWordCard">
               <text class="memory-word-card__close-icon">×</text>

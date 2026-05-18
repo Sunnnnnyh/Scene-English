@@ -1101,3 +1101,39 @@ Memory Mode 现在在 Learn tab 内联视图中打开单词卡。用户点击 Cl
 | `tests/onboardingService.test.ts` | 覆盖表达翻译轻引导首次展示和完成后不再展示。 | 阶段 4 / Step 4.4 |
 | `tests/scenes.test.ts` | 补充 Useful expression 内容质量约束，避免表达全部变成问句。 | 阶段 4 / Step 4.4 |
 | `tests/wordService.test.ts` | 更新服务层测试中的 Useful expression 预期内容。 | 阶段 4 / Step 4.4 |
+
+## 31. 阶段 4 / Step 4.5 单词卡音频播放更新
+
+Memory Mode 单词卡现在提供单词音频播放入口。该能力继续落在 `miniprogram/pages/scene/` 的 Learn tab 内联 Memory 视图中，不新增独立页面流程，也不进入收藏或已学记录逻辑。
+
+当前职责：
+
+- `miniprogram/pages/scene/sceneViewModel.ts` 的 `SceneMemoryWordCard` 新增 `audioUrl`，由 `createMemoryWordCard(word)` 从 `Word.audioUrl` 透传到页面状态。
+- `miniprogram/pages/scene/scene.wxml` 在单词音标旁渲染圆形播放按钮，并绑定 `onPlayMemoryWordAudio`。
+- `miniprogram/pages/scene/scene.ts` 负责 Memory 单词卡音频的运行时管理：点击播放时创建 `wx.createInnerAudioContext()`，播放新音频前释放旧上下文，关闭卡片、返回 Classroom、页面隐藏或卸载时停止/释放当前音频。
+- `miniprogram/pages/scene/scene.wxss` 为音频按钮补充圆形按钮和按下态样式。
+
+运行时注意事项：
+
+- scene 页当前不直接 import `miniprogram/services/audioService.ts`。微信开发者工具中曾出现 `services/audioService.js is not defined`，导致页面脚本在注册 `Page({...})` 前中断；因此本步骤采用页面内小范围音频上下文管理，延续此前对小程序页面运行时 helper module 风险的处理方式。
+- `miniprogram/services/audioService.ts` 仍保留为服务层音频封装，并由 `tests/audioService.test.ts` 覆盖；后续如果确认微信开发者工具编译链能稳定收集 service helper，再考虑统一复用。
+- 当前 `miniprogram/assets/audio/*.mp3` 是 Step 1.4 准备的静音占位文件。播放按钮用于验证音频路径和播放流程，真实用户测试前需要替换为审核过的单词发音音频。
+- Step 4.5 不记录 learned，也不接入 favorite；相关本地进度和收藏写入将在 Step 4.6 接入。
+
+`tests/sceneMemoryWordCard.test.ts` 验证：
+
+- `createMemoryWordCard` 会携带 `audioUrl`；
+- Memory 单词卡 WXML 存在音频播放按钮和点击绑定；
+- scene 页存在 `playMemoryWordAudio`、`stopMemoryWordAudio`、`createInnerAudioContext` 和播放失败轻提示；
+- scene 页不再直接依赖 `../../services/audioService`，防止小程序运行时 helper module 缺失问题回归；
+- 音频按钮样式存在。
+
+文件变更记录补充：
+
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `miniprogram/pages/scene/sceneViewModel.ts` | 为 Memory 单词卡展示状态补充 `audioUrl`。 | 阶段 4 / Step 4.5 |
+| `miniprogram/pages/scene/scene.ts` | 在 scene 页面内管理单词卡音频播放、停止、释放和播放失败轻提示，避免运行时 helper module 缺失中断页面注册。 | 阶段 4 / Step 4.5 |
+| `miniprogram/pages/scene/scene.wxml` | 在 Memory 单词卡音标旁渲染圆形音频播放按钮并绑定点击事件。 | 阶段 4 / Step 4.5 |
+| `miniprogram/pages/scene/scene.wxss` | 为单词卡音频播放按钮补充圆形按钮、图标和按下态样式。 | 阶段 4 / Step 4.5 |
+| `tests/sceneMemoryWordCard.test.ts` | 约束单词卡 `audioUrl`、音频按钮、播放方法、运行时依赖边界和样式。 | 阶段 4 / Step 4.5 |
