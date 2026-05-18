@@ -69,6 +69,12 @@
                 <view class="memory-word-card__audio" bindtap="onPlayMemoryWordAudio">
                   <text class="memory-word-card__audio-icon">▶</text>
                 </view>
+                <view
+                  class="memory-word-card__favorite {{selectedMemoryWordCard.isFavorite ? 'memory-word-card__favorite--active' : ''}}"
+                  bindtap="onToggleMemoryFavorite"
+                >
+                  <text class="memory-word-card__favorite-icon">{{selectedMemoryWordCard.isFavorite ? '★' : '☆'}}</text>
+                </view>
               </view>
             </view>
             <view class="memory-word-card__close" bindtap="onCloseMemoryWordCard">

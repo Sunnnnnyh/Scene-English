@@ -23,6 +23,7 @@ export type SceneMemoryWordCard = {
   cn: Word["cn"];
   phonetic: Word["phonetic"];
   audioUrl: Word["audioUrl"];
+  isFavorite: boolean;
   expressionEn: Word["expressionEn"];
   expressionCn: Word["expressionCn"];
   showExpressionCn: boolean;
@@ -112,13 +113,14 @@ export function createSceneViewModel(
   };
 }
 
-export function createMemoryWordCard(word: Word): SceneMemoryWordCard {
+export function createMemoryWordCard(word: Word, isFavorite = false): SceneMemoryWordCard {
   return {
     wordId: word.id,
     en: word.en,
     cn: word.cn,
     phonetic: word.phonetic,
     audioUrl: word.audioUrl,
+    isFavorite,
     expressionEn: word.expressionEn,
     expressionCn: word.expressionCn,
     showExpressionCn: false

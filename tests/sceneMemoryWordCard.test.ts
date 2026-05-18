@@ -41,7 +41,7 @@ describe("scene page Memory word card", () => {
       throw new Error("Projector word fixture is missing");
     }
 
-    const card = createMemoryWordCard(projector);
+    const card = createMemoryWordCard(projector, true);
 
     expect(card).toMatchObject({
       wordId: "projector",
@@ -49,6 +49,7 @@ describe("scene page Memory word card", () => {
       phonetic: projector.phonetic,
       cn: projector.cn,
       audioUrl: "/assets/audio/projector.mp3",
+      isFavorite: true,
       expressionEn: "The projector needs to be adjusted before everyone can see the slide clearly.",
       expressionCn: projector.expressionCn,
       showExpressionCn: false
@@ -80,6 +81,9 @@ describe("scene page Memory word card", () => {
     expect(sceneMarkup).toContain("{{selectedMemoryWordCard.phonetic}}");
     expect(sceneMarkup).toContain('bindtap="onPlayMemoryWordAudio"');
     expect(sceneMarkup).toContain("memory-word-card__audio");
+    expect(sceneMarkup).toContain('bindtap="onToggleMemoryFavorite"');
+    expect(sceneMarkup).toContain("selectedMemoryWordCard.isFavorite");
+    expect(sceneMarkup).toContain("memory-word-card__favorite");
     expect(sceneMarkup).toContain("{{selectedMemoryWordCard.expressionEn}}");
     expect(sceneMarkup).toContain("selectedMemoryWordCard.showExpressionCn");
     expect(sceneMarkup).toContain('data-translation-type="expression"');
@@ -107,6 +111,12 @@ describe("scene page Memory word card", () => {
     expect(sceneScript).toContain("selectedMemoryWordCard.audioUrl");
     expect(sceneScript).toContain("音频暂时无法播放");
     expect(sceneScript).toContain("onUnload");
+    expect(sceneScript).toContain("recordLearnedWord");
+    expect(sceneScript).toContain("refreshSceneProgress");
+    expect(sceneScript).toContain("isFavorite");
+    expect(sceneScript).toContain("addFavorite");
+    expect(sceneScript).toContain("removeFavorite");
+    expect(sceneScript).toContain("onToggleMemoryFavorite");
     expect(sceneScript).toContain("getWordById");
     expect(sceneScript).toContain("createMemoryWordCard");
     expect(sceneScript).toContain("shouldShowMemoryTranslationGuide");
@@ -124,6 +134,8 @@ describe("scene page Memory word card", () => {
     expect(sceneStyles).toContain(".memory-word-card");
     expect(sceneStyles).toContain(".memory-word-card__panel");
     expect(sceneStyles).toContain(".memory-word-card__audio");
+    expect(sceneStyles).toContain(".memory-word-card__favorite");
+    expect(sceneStyles).toContain(".memory-word-card__favorite--active");
     expect(sceneStyles).toContain(".memory-word-card__close");
     expect(wordCardRule).toContain("margin-top: 24rpx;");
     expect(sceneStyles).toContain("width: 40rpx;");

@@ -645,3 +645,23 @@
 - 遗留问题：
   - 当前 `miniprogram/assets/audio/*.mp3` 仍是静音占位音频，因此点击播放按钮没有可听声音是预期现象；后续用户测试前需要替换为真实单词发音文件。
   - Step 4.5 不接入收藏状态和已学记录；收藏、已学进度将在 Step 4.6 继续实现。
+
+### 2026-05-18 — 阶段 4 / Step 4.6 实现单词卡收藏和已学记录
+
+- 完成内容：
+  - 在 Learn tab 内联 Memory 单词卡中新增小星标收藏按钮，支持收藏和取消收藏当前单词。
+  - `SceneMemoryWordCard` 新增 `isFavorite` 展示状态，打开单词卡时会从 `favoriteService` 读取当前单词是否已收藏。
+  - 点击星标时通过已有 `addFavorite` / `removeFavorite` 写入 `sceneenglish:favorites` 本地缓存，并即时更新卡片显示状态。
+  - 点击 Memory 热区打开单词卡时，通过已有 `recordLearnedWord` 将该词记录为已学；重复打开同一个词不会重复增加已学数量。
+  - 打开单词卡后即时刷新 Learn tab 场景首页进度字段，使返回 Classroom 时可看到最新 `Learned x / 20` 和进度条。
+  - 补充 `tests/sceneMemoryWordCard.test.ts`，约束收藏状态、收藏按钮绑定、已学记录调用、进度刷新和收藏样式。
+- 验证结果：
+  - 本地已验证 `npm test -- tests/sceneMemoryWordCard.test.ts` 通过。
+  - 本地已验证 `npm run typecheck` 通过。
+  - 本地已验证 `npm run format:check` 通过。
+  - 本地已验证 `npm run lint` 通过。
+  - 本地已验证 `npm test` 通过，显示 28 个测试文件、109 个测试用例通过。
+  - 用户已在微信开发者工具中验证 Step 4.6 通过。
+- 遗留问题：
+  - 收藏夹列表页面仍为占位页；当前仅完成单词卡层面的收藏写入和状态显示，后续阶段 5 再实现收藏夹真实列表。
+  - 当前热区坐标仍基于低保真占位图，后续替换正式教室图片后需要重新校准 20 个物品热区。

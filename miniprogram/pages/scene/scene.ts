@@ -1,4 +1,5 @@
-import { getSceneProgress } from "../../services/progressService";
+import { addFavorite, isFavorite, removeFavorite } from "../../services/favoriteService";
+import { getSceneProgress, recordLearnedWord } from "../../services/progressService";
 import { getSceneById } from "../../services/sceneService";
 import { getWordById, getWordsBySceneId } from "../../services/wordService";
 import {
@@ -15,6 +16,7 @@ import {
   type SceneEntryId,
   type SceneViewModel
 } from "./sceneViewModel";
+import type { Scene } from "../../types";
 
 type ScenePageOptions = {
   sceneId?: string;
@@ -86,6 +88,22 @@ function playMemoryWordAudio(src: SceneMemoryWordCard["audioUrl"], onError: () =
   } catch {
     onError();
   }
+}
+
+function refreshSceneProgress(sceneId: Scene["id"]) {
+  const scene = getSceneById(sceneId);
+
+  if (!scene) {
+    return {};
+  }
+
+  const progress = getSceneProgress(scene.id);
+  const learnedCount = progress.learnedWordIds.length;
+
+  return {
+    progressLabel: `Learned ${learnedCount} / ${scene.wordCount}`,
+    progressPercent: scene.wordCount > 0 ? Math.round((learnedCount / scene.wordCount) * 100) : 0
+  };
 }
 
 const defaultScene = getSceneById("classroom");
@@ -176,12 +194,49 @@ Page({
 
     const selectedWord = getWordById(wordId);
 
+    if (!selectedWord) {
+      this.setData({
+        selectedMemoryWordId: wordId,
+        selectedMemoryWordCard: null,
+        showMemoryTranslationGuide: false
+      });
+      this.completeMemoryGuideIfNeeded();
+      return;
+    }
+
+    recordLearnedWord(selectedWord.sceneId, selectedWord.id);
+
     this.setData({
       selectedMemoryWordId: wordId,
-      selectedMemoryWordCard: selectedWord ? createMemoryWordCard(selectedWord) : null,
-      showMemoryTranslationGuide: selectedWord ? shouldShowMemoryTranslationGuide() : false
+      selectedMemoryWordCard: createMemoryWordCard(selectedWord, isFavorite(selectedWord.id)),
+      showMemoryTranslationGuide: shouldShowMemoryTranslationGuide(),
+      ...refreshSceneProgress(selectedWord.sceneId)
     });
     this.completeMemoryGuideIfNeeded();
+  },
+
+  onToggleMemoryFavorite() {
+    const selectedMemoryWordCard = this.data.selectedMemoryWordCard as SceneMemoryWordCard | null;
+    const sceneId = this.data.sceneId;
+
+    if (!selectedMemoryWordCard || !sceneId) {
+      return;
+    }
+
+    const nextIsFavorite = !selectedMemoryWordCard.isFavorite;
+
+    if (nextIsFavorite) {
+      addFavorite(selectedMemoryWordCard.wordId, sceneId);
+    } else {
+      removeFavorite(selectedMemoryWordCard.wordId);
+    }
+
+    this.setData({
+      selectedMemoryWordCard: {
+        ...selectedMemoryWordCard,
+        isFavorite: nextIsFavorite
+      }
+    });
   },
 
   onDismissMemoryGuide() {

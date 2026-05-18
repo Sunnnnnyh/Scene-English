@@ -6,7 +6,7 @@
 
 ## 1. 当前阶段
 
-当前项目已完成阶段 4 / Step 4.4，并完成 Learn tab 学习模式内联切换体验修复。项目已初始化微信小程序 TypeScript 工程，建立基础目录结构和全部规划页面占位，配置基础开发质量工具，完成核心类型、场景数据、Classroom 20 个单词静态数据、占位图片 / 音频资源，并实现本地缓存工具、字符串标准化工具、热区计算工具、场景服务、单词服务、收藏服务、学习进度服务、错题服务、抽题服务、音频服务和 mock 口语识别服务。首页已接入场景选择页，可以展示 Classroom 主场景和 Lecture Hall、Dormitory、Cafeteria 三个 Coming soon 场景；底部导航已包含 Home / Learn / Review / Me。Home 负责选择学习场景，Learn 负责进入当前学习场景；MVP 阶段只有 Classroom，因此直接点击 Learn 默认进入 Classroom 学习首页。Classroom 学习首页可查看场景预览、学习进度和三个学习模式入口，Coming soon 场景只提示不跳转。点击学习模式入口时，当前采用 Learn tab 内部状态切换，不再 `navigateTo` 普通页面，从而避免底部 tabBar 在过渡中消失。Review 页已预留收藏夹和错题夹全局入口，Me 页已展示本地轻量统计和 mock ASR 状态。Memory Mode 当前优先在 Learn tab 内联视图中推进：已能稳定展示 Classroom 场景图，并根据 Classroom 20 个单词数据覆盖透明热区；点击热区会打开对应单词卡，卡片展示英文、中文、美式音标和 1 条 Useful expression；点击 Useful expression 英文句子可展开或收起中文翻译，并通过 `sceneenglish:onboarding` 记录表达翻译轻引导完成状态。点击空白区域只给轻提示。首次进入单词记忆模式时会展示一次性轻引导，高亮 `projector` 并通过 `sceneenglish:onboarding` 本地缓存记录完成状态。音频播放、收藏和已学记录仍在后续步骤实现。工程可以被微信开发者工具识别，所有已注册页面都能打开；TypeScript、ESLint、Prettier 和 Vitest 命令均可运行。
+当前项目已完成阶段 4 / Step 4.6，并完成 Learn tab 学习模式内联切换体验修复。项目已初始化微信小程序 TypeScript 工程，建立基础目录结构和全部规划页面占位，配置基础开发质量工具，完成核心类型、场景数据、Classroom 20 个单词静态数据、占位图片 / 音频资源，并实现本地缓存工具、字符串标准化工具、热区计算工具、场景服务、单词服务、收藏服务、学习进度服务、错题服务、抽题服务、音频服务和 mock 口语识别服务。首页已接入场景选择页，可以展示 Classroom 主场景和 Lecture Hall、Dormitory、Cafeteria 三个 Coming soon 场景；底部导航已包含 Home / Learn / Review / Me。Home 负责选择学习场景，Learn 负责进入当前学习场景；MVP 阶段只有 Classroom，因此直接点击 Learn 默认进入 Classroom 学习首页。Classroom 学习首页可查看场景预览、学习进度和三个学习模式入口，Coming soon 场景只提示不跳转。点击学习模式入口时，当前采用 Learn tab 内部状态切换，不再 `navigateTo` 普通页面，从而避免底部 tabBar 在过渡中消失。Review 页已预留收藏夹和错题夹全局入口，Me 页已展示本地轻量统计和 mock ASR 状态。Memory Mode 当前优先在 Learn tab 内联视图中推进：已能稳定展示 Classroom 场景图，并根据 Classroom 20 个单词数据覆盖透明热区；点击热区会打开对应单词卡，卡片展示英文、中文、美式音标、音频播放入口、收藏状态和 1 条 Useful expression；点击 Useful expression 英文句子可展开或收起中文翻译，并通过 `sceneenglish:onboarding` 记录表达翻译轻引导完成状态。点击热区打开单词卡时会通过 `progressService` 记录该词为已学，并刷新 `Learned x / 20` 进度；点击星标会通过 `favoriteService` 写入或移除收藏。点击空白区域只给轻提示。首次进入单词记忆模式时会展示一次性轻引导，高亮 `projector` 并通过 `sceneenglish:onboarding` 本地缓存记录完成状态。工程可以被微信开发者工具识别，所有已注册页面都能打开；TypeScript、ESLint、Prettier 和 Vitest 命令均可运行。
 
 当前源码目录为：
 
@@ -1137,3 +1137,38 @@ Memory Mode 单词卡现在提供单词音频播放入口。该能力继续落�
 | `miniprogram/pages/scene/scene.wxml` | 在 Memory 单词卡音标旁渲染圆形音频播放按钮并绑定点击事件。 | 阶段 4 / Step 4.5 |
 | `miniprogram/pages/scene/scene.wxss` | 为单词卡音频播放按钮补充圆形按钮、图标和按下态样式。 | 阶段 4 / Step 4.5 |
 | `tests/sceneMemoryWordCard.test.ts` | 约束单词卡 `audioUrl`、音频按钮、播放方法、运行时依赖边界和样式。 | 阶段 4 / Step 4.5 |
+
+## 32. 阶段 4 / Step 4.6 单词卡收藏和已学记录更新
+
+Memory Mode 单词卡现在接入收藏状态和已学记录。该能力继续落在 `miniprogram/pages/scene/` 的 Learn tab 内联 Memory 视图中，复用已有 `favoriteService` 和 `progressService`，不新增页面或依赖。
+
+当前职责：
+
+- `miniprogram/pages/scene/sceneViewModel.ts` 的 `SceneMemoryWordCard` 新增 `isFavorite`，由 `createMemoryWordCard(word, isFavorite)` 带入页面状态。
+- `miniprogram/pages/scene/scene.ts` 在热区打开单词卡时调用 `recordLearnedWord(sceneId, wordId)` 记录已学，并通过 `refreshSceneProgress(sceneId)` 刷新 `progressLabel` 和 `progressPercent`。
+- `miniprogram/pages/scene/scene.ts` 在打开单词卡时调用 `isFavorite(wordId)` 读取收藏状态，并在 `onToggleMemoryFavorite` 中调用 `addFavorite` 或 `removeFavorite` 更新本地收藏缓存。
+- `miniprogram/pages/scene/scene.wxml` 在音频按钮旁渲染小星标收藏按钮，绑定 `onToggleMemoryFavorite`，并根据 `selectedMemoryWordCard.isFavorite` 切换选中状态。
+- `miniprogram/pages/scene/scene.wxss` 为收藏星标补充圆形按钮、选中态和按下态样式。
+
+运行时注意事项：
+
+- `recordLearnedWord` 已在 service 层处理去重，因此重复打开同一个单词不会重复增加已学数量。
+- 收藏状态写入 `sceneenglish:favorites`，当前 Step 只负责单词卡层面的写入和显示；收藏夹列表页面仍留到后续阶段实现。
+- 打开单词卡后会即时刷新 Learn tab 当前页面的进度字段，用户返回 Classroom 学习首页时能看到最新进度。
+
+`tests/sceneMemoryWordCard.test.ts` 验证：
+
+- `createMemoryWordCard` 支持 `isFavorite` 展示状态；
+- Memory 单词卡 WXML 存在收藏按钮、收藏状态绑定和选中态 class；
+- scene 页调用 `recordLearnedWord`、`isFavorite`、`addFavorite`、`removeFavorite` 和 `refreshSceneProgress`；
+- 收藏按钮样式和选中态样式存在。
+
+文件变更记录补充：
+
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `miniprogram/pages/scene/sceneViewModel.ts` | 为 Memory 单词卡展示状态补充 `isFavorite`，并支持创建卡片时传入当前收藏状态。 | 阶段 4 / Step 4.6 |
+| `miniprogram/pages/scene/scene.ts` | 在打开 Memory 单词卡时记录已学、刷新进度、读取收藏状态，并处理收藏 / 取消收藏。 | 阶段 4 / Step 4.6 |
+| `miniprogram/pages/scene/scene.wxml` | 在 Memory 单词卡音频按钮旁渲染星标收藏按钮并绑定点击事件。 | 阶段 4 / Step 4.6 |
+| `miniprogram/pages/scene/scene.wxss` | 为单词卡收藏按钮补充圆形按钮、选中态和按下态样式。 | 阶段 4 / Step 4.6 |
+| `tests/sceneMemoryWordCard.test.ts` | 约束单词卡收藏状态、收藏按钮绑定、已学记录调用、进度刷新和收藏样式。 | 阶段 4 / Step 4.6 |
