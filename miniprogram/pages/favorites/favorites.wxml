@@ -32,6 +32,22 @@
           <text class="favorite-expression-line">{{item.expressionEn}}</text>
           <text class="favorite-expression-translation">{{item.expressionCn}}</text>
         </view>
+        <view class="favorite-actions">
+          <button
+            class="favorite-action-button favorite-play-button"
+            data-audio-url="{{item.audioUrl}}"
+            catchtap="onPlayFavoriteAudio"
+          >
+            Play
+          </button>
+          <button
+            class="favorite-action-button favorite-remove-button"
+            data-word-id="{{item.wordId}}"
+            catchtap="onRemoveFavorite"
+          >
+            Remove
+          </button>
+        </view>
       </view>
     </view>
   </view>

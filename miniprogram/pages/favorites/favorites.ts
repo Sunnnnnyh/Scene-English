@@ -1,4 +1,4 @@
-import { getFavorites } from "../../services/favoriteService";
+import { getFavorites, removeFavorite } from "../../services/favoriteService";
 import { getSceneById } from "../../services/sceneService";
 import { getWordById } from "../../services/wordService";
 import type { Favorite, Scene, Word } from "../../types";
@@ -8,6 +8,7 @@ type FavoriteListItem = {
   en: Word["en"];
   cn: Word["cn"];
   phonetic: Word["phonetic"];
+  audioUrl: Word["audioUrl"];
   expressionEn: Word["expressionEn"];
   expressionCn: Word["expressionCn"];
   sceneName: string;
@@ -22,6 +23,58 @@ type FavoriteDetailTapEvent = WechatMiniprogram.BaseEvent & {
     };
   };
 };
+
+type FavoriteAudioTapEvent = WechatMiniprogram.BaseEvent & {
+  currentTarget: {
+    dataset: {
+      audioUrl?: Word["audioUrl"];
+    };
+  };
+};
+
+let favoriteAudioContext: WechatMiniprogram.InnerAudioContext | undefined;
+
+function stopFavoriteAudio() {
+  if (!favoriteAudioContext) {
+    return;
+  }
+
+  try {
+    favoriteAudioContext.stop();
+  } catch {
+    // Best-effort cleanup; playback errors are surfaced from play callbacks.
+  }
+}
+
+function releaseFavoriteAudio() {
+  if (!favoriteAudioContext) {
+    return;
+  }
+
+  stopFavoriteAudio();
+
+  try {
+    favoriteAudioContext.destroy();
+  } catch {
+    // Best-effort cleanup when a new favorite audio starts or the page leaves.
+  }
+
+  favoriteAudioContext = undefined;
+}
+
+function playFavoriteAudio(src: Word["audioUrl"], onError: () => void) {
+  releaseFavoriteAudio();
+
+  try {
+    const audioContext = wx.createInnerAudioContext();
+    favoriteAudioContext = audioContext;
+    audioContext.src = src;
+    audioContext.onError(onError);
+    audioContext.play();
+  } catch {
+    onError();
+  }
+}
 
 function createFavoriteItems(
   favorites: Favorite[],
@@ -41,6 +94,7 @@ function createFavoriteItems(
         en: word.en,
         cn: word.cn,
         phonetic: word.phonetic,
+        audioUrl: word.audioUrl,
         expressionEn: word.expressionEn,
         expressionCn: word.expressionCn,
         sceneName: scene.nameEn,
@@ -87,5 +141,45 @@ Page({
       : [...selectedFavoriteWordIds, wordId];
 
     this.setData(createPageData(nextSelectedFavoriteWordIds));
+  },
+
+  onPlayFavoriteAudio(event: FavoriteAudioTapEvent) {
+    const { audioUrl } = event.currentTarget.dataset;
+
+    if (!audioUrl) {
+      return;
+    }
+
+    playFavoriteAudio(audioUrl, () => {
+      wx.showToast({
+        title: "音频暂时无法播放",
+        icon: "none"
+      });
+    });
+  },
+
+  onRemoveFavorite(event: FavoriteDetailTapEvent) {
+    const { wordId } = event.currentTarget.dataset;
+
+    if (!wordId) {
+      return;
+    }
+
+    stopFavoriteAudio();
+    removeFavorite(wordId);
+
+    const selectedFavoriteWordIds = (this.data.selectedFavoriteWordIds ?? []).filter(
+      (selectedWordId: string) => selectedWordId !== wordId
+    );
+
+    this.setData(createPageData(selectedFavoriteWordIds));
+  },
+
+  onHide() {
+    stopFavoriteAudio();
+  },
+
+  onUnload() {
+    releaseFavoriteAudio();
   }
 });

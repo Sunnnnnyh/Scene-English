@@ -6,7 +6,7 @@
 
 ## 1. 当前阶段
 
-当前项目已完成阶段 5 / Step 5.1，并完成 Learn tab 学习模式内联切换体验修复。项目已初始化微信小程序 TypeScript 工程，建立基础目录结构和全部规划页面占位，配置基础开发质量工具，完成核心类型、场景数据、Classroom 20 个单词静态数据、占位图片 / 音频资源，并实现本地缓存工具、字符串标准化工具、热区计算工具、场景服务、单词服务、收藏服务、学习进度服务、错题服务、抽题服务、音频服务和 mock 口语识别服务。首页已接入场景选择页，可以展示 Classroom 主场景和 Lecture Hall、Dormitory、Cafeteria 三个 Coming soon 场景；底部导航已包含 Home / Learn / Review / Me。Home 负责选择学习场景，Learn 负责进入当前学习场景；MVP 阶段只有 Classroom，因此直接点击 Learn 默认进入 Classroom 学习首页。Classroom 学习首页可查看场景预览、学习进度和三个学习模式入口，Coming soon 场景只提示不跳转。点击学习模式入口时，当前采用 Learn tab 内部状态切换，不再 `navigateTo` 普通页面，从而避免底部 tabBar 在过渡中消失。Review 页已预留收藏夹和错题夹全局入口，Me 页已展示本地轻量统计和 mock ASR 状态。Memory Mode 当前优先在 Learn tab 内联视图中推进：已能稳定展示 Classroom 场景图，并根据 Classroom 20 个单词数据覆盖透明热区；Memory 视图标题下方同样展示 `单词进度`、`Learned x / 20` 和进度条；点击热区会打开对应单词卡，卡片展示英文、中文、美式音标、音频播放入口、收藏状态和 1 条 Useful expression；点击 Useful expression 英文句子可展开或收起中文翻译，并通过 `sceneenglish:onboarding` 记录表达翻译轻引导完成状态。点击热区打开单词卡时会通过 `progressService` 记录该词为已学，并刷新 `Learned x / 20` 进度；点击星标会通过 `favoriteService` 写入或移除收藏。Favorites 页面已接入真实收藏列表：从本地收藏记录生成列表项，支持空状态，并允许点击多个收藏项同时展开音标和 Useful expression。点击空白区域只给轻提示。首次进入单词记忆模式时会展示一次性轻引导，高亮 `projector` 并通过 `sceneenglish:onboarding` 本地缓存记录完成状态。工程可以被微信开发者工具识别，所有已注册页面都能打开；TypeScript、ESLint、Prettier 和 Vitest 命令均可运行。
+当前项目已完成阶段 5 / Step 5.2，并完成 Learn tab 学习模式内联切换体验修复。项目已初始化微信小程序 TypeScript 工程，建立基础目录结构和全部规划页面占位，配置基础开发质量工具，完成核心类型、场景数据、Classroom 20 个单词静态数据、占位图片 / 音频资源，并实现本地缓存工具、字符串标准化工具、热区计算工具、场景服务、单词服务、收藏服务、学习进度服务、错题服务、抽题服务、音频服务和 mock 口语识别服务。首页已接入场景选择页，可以展示 Classroom 主场景和 Lecture Hall、Dormitory、Cafeteria 三个 Coming soon 场景；底部导航已包含 Home / Learn / Review / Me。Home 负责选择学习场景，Learn 负责进入当前学习场景；MVP 阶段只有 Classroom，因此直接点击 Learn 默认进入 Classroom 学习首页。Classroom 学习首页可查看场景预览、学习进度和三个学习模式入口，Coming soon 场景只提示不跳转。点击学习模式入口时，当前采用 Learn tab 内部状态切换，不再 `navigateTo` 普通页面，从而避免底部 tabBar 在过渡中消失。Review 页已预留收藏夹和错题夹全局入口，Me 页已展示本地轻量统计和 mock ASR 状态。Memory Mode 当前优先在 Learn tab 内联视图中推进：已能稳定展示 Classroom 场景图，并根据 Classroom 20 个单词数据覆盖透明热区；Memory 视图标题下方同样展示 `单词进度`、`Learned x / 20` 和进度条；点击热区会打开对应单词卡，卡片展示英文、中文、美式音标、音频播放入口、收藏状态和 1 条 Useful expression；点击 Useful expression 英文句子可展开或收起中文翻译，并通过 `sceneenglish:onboarding` 记录表达翻译轻引导完成状态。点击热区打开单词卡时会通过 `progressService` 记录该词为已学，并刷新 `Learned x / 20` 进度；点击星标会通过 `favoriteService` 写入或移除收藏。Favorites 页面已接入真实收藏列表：从本地收藏记录生成列表项，支持空状态，允许点击多个收藏项同时展开音标和 Useful expression，并在展开详情中支持播放单词音频和取消收藏；取消收藏后会写入 `sceneenglish:favorites` 并立即刷新列表。点击空白区域只给轻提示。首次进入单词记忆模式时会展示一次性轻引导，高亮 `projector` 并通过 `sceneenglish:onboarding` 本地缓存记录完成状态。工程可以被微信开发者工具识别，所有已注册页面都能打开；TypeScript、ESLint、Prettier 和 Vitest 命令均可运行。
 
 当前源码目录为：
 
@@ -1240,3 +1240,42 @@ Learn tab 内联 Memory 视图现在也展示当前 Classroom 的已学进度。
 | `miniprogram/pages/scene/scene.wxml` | 在 Learn tab 内联 Memory 视图中渲染单词进度文字和进度条。 | Memory 进度条补充 |
 | `miniprogram/pages/scene/scene.wxss` | 为 Memory 视图内进度条补充紧凑页面流样式。 | Memory 进度条补充 |
 | `tests/sceneMemoryWordCard.test.ts` | 约束 Memory 视图内进度条的渲染、数据绑定和样式边界。 | Memory 进度条补充 |
+
+## 35. 阶段 5 / Step 5.2 收藏夹播放和取消收藏更新
+
+Favorites 页面现在支持在收藏夹内播放单词音频并取消收藏。该能力继续落在 `miniprogram/pages/favorites/` 页面内，复用已有 `favoriteService` 的取消收藏能力，不新增依赖或页面。
+
+当前职责：
+
+- `miniprogram/pages/favorites/favoritesViewModel.ts` 的 `FavoriteListItem` 新增 `audioUrl`，用于测试约束收藏项携带对应单词音频路径。
+- `miniprogram/pages/favorites/favorites.ts` 的页面列表项同步携带 `audioUrl`，并继续由 `getFavorites()`、`getWordById()` 和 `getSceneById()` 拼装运行时数据。
+- `favorites.ts` 新增收藏夹页面内音频上下文管理：播放前释放旧上下文，页面隐藏时停止音频，页面卸载时释放音频上下文。
+- `onPlayFavoriteAudio` 通过展开项中的 `audioUrl` 调用 `wx.createInnerAudioContext()` 播放音频；播放失败时显示“音频暂时无法播放”轻提示。
+- `onRemoveFavorite` 通过 `removeFavorite(wordId)` 写入 `sceneenglish:favorites`，并立即重新生成 Favorites 页面数据。
+- 取消收藏时会同步移除该词的展开状态，避免刷新后保留无效的 `selectedFavoriteWordIds`。
+- `miniprogram/pages/favorites/favorites.wxml` 在展开详情中渲染 `Play` 和 `Remove` 按钮，并使用 `catchtap` 避免按钮点击冒泡触发卡片展开 / 收起。
+- `miniprogram/pages/favorites/favorites.wxss` 为收藏夹操作按钮补充基础样式。
+
+运行时注意事项：
+
+- 当前 Favorites 页面延续此前对小程序 helper module 运行时风险的处理方式，不直接 import `../../services/audioService`，而是在页面内管理小范围音频上下文。
+- 当前 `miniprogram/assets/audio/*.mp3` 仍是静音占位音频；播放按钮用于验证路径和播放流程，真实用户测试前需要替换为正式发音音频。
+- 取消收藏后，Memory 单词卡再次打开同一单词时会通过 `favoriteService.isFavorite()` 读到最新状态，从而保持收藏状态同步。
+
+`tests/favoritesPage.test.ts` 验证：
+
+- `createFavoritesViewModel` 会为收藏项携带 `audioUrl`；
+- Favorites WXML 存在播放按钮、取消收藏按钮、音频路径绑定和点击绑定；
+- Favorites 页面运行时包含 `onPlayFavoriteAudio`、`onRemoveFavorite`、`playFavoriteAudio`、`stopFavoriteAudio` 和播放失败轻提示；
+- Favorites 页面不直接依赖 `../../services/audioService`，防止小程序运行时 helper module 缺失问题回归；
+- 样式包含收藏夹操作区、操作按钮和取消收藏按钮状态。
+
+文件变更记录补充：
+
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `miniprogram/pages/favorites/favorites.ts` | 为 Favorites 页面补充收藏项音频播放、页面离开时音频停止 / 释放、取消收藏和列表即时刷新能力。 | 阶段 5 / Step 5.2 |
+| `miniprogram/pages/favorites/favorites.wxml` | 在收藏项展开详情中渲染 `Play` 和 `Remove` 操作按钮，并绑定播放和取消收藏事件。 | 阶段 5 / Step 5.2 |
+| `miniprogram/pages/favorites/favorites.wxss` | 为收藏夹播放和取消收藏操作区补充按钮布局、按下态和移除按钮样式。 | 阶段 5 / Step 5.2 |
+| `miniprogram/pages/favorites/favoritesViewModel.ts` | 为测试用 Favorites 展示模型补充 `audioUrl` 字段，约束收藏项音频路径。 | 阶段 5 / Step 5.2 |
+| `tests/favoritesPage.test.ts` | 约束 Favorites 页面音频播放、取消收藏、运行时依赖边界和操作按钮样式。 | 阶段 5 / Step 5.2 |

@@ -7,6 +7,7 @@ export type FavoriteListItem = {
   en: Word["en"];
   cn: Word["cn"];
   phonetic: Word["phonetic"];
+  audioUrl: Word["audioUrl"];
   expressionEn: Word["expressionEn"];
   expressionCn: Word["expressionCn"];
   sceneName: string;
@@ -41,6 +42,7 @@ export function createFavoritesViewModel(
         en: word.en,
         cn: word.cn,
         phonetic: word.phonetic,
+        audioUrl: word.audioUrl,
         expressionEn: word.expressionEn,
         expressionCn: word.expressionCn,
         sceneName: scene.nameEn,

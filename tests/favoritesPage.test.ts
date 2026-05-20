@@ -54,6 +54,7 @@ describe("favorites page", () => {
           sceneName: "Classroom",
           sceneId: "classroom",
           phonetic: projector.phonetic,
+          audioUrl: projector.audioUrl,
           expressionEn: projector.expressionEn,
           expressionCn: projector.expressionCn,
           isExpanded: true
@@ -65,6 +66,7 @@ describe("favorites page", () => {
           sceneName: "Classroom",
           sceneId: "classroom",
           phonetic: podium.phonetic,
+          audioUrl: podium.audioUrl,
           expressionEn: podium.expressionEn,
           expressionCn: podium.expressionCn,
           isExpanded: true
@@ -113,6 +115,25 @@ describe("favorites page", () => {
     expect(favoritesScript).not.toContain("./favoritesViewModel");
   });
 
+  it("supports audio playback and removing favorites from the favorites page", () => {
+    expect(favoritesMarkup).toContain('data-audio-url="{{item.audioUrl}}"');
+    expect(favoritesMarkup).toContain('catchtap="onPlayFavoriteAudio"');
+    expect(favoritesMarkup).toContain('catchtap="onRemoveFavorite"');
+    expect(favoritesMarkup).toContain("favorite-action-button");
+    expect(favoritesMarkup).toContain("Play");
+    expect(favoritesMarkup).toContain("Remove");
+
+    expect(favoritesScript).toContain("removeFavorite");
+    expect(favoritesScript).toContain("onPlayFavoriteAudio");
+    expect(favoritesScript).toContain("onRemoveFavorite");
+    expect(favoritesScript).toContain("playFavoriteAudio");
+    expect(favoritesScript).toContain("stopFavoriteAudio");
+    expect(favoritesScript).toContain("createInnerAudioContext");
+    expect(favoritesScript).toContain("音频暂时无法播放");
+    expect(favoritesScript).toContain("selectedFavoriteWordIds");
+    expect(favoritesScript).not.toContain("../../services/audioService");
+  });
+
   it("styles list rows and the empty state", () => {
     expect(favoritesStyles).toContain(".favorites-page");
     expect(favoritesStyles).toContain(".favorites-list");
@@ -122,6 +143,9 @@ describe("favorites page", () => {
     expect(favoritesStyles).toContain(".favorite-detail");
     expect(favoritesStyles).toContain(".favorite-phonetic");
     expect(favoritesStyles).toContain(".favorite-expression");
+    expect(favoritesStyles).toContain(".favorite-actions");
+    expect(favoritesStyles).toContain(".favorite-action-button");
+    expect(favoritesStyles).toContain(".favorite-remove-button");
     expect(favoritesStyles).toContain(".favorite-empty");
   });
 });

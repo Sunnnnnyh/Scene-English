@@ -127,6 +127,38 @@
   line-height: 1.45;
 }
 
+.favorite-actions {
+  display: flex;
+  gap: 16rpx;
+  margin-top: 22rpx;
+}
+
+.favorite-action-button {
+  flex: 1;
+  min-height: 72rpx;
+  margin: 0;
+  border: 2rpx solid #19324d;
+  border-radius: 999rpx;
+  background: #fff4df;
+  color: #19324d;
+  font-size: 24rpx;
+  font-weight: 800;
+  line-height: 72rpx;
+}
+
+.favorite-action-button:active {
+  transform: translateY(1rpx);
+}
+
+.favorite-play-button {
+  background: #ffe6bb;
+}
+
+.favorite-remove-button {
+  background: #fff7f5;
+  color: #c95445;
+}
+
 .favorite-empty {
   margin-top: 42rpx;
   padding: 32rpx;
