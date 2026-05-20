@@ -140,6 +140,31 @@
   line-height: 1.5;
 }
 
+.memory-progress-section {
+  margin-top: 24rpx;
+}
+
+.memory-progress-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20rpx;
+  margin-bottom: 12rpx;
+}
+
+.memory-progress-label {
+  color: #19324d;
+  font-size: 24rpx;
+  font-weight: 800;
+}
+
+.memory-progress-count {
+  flex-shrink: 0;
+  color: #e8754f;
+  font-size: 22rpx;
+  font-weight: 800;
+}
+
 .mode-page-preview {
   margin-top: 34rpx;
 }

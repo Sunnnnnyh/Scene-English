@@ -6,7 +6,7 @@
 
 ## 1. 当前阶段
 
-当前项目已完成阶段 4 / Step 4.6，并完成 Learn tab 学习模式内联切换体验修复。项目已初始化微信小程序 TypeScript 工程，建立基础目录结构和全部规划页面占位，配置基础开发质量工具，完成核心类型、场景数据、Classroom 20 个单词静态数据、占位图片 / 音频资源，并实现本地缓存工具、字符串标准化工具、热区计算工具、场景服务、单词服务、收藏服务、学习进度服务、错题服务、抽题服务、音频服务和 mock 口语识别服务。首页已接入场景选择页，可以展示 Classroom 主场景和 Lecture Hall、Dormitory、Cafeteria 三个 Coming soon 场景；底部导航已包含 Home / Learn / Review / Me。Home 负责选择学习场景，Learn 负责进入当前学习场景；MVP 阶段只有 Classroom，因此直接点击 Learn 默认进入 Classroom 学习首页。Classroom 学习首页可查看场景预览、学习进度和三个学习模式入口，Coming soon 场景只提示不跳转。点击学习模式入口时，当前采用 Learn tab 内部状态切换，不再 `navigateTo` 普通页面，从而避免底部 tabBar 在过渡中消失。Review 页已预留收藏夹和错题夹全局入口，Me 页已展示本地轻量统计和 mock ASR 状态。Memory Mode 当前优先在 Learn tab 内联视图中推进：已能稳定展示 Classroom 场景图，并根据 Classroom 20 个单词数据覆盖透明热区；点击热区会打开对应单词卡，卡片展示英文、中文、美式音标、音频播放入口、收藏状态和 1 条 Useful expression；点击 Useful expression 英文句子可展开或收起中文翻译，并通过 `sceneenglish:onboarding` 记录表达翻译轻引导完成状态。点击热区打开单词卡时会通过 `progressService` 记录该词为已学，并刷新 `Learned x / 20` 进度；点击星标会通过 `favoriteService` 写入或移除收藏。点击空白区域只给轻提示。首次进入单词记忆模式时会展示一次性轻引导，高亮 `projector` 并通过 `sceneenglish:onboarding` 本地缓存记录完成状态。工程可以被微信开发者工具识别，所有已注册页面都能打开；TypeScript、ESLint、Prettier 和 Vitest 命令均可运行。
+当前项目已完成阶段 5 / Step 5.1，并完成 Learn tab 学习模式内联切换体验修复。项目已初始化微信小程序 TypeScript 工程，建立基础目录结构和全部规划页面占位，配置基础开发质量工具，完成核心类型、场景数据、Classroom 20 个单词静态数据、占位图片 / 音频资源，并实现本地缓存工具、字符串标准化工具、热区计算工具、场景服务、单词服务、收藏服务、学习进度服务、错题服务、抽题服务、音频服务和 mock 口语识别服务。首页已接入场景选择页，可以展示 Classroom 主场景和 Lecture Hall、Dormitory、Cafeteria 三个 Coming soon 场景；底部导航已包含 Home / Learn / Review / Me。Home 负责选择学习场景，Learn 负责进入当前学习场景；MVP 阶段只有 Classroom，因此直接点击 Learn 默认进入 Classroom 学习首页。Classroom 学习首页可查看场景预览、学习进度和三个学习模式入口，Coming soon 场景只提示不跳转。点击学习模式入口时，当前采用 Learn tab 内部状态切换，不再 `navigateTo` 普通页面，从而避免底部 tabBar 在过渡中消失。Review 页已预留收藏夹和错题夹全局入口，Me 页已展示本地轻量统计和 mock ASR 状态。Memory Mode 当前优先在 Learn tab 内联视图中推进：已能稳定展示 Classroom 场景图，并根据 Classroom 20 个单词数据覆盖透明热区；Memory 视图标题下方同样展示 `单词进度`、`Learned x / 20` 和进度条；点击热区会打开对应单词卡，卡片展示英文、中文、美式音标、音频播放入口、收藏状态和 1 条 Useful expression；点击 Useful expression 英文句子可展开或收起中文翻译，并通过 `sceneenglish:onboarding` 记录表达翻译轻引导完成状态。点击热区打开单词卡时会通过 `progressService` 记录该词为已学，并刷新 `Learned x / 20` 进度；点击星标会通过 `favoriteService` 写入或移除收藏。Favorites 页面已接入真实收藏列表：从本地收藏记录生成列表项，支持空状态，并允许点击多个收藏项同时展开音标和 Useful expression。点击空白区域只给轻提示。首次进入单词记忆模式时会展示一次性轻引导，高亮 `projector` 并通过 `sceneenglish:onboarding` 本地缓存记录完成状态。工程可以被微信开发者工具识别，所有已注册页面都能打开；TypeScript、ESLint、Prettier 和 Vitest 命令均可运行。
 
 当前源码目录为：
 
@@ -1172,3 +1172,71 @@ Memory Mode 单词卡现在接入收藏状态和已学记录。该能力继续�
 | `miniprogram/pages/scene/scene.wxml` | 在 Memory 单词卡音频按钮旁渲染星标收藏按钮并绑定点击事件。 | 阶段 4 / Step 4.6 |
 | `miniprogram/pages/scene/scene.wxss` | 为单词卡收藏按钮补充圆形按钮、选中态和按下态样式。 | 阶段 4 / Step 4.6 |
 | `tests/sceneMemoryWordCard.test.ts` | 约束单词卡收藏状态、收藏按钮绑定、已学记录调用、进度刷新和收藏样式。 | 阶段 4 / Step 4.6 |
+
+## 33. 阶段 5 / Step 5.1 收藏夹列表更新
+
+Favorites 页面现在展示真实收藏列表。该页面属于全局复习入口，从 `Review` tab 进入，不放在具体 Classroom 学习首页中。
+
+当前职责：
+
+- `miniprogram/pages/favorites/favorites.ts` 在页面显示时通过 `getFavorites()` 读取本地收藏记录，并用 `getWordById()`、`getSceneById()` 拼装页面列表数据。
+- `favorites.ts` 保留 `selectedFavoriteWordIds` 页面状态，用于记录当前展开的收藏项；该状态是数组，因此多个卡片可以同时展开。
+- `onToggleFavoriteDetail` 根据点击项的 `wordId` 切换该项是否展开，再重新生成页面数据。
+- `miniprogram/pages/favorites/favorites.wxml` 渲染收藏列表、空状态和收藏项详情；详情只展示音标和 1 条 Useful expression，不展示 Example / 例句。
+- `miniprogram/pages/favorites/favorites.wxss` 为收藏页、列表卡片、场景标签、展开详情、Useful expression 和空状态提供基础样式。
+- `miniprogram/pages/favorites/favoritesViewModel.ts` 作为测试用展示模型，约束收藏列表的数据结构和空状态；小程序运行时页面不 import 该 helper，避免此前 helper module 缺失类问题回归。
+
+运行时注意事项：
+
+- 当前 Step 5.1 只实现收藏夹列表查看和详情展开；音频播放与取消收藏留到 Step 5.2。
+- 收藏页读取的是 `sceneenglish:favorites`，因此 Memory 单词卡中的星标状态和 Favorites 列表共享同一份本地数据。
+- Favorites 中展开的句子同样使用 `Word.expressionEn` / `Word.expressionCn`，保持与 Memory 单词卡的内容策略一致。
+
+`tests/favoritesPage.test.ts` 验证：
+
+- `createFavoritesViewModel` 能从收藏记录生成列表项；
+- 空收藏时展示空状态；
+- WXML 渲染收藏列表、空状态、点击展开绑定、音标和 Useful expression；
+- WXML 不包含 Example、`exampleEn` 或 `exampleCn`；
+- 页面运行时使用 service 读取收藏、单词和场景数据，不 import `./favoritesViewModel`；
+- 样式包含收藏列表、收藏项、展开详情、Useful expression 和空状态。
+
+文件变更记录补充：
+
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `miniprogram/pages/favorites/favorites.ts` | 从本地收藏记录构建真实收藏列表，并支持多个收藏项同时展开或收起详情。 | 阶段 5 / Step 5.1 |
+| `miniprogram/pages/favorites/favorites.wxml` | 渲染 Favorites 列表、空状态、收藏项基础信息和展开后的音标 / Useful expression。 | 阶段 5 / Step 5.1 |
+| `miniprogram/pages/favorites/favorites.wxss` | 为收藏页、列表项、展开详情、Useful expression 和空状态补充基础样式。 | 阶段 5 / Step 5.1 |
+| `miniprogram/pages/favorites/favoritesViewModel.ts` | 提供测试用 Favorites 展示模型，约束收藏列表和空状态数据结构。 | 阶段 5 / Step 5.1 |
+| `tests/favoritesPage.test.ts` | 约束 Favorites 列表、空状态、详情展开、Useful expression 内容和运行时依赖边界。 | 阶段 5 / Step 5.1 |
+
+## 34. Memory 单词记忆界面进度条更新
+
+Learn tab 内联 Memory 视图现在也展示当前 Classroom 的已学进度。该进度与 Classroom 学习首页共用同一组页面状态，不新增独立业务逻辑。
+
+当前职责：
+
+- `miniprogram/pages/scene/scene.wxml` 在 `activeMode === "memory"` 时渲染 `memory-progress-section`，展示 `单词进度`、`progressLabel` 和基于 `progressPercent` 的进度条。
+- `miniprogram/pages/scene/scene.wxss` 为 Memory 视图内进度条补充紧凑的页面流样式。
+- `miniprogram/pages/scene/scene.ts` 继续通过已有 `recordLearnedWord` 和 `refreshSceneProgress` 更新 `progressLabel` / `progressPercent`；Memory 进度条自动复用这些状态。
+
+运行时注意事项：
+
+- 该进度条只在 Memory 单词记忆界面展示，不影响听力默写和听力口语占位视图。
+- 该进度条使用与 Classroom 学习首页相同的数据源，因此重复点击同一单词不会重复增加进度。
+
+`tests/sceneMemoryWordCard.test.ts` 验证：
+
+- Memory 视图包含 `memory-progress-section`；
+- Memory 视图展示 `单词进度` 和 `progressLabel`；
+- 进度条宽度绑定 `progressPercent`；
+- 样式使用页面流布局，不使用 fixed 定位。
+
+文件变更记录补充：
+
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `miniprogram/pages/scene/scene.wxml` | 在 Learn tab 内联 Memory 视图中渲染单词进度文字和进度条。 | Memory 进度条补充 |
+| `miniprogram/pages/scene/scene.wxss` | 为 Memory 视图内进度条补充紧凑页面流样式。 | Memory 进度条补充 |
+| `tests/sceneMemoryWordCard.test.ts` | 约束 Memory 视图内进度条的渲染、数据绑定和样式边界。 | Memory 进度条补充 |

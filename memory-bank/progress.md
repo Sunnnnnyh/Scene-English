@@ -665,3 +665,41 @@
 - 遗留问题：
   - 收藏夹列表页面仍为占位页；当前仅完成单词卡层面的收藏写入和状态显示，后续阶段 5 再实现收藏夹真实列表。
   - 当前热区坐标仍基于低保真占位图，后续替换正式教室图片后需要重新校准 20 个物品热区。
+
+### 2026-05-20 — 阶段 5 / Step 5.1 实现收藏夹列表
+
+- 完成内容：
+  - 将 Favorites 页面从占位页调整为真实收藏列表，页面从 `favoriteService` 读取本地收藏记录。
+  - 每个收藏项展示英文、中文和所属场景，空列表时展示基础空状态。
+  - 收藏项支持点击展开单词详情，展示音标和 1 条 Useful expression；不展示 Example / 例句区块。
+  - 多个收藏卡片可以同时保持展开，再次点击同一收藏项会收起该项。
+  - 新增 `favoritesViewModel` 作为测试用展示模型，页面运行时仍在 `favorites.ts` 内部构建数据，避免小程序运行时 helper module 缺失风险。
+  - 新增 `tests/favoritesPage.test.ts`，约束收藏列表展示、空状态、Useful expression 展开、多项同时展开和运行时依赖边界。
+- 验证结果：
+  - 本地已验证 `npm test -- tests/favoritesPage.test.ts` 通过。
+  - 本地已验证 `npm run typecheck` 通过。
+  - 本地已验证 `npm run format:check` 通过。
+  - 本地已验证 `npm run lint` 通过。
+  - 本地已验证 `npm test` 通过，显示 29 个测试文件、114 个测试用例通过。
+  - 用户已在微信开发者工具中验证 Favorites 展开详情、Useful expression 展示和多卡片同时展开通过。
+- 遗留问题：
+  - 当前 Step 5.1 只实现收藏夹查看列表和详情展开，不实现收藏夹内音频播放或取消收藏。
+  - 收藏夹播放和取消收藏留到 Step 5.2 实现。
+
+### 2026-05-20 — Memory 单词记忆界面进度条补充
+
+- 完成内容：
+  - 根据用户反馈，在 Learn tab 内联 Memory 单词记忆界面中补充单词进度展示。
+  - 新增 `单词进度` 标签、`Learned x / 20` 进度文字和进度条，复用现有 `progressLabel` / `progressPercent` 页面状态。
+  - 点击 Memory 热区打开单词卡后，已有 `recordLearnedWord` 和 `refreshSceneProgress` 会继续同步更新该进度条。
+  - 该调整只影响 Memory 视图，不改变 Classroom 学习首页、听力默写或听力口语模式。
+- 验证结果：
+  - 新增测试先在 Memory 视图缺少进度条时失败，随后补充 WXML 和样式后通过。
+  - 本地已验证 `npm test -- tests/sceneMemoryWordCard.test.ts` 通过。
+  - 本地已验证 `npm run typecheck` 通过。
+  - 本地已验证 `npm run lint` 通过。
+  - 本地已验证 `npm run format:check` 通过。
+  - 本地已验证 `npm test` 通过，显示 29 个测试文件、116 个测试用例通过。
+  - 用户已在微信开发者工具中验证 Memory 单词记忆界面进度条通过。
+- 遗留问题：
+  - 当前进度条仍使用基础 UI，后续统一视觉精修阶段可再微调间距和样式。

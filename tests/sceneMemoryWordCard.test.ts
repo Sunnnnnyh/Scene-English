@@ -102,6 +102,14 @@ describe("scene page Memory word card", () => {
     expect(sceneMarkup).not.toContain("selectedMemoryWordLabel");
   });
 
+  it("shows the learned word progress inside the Memory mode view", () => {
+    expect(sceneMarkup).toContain("memory-progress-section");
+    expect(sceneMarkup).toContain("单词进度");
+    expect(sceneMarkup).toContain("{{progressLabel}}");
+    expect(sceneMarkup).toContain('style="width: {{progressPercent}}%;"');
+    expect(sceneMarkup).toContain("wx:if=\"{{activeMode === 'memory'}}\"");
+  });
+
   it("connects hotspot taps to word lookup and card interactions", () => {
     expect(sceneScript).not.toContain("../../services/audioService");
     expect(sceneScript).toContain("createInnerAudioContext");
@@ -146,5 +154,16 @@ describe("scene page Memory word card", () => {
     expect(wordCardRule).not.toContain("position: fixed;");
     expect(wordCardRule).not.toContain("bottom:");
     expect(wordCardPanelRule).not.toContain("max-height: 58vh;");
+  });
+
+  it("styles the Memory mode progress bar as a compact page-flow element", () => {
+    const progressRule = sceneStyles.match(/\.memory-progress-section\s*\{[^}]*\}/)?.[0] ?? "";
+
+    expect(sceneStyles).toContain(".memory-progress-section");
+    expect(sceneStyles).toContain(".memory-progress-header");
+    expect(sceneStyles).toContain(".memory-progress-label");
+    expect(sceneStyles).toContain(".memory-progress-count");
+    expect(progressRule).toContain("margin-top: 24rpx;");
+    expect(progressRule).not.toContain("position: fixed;");
   });
 });

@@ -1,4 +1,38 @@
-<view class="placeholder-page">
-  <text class="placeholder-title">{{title}}</text>
-  <text class="placeholder-copy">{{description}}</text>
+<view class="favorites-page">
+  <view class="favorites-header">
+    <text class="favorites-title">{{title}}</text>
+    <text class="favorites-subtitle">{{subtitle}}</text>
+  </view>
+
+  <view wx:if="{{isEmpty}}" class="favorite-empty">
+    <text class="favorite-empty-title">{{emptyTitle}}</text>
+    <text class="favorite-empty-description">{{emptyDescription}}</text>
+  </view>
+
+  <view wx:else class="favorites-list">
+    <view
+      wx:for="{{favoriteItems}}"
+      wx:key="wordId"
+      class="favorite-item"
+      data-word-id="{{item.wordId}}"
+      bindtap="onToggleFavoriteDetail"
+    >
+      <view class="favorite-summary">
+        <view class="favorite-copy">
+          <text class="favorite-word">{{item.en}}</text>
+          <text class="favorite-cn">{{item.cn}}</text>
+        </view>
+        <text class="favorite-scene">{{item.sceneName}}</text>
+      </view>
+
+      <view wx:if="{{item.isExpanded}}" class="favorite-detail">
+        <text class="favorite-phonetic">{{item.phonetic}}</text>
+        <view class="favorite-expression">
+          <text class="favorite-expression-label">Useful expression</text>
+          <text class="favorite-expression-line">{{item.expressionEn}}</text>
+          <text class="favorite-expression-translation">{{item.expressionCn}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
 </view>

@@ -41,6 +41,16 @@
     <text class="scene-title">{{selectedModeTitle}}</text>
     <text class="mode-page-subtitle">{{selectedModeSubtitle}}</text>
 
+    <view wx:if="{{activeMode === 'memory'}}" class="memory-progress-section">
+      <view class="memory-progress-header">
+        <text class="memory-progress-label">单词进度</text>
+        <text class="memory-progress-count">{{progressLabel}}</text>
+      </view>
+      <view class="progress-track">
+        <view class="progress-fill" style="width: {{progressPercent}}%;"></view>
+      </view>
+    </view>
+
     <block wx:if="{{activeMode === 'memory'}}">
       <view class="scene-preview mode-page-preview memory-scene-preview" bindtap="onMemoryBlankTap">
         <image class="scene-image" src="{{sceneImage}}" mode="aspectFill" />
