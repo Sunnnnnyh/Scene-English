@@ -118,6 +118,21 @@
       </view>
     </block>
 
+    <block wx:elif="{{activeMode === 'listeningWriting'}}">
+      <view class="scene-preview mode-page-preview">
+        <image class="scene-image" src="{{sceneImage}}" mode="aspectFill" />
+      </view>
+
+      <view class="mode-page-panel listening-writing-start">
+        <view class="listening-writing-progress">
+          <text class="listening-writing-progress-label">Question</text>
+          <text class="listening-writing-progress-count">{{listeningWritingState.questionLabel}}</text>
+        </view>
+        <text class="mode-page-note">听发音，找到对应的教室物品，再准备拼写。</text>
+        <button class="listening-writing-play" bindtap="onPlayListeningWritingAudio">播放单词音频</button>
+      </view>
+    </block>
+
     <block wx:else>
       <view class="scene-preview mode-page-preview">
         <image class="scene-image" src="{{sceneImage}}" mode="aspectFill" />

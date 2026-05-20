@@ -1279,3 +1279,47 @@ Favorites 页面现在支持在收藏夹内播放单词音频并取消收藏。�
 | `miniprogram/pages/favorites/favorites.wxss` | 为收藏夹播放和取消收藏操作区补充按钮布局、按下态和移除按钮样式。 | 阶段 5 / Step 5.2 |
 | `miniprogram/pages/favorites/favoritesViewModel.ts` | 为测试用 Favorites 展示模型补充 `audioUrl` 字段，约束收藏项音频路径。 | 阶段 5 / Step 5.2 |
 | `tests/favoritesPage.test.ts` | 约束 Favorites 页面音频播放、取消收藏、运行时依赖边界和操作按钮样式。 | 阶段 5 / Step 5.2 |
+
+## 36. 阶段 6 / Step 6.1 听力 + 默写开始状态更新
+
+Learn tab 内联“听力 + 默写”模式现在可以开始一轮练习。该步骤只建立练习开始状态，不实现听音找物点击判断、拼写输入或结束页。
+
+当前职责：
+
+- `miniprogram/pages/scene/sceneViewModel.ts` 新增 `SceneListeningWritingState` 和 `SceneListeningWritingQuestion`，用于表示听写模式当前题号、总题数、展示标签和当前题音频路径。
+- `createEmptyListeningWritingState()` 提供听写模式的空状态，供 Classroom 首页、返回和非听写模式切换时复位。
+- `createListeningWritingStartState(round, words)` 从当前练习轮次和词表中生成页面展示状态；首题展示为 `1 / 5`，并只暴露音频路径和内部题目信息，不暴露目标英文答案。
+- `miniprogram/pages/scene/scene.ts` 在点击“听力 + 默写”入口时生成 5 题练习轮次，并写入 `listeningWritingRound` 与 `listeningWritingState`。
+- `scene.ts` 为 Step 6.1 在页面内保留轻量 `createPracticeQuizRound` 实现，避免微信开发者工具运行时缺失 `services/quizService.js` 造成页面注册失败；通用 `quizService` 仍保留给 service 层测试和后续非页面逻辑。
+- `scene.ts` 新增听写模式音频上下文管理，负责播放当前目标单词音频，并在返回 Classroom、页面隐藏和页面卸载时停止或释放音频。
+- `miniprogram/pages/scene/scene.wxml` 为 `activeMode === "listeningWriting"` 渲染 Classroom 场景图、题号 `{{listeningWritingState.questionLabel}}` 和“播放单词音频”按钮。
+- `miniprogram/pages/scene/scene.wxss` 为听写开始面板、题号行和播放按钮补充基础样式。
+
+运行时注意事项：
+
+- 听写开始面板不展示目标英文单词，避免用户在听音阶段直接看到答案。
+- 当前音频资源仍是静音占位文件；按钮用于验证路径和播放流程，真实学习体验需要在 Step 6.1.5 替换为真实发音文件。
+- 当前页面运行时不直接 import `../../services/quizService`，这是为了规避与此前 `audioService` 类似的小程序 helper module 缺失问题。
+
+`tests/listeningWritingStart.test.ts` 验证：
+
+- `scene.ts` 在选择听写模式时生成 5 题开始状态，并使用 `mode: "listeningWriting"` 和 `learnedWordIds`；
+- `scene.ts` 不运行时 import `../../services/quizService`；
+- WXML 渲染听写专用分支、题号和播放按钮；
+- 页面内存在听写音频播放、停止和释放逻辑；
+- WXSS 包含听写开始面板、题号行和播放按钮样式。
+
+`tests/sceneViewModel.test.ts` 验证：
+
+- `createListeningWritingStartState` 能从首题生成 `currentQuestionNumber: 1`、`totalQuestionCount: 5`、`questionLabel: "1 / 5"` 和目标单词音频路径。
+
+文件变更记录补充：
+
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `miniprogram/pages/scene/sceneViewModel.ts` | 为 Learn tab 内联听写模式补充开始状态类型、空状态和首题展示状态创建函数。 | 阶段 6 / Step 6.1 |
+| `miniprogram/pages/scene/scene.ts` | 在选择听写模式时生成 5 题开始轮次，管理目标音频播放，并避免运行时 import `quizService`。 | 阶段 6 / Step 6.1 |
+| `miniprogram/pages/scene/scene.wxml` | 渲染听写模式开始面板、当前题号和播放单词音频按钮。 | 阶段 6 / Step 6.1 |
+| `miniprogram/pages/scene/scene.wxss` | 为听写开始面板、题号展示和播放按钮补充基础样式。 | 阶段 6 / Step 6.1 |
+| `tests/listeningWritingStart.test.ts` | 约束听写模式开始状态、题号展示、播放入口、运行时依赖边界和样式。 | 阶段 6 / Step 6.1 |
+| `tests/sceneViewModel.test.ts` | 补充听写开始状态的首题题号和音频路径单元测试。 | 阶段 6 / Step 6.1 |

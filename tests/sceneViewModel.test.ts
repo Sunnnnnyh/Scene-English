@@ -1,9 +1,12 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  createListeningWritingStartState,
   createSceneViewModel,
   getSceneEntryAction
 } from "../miniprogram/pages/scene/sceneViewModel";
+import { classroomWords } from "../miniprogram/data/scenes";
+import { createPracticeQuizRound } from "../miniprogram/services/quizService";
 import { getSceneById } from "../miniprogram/services/sceneService";
 import type { UserProgress } from "../miniprogram/types";
 
@@ -69,6 +72,27 @@ describe("scene page view model", () => {
     expect(getSceneEntryAction("listeningSpeaking")).toEqual({
       type: "selectMode",
       mode: "listeningSpeaking"
+    });
+  });
+
+  it("builds Listen + Spell start state from the first quiz question", () => {
+    const round = createPracticeQuizRound({
+      sceneId: "classroom",
+      mode: "listeningWriting",
+      words: classroomWords,
+      learnedWordIds: classroomWords.slice(0, 5).map((word) => word.id)
+    });
+
+    const state = createListeningWritingStartState(round, classroomWords);
+
+    expect(state).toMatchObject({
+      currentQuestionNumber: 1,
+      totalQuestionCount: 5,
+      questionLabel: "1 / 5",
+      currentQuestion: {
+        wordId: classroomWords[0].id,
+        audioUrl: classroomWords[0].audioUrl
+      }
     });
   });
 });

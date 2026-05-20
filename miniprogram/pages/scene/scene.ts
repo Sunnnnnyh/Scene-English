@@ -9,14 +9,18 @@ import {
   shouldShowMemoryTranslationGuide
 } from "../../services/onboardingService";
 import {
+  createEmptyListeningWritingState,
+  createListeningWritingStartState,
   createMemoryWordCard,
   createSceneViewModel,
   getSceneEntryAction,
+  type SceneListeningWritingQuestion,
+  type SceneListeningWritingState,
   type SceneMemoryWordCard,
   type SceneEntryId,
   type SceneViewModel
 } from "./sceneViewModel";
-import type { Scene } from "../../types";
+import type { QuizQuestion, QuizRound, Scene, Word } from "../../types";
 
 type ScenePageOptions = {
   sceneId?: string;
@@ -46,7 +50,10 @@ type MemoryTranslationTapEvent = WechatMiniprogram.BaseEvent & {
   };
 };
 
+const DEFAULT_LISTENING_WRITING_QUESTION_COUNT = 5;
+
 let memoryWordAudioContext: WechatMiniprogram.InnerAudioContext | undefined;
+let listeningWritingAudioContext: WechatMiniprogram.InnerAudioContext | undefined;
 
 function stopMemoryWordAudio() {
   if (!memoryWordAudioContext) {
@@ -90,6 +97,51 @@ function playMemoryWordAudio(src: SceneMemoryWordCard["audioUrl"], onError: () =
   }
 }
 
+function stopListeningWritingAudio() {
+  if (!listeningWritingAudioContext) {
+    return;
+  }
+
+  try {
+    listeningWritingAudioContext.stop();
+  } catch {
+    // Best-effort cleanup; playback errors are surfaced from play callbacks.
+  }
+}
+
+function releaseListeningWritingAudio() {
+  if (!listeningWritingAudioContext) {
+    return;
+  }
+
+  stopListeningWritingAudio();
+
+  try {
+    listeningWritingAudioContext.destroy();
+  } catch {
+    // Best-effort cleanup when the page unloads or a new prompt starts.
+  }
+
+  listeningWritingAudioContext = undefined;
+}
+
+function playListeningWritingAudio(
+  src: SceneListeningWritingQuestion["audioUrl"],
+  onError: () => void
+) {
+  releaseListeningWritingAudio();
+
+  try {
+    const audioContext = wx.createInnerAudioContext();
+    listeningWritingAudioContext = audioContext;
+    audioContext.src = src;
+    audioContext.onError(onError);
+    audioContext.play();
+  } catch {
+    onError();
+  }
+}
+
 function refreshSceneProgress(sceneId: Scene["id"]) {
   const scene = getSceneById(sceneId);
 
@@ -103,6 +155,58 @@ function refreshSceneProgress(sceneId: Scene["id"]) {
   return {
     progressLabel: `Learned ${learnedCount} / ${scene.wordCount}`,
     progressPercent: scene.wordCount > 0 ? Math.round((learnedCount / scene.wordCount) * 100) : 0
+  };
+}
+
+function createPracticeQuizRound({
+  sceneId,
+  mode,
+  words,
+  learnedWordIds
+}: {
+  sceneId: Scene["id"];
+  mode: "listeningWriting";
+  words: Word[];
+  learnedWordIds: Word["id"][];
+}): QuizRound {
+  const learnedWordIdSet = new Set(learnedWordIds);
+  const learnedWords = words.filter((word) => learnedWordIdSet.has(word.id));
+  const unlearnedWords = words.filter((word) => !learnedWordIdSet.has(word.id));
+  const selectedWords = [...learnedWords, ...unlearnedWords].slice(
+    0,
+    DEFAULT_LISTENING_WRITING_QUESTION_COUNT
+  );
+  const startedAt = new Date().toISOString();
+  const questions: QuizQuestion[] = selectedWords.map((word, index) => ({
+    id: `${sceneId}:${mode}:${word.id}:${index + 1}`,
+    sceneId,
+    wordId: word.id,
+    mode
+  }));
+
+  return {
+    id: `${sceneId}:${mode}:${startedAt}`,
+    sceneId,
+    mode,
+    questions,
+    currentIndex: 0,
+    startedAt
+  };
+}
+
+function createListeningWritingModeData(sceneId: Scene["id"]) {
+  const words = getWordsBySceneId(sceneId);
+  const progress = getSceneProgress(sceneId);
+  const listeningWritingRound = createPracticeQuizRound({
+    sceneId,
+    mode: "listeningWriting",
+    words,
+    learnedWordIds: progress.learnedWordIds
+  });
+
+  return {
+    listeningWritingRound,
+    listeningWritingState: createListeningWritingStartState(listeningWritingRound, words)
   };
 }
 
@@ -148,6 +252,16 @@ Page({
 
     const action = getSceneEntryAction(entryId);
     const selectedMode = this.data.modeEntries.find((entry) => entry.id === action.mode);
+    const listeningWritingData =
+      action.mode === "listeningWriting"
+        ? createListeningWritingModeData(sceneId)
+        : {
+            listeningWritingRound: null,
+            listeningWritingState: createEmptyListeningWritingState()
+          };
+
+    stopMemoryWordAudio();
+    stopListeningWritingAudio();
 
     this.setData({
       activeMode: action.mode,
@@ -156,12 +270,14 @@ Page({
       showMemoryGuide: action.mode === "memory" ? shouldShowMemoryGuide() : false,
       showMemoryTranslationGuide: false,
       selectedMemoryWordId: "",
-      selectedMemoryWordCard: null
+      selectedMemoryWordCard: null,
+      ...listeningWritingData
     });
   },
 
   onBackToSceneHome() {
     stopMemoryWordAudio();
+    stopListeningWritingAudio();
 
     this.setData({
       activeMode: "",
@@ -170,7 +286,9 @@ Page({
       showMemoryGuide: false,
       showMemoryTranslationGuide: false,
       selectedMemoryWordId: "",
-      selectedMemoryWordCard: null
+      selectedMemoryWordCard: null,
+      listeningWritingRound: null,
+      listeningWritingState: createEmptyListeningWritingState()
     });
   },
 
@@ -291,12 +409,30 @@ Page({
     });
   },
 
+  onPlayListeningWritingAudio() {
+    const listeningWritingState = this.data.listeningWritingState as SceneListeningWritingState;
+    const audioUrl = listeningWritingState.currentQuestion?.audioUrl;
+
+    if (!audioUrl) {
+      return;
+    }
+
+    playListeningWritingAudio(audioUrl, () => {
+      wx.showToast({
+        title: "音频暂时无法播放",
+        icon: "none"
+      });
+    });
+  },
+
   onHide() {
     stopMemoryWordAudio();
+    stopListeningWritingAudio();
   },
 
   onUnload() {
     releaseMemoryWordAudio();
+    releaseListeningWritingAudio();
   },
 
   onMemoryBlankTap() {

@@ -1,4 +1,4 @@
-import type { Scene, StudyMode, UserProgress, Word } from "../../types";
+import type { QuizQuestion, QuizRound, Scene, StudyMode, UserProgress, Word } from "../../types";
 import { createHotspotStyle } from "../../utils/hotspot";
 
 export type SceneEntryId = StudyMode;
@@ -29,6 +29,19 @@ export type SceneMemoryWordCard = {
   showExpressionCn: boolean;
 };
 
+export type SceneListeningWritingQuestion = {
+  questionId: QuizQuestion["id"];
+  wordId: Word["id"];
+  audioUrl: Word["audioUrl"];
+};
+
+export type SceneListeningWritingState = {
+  currentQuestionNumber: number;
+  totalQuestionCount: number;
+  questionLabel: string;
+  currentQuestion: SceneListeningWritingQuestion | null;
+};
+
 export type SceneViewModel = {
   sceneId: Scene["id"];
   title: string;
@@ -47,6 +60,8 @@ export type SceneViewModel = {
   memoryGuideWordId: Word["id"];
   selectedMemoryWordId: string;
   selectedMemoryWordCard: SceneMemoryWordCard | null;
+  listeningWritingRound: QuizRound | null;
+  listeningWritingState: SceneListeningWritingState;
 };
 
 export type SceneEntryAction = {
@@ -77,6 +92,43 @@ const modeEntries: SceneModeEntry[] = [
     isRecommended: false
   }
 ];
+
+export function createEmptyListeningWritingState(): SceneListeningWritingState {
+  return {
+    currentQuestionNumber: 0,
+    totalQuestionCount: 0,
+    questionLabel: "",
+    currentQuestion: null
+  };
+}
+
+export function createListeningWritingStartState(
+  round: QuizRound,
+  words: Word[]
+): SceneListeningWritingState {
+  const currentQuestion = round.questions[round.currentIndex];
+  const currentWord = currentQuestion
+    ? words.find((word) => word.id === currentQuestion.wordId)
+    : undefined;
+
+  if (!currentQuestion || !currentWord) {
+    return createEmptyListeningWritingState();
+  }
+
+  const currentQuestionNumber = round.currentIndex + 1;
+  const totalQuestionCount = round.questions.length;
+
+  return {
+    currentQuestionNumber,
+    totalQuestionCount,
+    questionLabel: `${currentQuestionNumber} / ${totalQuestionCount}`,
+    currentQuestion: {
+      questionId: currentQuestion.id,
+      wordId: currentQuestion.wordId,
+      audioUrl: currentWord.audioUrl
+    }
+  };
+}
 
 export function createSceneViewModel(
   scene: Scene,
@@ -109,7 +161,9 @@ export function createSceneViewModel(
     showMemoryTranslationGuide: false,
     memoryGuideWordId: "projector",
     selectedMemoryWordId: "",
-    selectedMemoryWordCard: null
+    selectedMemoryWordCard: null,
+    listeningWritingRound: null,
+    listeningWritingState: createEmptyListeningWritingState()
   };
 }
 
