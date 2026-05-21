@@ -459,35 +459,37 @@ MVP 词表不是简单罗列教室物品，而是优先选择能体现产品价�
 | 原则 | 说明 |
 |---|---|
 | 真实可用 | 表达应能直接用于课堂、校园或留学生活场景 |
-| 自然简洁 | 优先选择短句，不使用过长或过于书面化的表达 |
-| 混合类型 | 根据物品自然选择请求、求助、问题描述、场景说明等表达 |
+| 自然但有语境 | 表达应比简单例句更贴近真实课堂交流，可包含原因、目的或具体使用场景，但不写成长句训练材料 |
+| 混合类型 | 根据物品自然选择请求、指令、提醒、问题描述、场景说明、物品状态等表达，不能全部写成问句 |
 | 默认英文 | 单词卡默认展示英文表达，中文翻译点击展开 |
 | 不增加练习负担 | 第一版只帮助用户建立语境感，不要求默写或朗读表达 |
 
 ### 7.3 教室词表
 
-| 序号 | 中文 | 英文 | 音标 | 示例句 | 实用表达 |
-|---|---|---|---|---|---|
-| 1 | 黑板 | blackboard | /ˈblækbɔːrd/ | The teacher writes on the blackboard. | Could you write it on the blackboard? |
-| 2 | 白板 | whiteboard | /ˈwaɪtbɔːrd/ | Please look at the whiteboard. | Can you see the whiteboard clearly? |
-| 3 | 投影仪 | projector | /prəˈdʒektər/ | The teacher is using the projector. | Could you turn on the projector? |
-| 4 | 讲台 | podium | /ˈpoʊdiəm/ | The teacher stands behind the podium. | Please come to the podium for your presentation. |
-| 5 | 课桌 | desk | /desk/ | There is a book on the desk. | Can I put my bag under the desk? |
-| 6 | 椅子 | chair | /tʃer/ | She is sitting on a chair. | Is this chair taken? |
-| 7 | 书包 | backpack | /ˈbækpæk/ | My backpack is under the desk. | I left my backpack in the classroom. |
-| 8 | 课本 | textbook | /ˈtekstbʊk/ | Open your textbook to page ten. | Which textbook do we need for this class? |
-| 9 | 笔记本 | notebook | /ˈnoʊtbʊk/ | I write notes in my notebook. | I forgot to bring my notebook. |
-| 10 | 铅笔 | pencil | /ˈpensl/ | I use a pencil to draw. | Do you have a pencil I can borrow? |
-| 11 | 钢笔 | pen | /pen/ | May I borrow your pen? | My pen is out of ink. |
-| 12 | 橡皮 | eraser | /ɪˈreɪsər/ | I need an eraser. | Could I use your eraser for a second? |
-| 13 | 粉笔 | chalk | /tʃɔːk/ | The teacher writes with chalk. | There is no chalk left. |
-| 14 | 尺子 | ruler | /ˈruːlər/ | Use a ruler to draw a line. | I need a ruler to measure this. |
-| 15 | 窗户 | window | /ˈwɪndoʊ/ | Please open the window. | Could you close the window? |
-| 16 | 窗帘 | curtain | /ˈkɜːrtn/ | The curtain is blue. | Could you pull the curtain? |
-| 17 | 门 | door | /dɔːr/ | Close the door, please. | Could you leave the door open? |
-| 18 | 时钟 | clock | /klɑːk/ | The clock is on the wall. | The clock is five minutes fast. |
-| 19 | 插座 | socket | /ˈsɑːkɪt/ | Plug the charger into the socket. | Is there a socket near my seat? |
-| 20 | 垃圾桶 | trash can | /ˈtræʃ kæn/ | Throw the paper into the trash can. | Where is the trash can? |
+本表只列 MVP 用户界面需要展示的内容：单词、音标和 1 条实用表达。Example / 例句不作为当前 MVP 的产品展示内容。
+
+| 序号 | 中文 | 英文 | 音标 | 实用表达 |
+|---|---|---|---|---|
+| 1 | 黑板 | blackboard | /ˈblækbɔːrd/ | The key term is on the blackboard, so everyone can copy it down. |
+| 2 | 白板 | whiteboard | /ˈwaɪtbɔːrd/ | The homework is written on the right side of the whiteboard. |
+| 3 | 投影仪 | projector | /prəˈdʒektər/ | The projector needs to be adjusted before everyone can see the slide clearly. |
+| 4 | 讲台 | podium | /ˈpoʊdiəm/ | Please come to the podium when you are ready to present your group work. |
+| 5 | 课桌 | desk | /desk/ | Move this desk a little so there is more room for the chair. |
+| 6 | 椅子 | chair | /tʃer/ | This chair is free, but someone may need it for the next class. |
+| 7 | 书包 | backpack | /ˈbækpæk/ | I left my backpack in the classroom, so I need to go back before lunch. |
+| 8 | 课本 | textbook | /ˈtekstbʊk/ | Bring this textbook tomorrow because the teacher may start the new unit. |
+| 9 | 笔记本 | notebook | /ˈnoʊtbʊk/ | I forgot to bring my notebook, so I need to copy the notes after class. |
+| 10 | 铅笔 | pencil | /ˈpensl/ | Use a pencil for the diagram because the lines may need to change. |
+| 11 | 钢笔 | pen | /pen/ | My pen is out of ink, so I need another one for the quiz. |
+| 12 | 橡皮 | eraser | /ɪˈreɪsər/ | Use the eraser carefully so the answer box stays clean. |
+| 13 | 粉笔 | chalk | /tʃɔːk/ | There is no chalk left, so the teacher cannot finish the note on the board. |
+| 14 | 尺子 | ruler | /ˈruːlər/ | I need a ruler to measure the margin before I draw the chart. |
+| 15 | 窗户 | window | /ˈwɪndoʊ/ | Open the window a little because the classroom feels warm. |
+| 16 | 窗帘 | curtain | /ˈkɜːrtn/ | Close the curtain so the sunlight does not cover the screen. |
+| 17 | 门 | door | /dɔːr/ | Leave the door open so late students can come in quietly. |
+| 18 | 时钟 | clock | /klɑːk/ | The clock is five minutes fast, so we still have time before class ends. |
+| 19 | 插座 | socket | /ˈsɑːkɪt/ | There is a socket near my seat where I can charge my laptop. |
+| 20 | 垃圾桶 | trash can | /ˈtræʃ kæn/ | The paper from the group activity goes into the trash can. |
 
 ### 7.4 场景图片规范
 
@@ -517,8 +519,8 @@ MVP 词表不是简单罗列教室物品，而是优先选择能体现产品价�
   "id": "classroom",
   "nameCn": "教室",
   "nameEn": "Classroom",
-  "coverImage": "/assets/images/classroom-cover.png",
-  "sceneImage": "/assets/images/classroom.png",
+  "coverImage": "/assets/picture/classroom.png",
+  "sceneImage": "/assets/picture/classroom.png",
   "baseWidth": 1920,
   "baseHeight": 1080,
   "wordCount": 20
@@ -536,8 +538,8 @@ MVP 词表不是简单罗列教室物品，而是优先选择能体现产品价�
   "phonetic": "/prəˈdʒektər/",
   "exampleEn": "The teacher is using the projector.",
   "exampleCn": "老师正在使用投影仪。",
-  "expressionEn": "Could you turn on the projector?",
-  "expressionCn": "可以打开投影仪吗？",
+  "expressionEn": "The projector needs to be adjusted before everyone can see the slide clearly.",
+  "expressionCn": "投影仪需要先调一下，大家才能看清幻灯片。",
   "audioUrl": "/assets/audio/projector.mp3",
   "position": {
     "x": 120,
@@ -547,6 +549,8 @@ MVP 词表不是简单罗列教室物品，而是优先选择能体现产品价�
   }
 }
 ```
+
+`exampleEn` / `exampleCn` 作为底层字段可暂时保留，用于数据完整性、测试兼容和后续可能的学习形态；当前 MVP 用户界面不展示 Example / 例句区块，产品内容以 1 条 Useful expression 为唯一句子区块。
 
 ### 8.4 UserProgress
 
@@ -705,15 +709,15 @@ MVP 只判断“是否识别出目标词”，不做音素级评分。这是因�
 
 - 场景插画草图；
 - 场景词表；
-- 分级例句；
-- 例句中文解释；
+- 贴近真实场景的实用表达；
+- 实用表达中文解释；
 - 单词音频；
 - 不同难度的学习提示。
 
 但所有学习内容都应经过人工审核，尤其是：
 
 - 词义是否准确；
-- 例句是否自然；
+- 实用表达是否自然、可用，且不全部写成问句；
 - 场景物品是否可视化；
 - 音频发音是否清晰；
 - 图片与热区是否一致。
@@ -879,7 +883,7 @@ SceneEnglish 的产品价值可以概括为以下几点：
 4. **MVP 取舍**：只做一个教室场景和 20 个词，优先验证交互和学习闭环。
 5. **AI 边界**：口语模式先验证开口意愿，MVP 不做专业发音评分，只做识别匹配。
 6. **技术落地**：本地优先、服务层抽象、热区坐标换算、mock ASR 可替换。
-7. **扩展思路**：后续用 AI 辅助生成场景、词表、例句和音频，但保留人工审核。
+7. **扩展思路**：后续用 AI 辅助生成场景、词表、实用表达和音频，但保留人工审核。
 
 一句话总结：
 

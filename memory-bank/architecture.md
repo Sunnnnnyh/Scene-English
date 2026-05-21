@@ -275,7 +275,7 @@ $env:PATH = "D:\SceneEnglish\.tools\node-v24.11.1-win-x64;$env:PATH"
 核心职责：
 
 - `Scene` 描述可学习场景和 coming soon 场景，包括图片路径、原始画布尺寸、词数和场景状态。
-- `Word` 描述单词记录，包括中文、英文、音标、例句、实用表达、音频路径和热区坐标。
+- `Word` 描述单词记录，包括中文、英文、音标、底层例句字段、实用表达、音频路径和热区坐标；当前 MVP 用户界面只展示实用表达，不展示 Example / 例句区块。
 - `UserProgress`、`Favorite`、`Mistake` 和 `OnboardingState` 描述后续会通过 service 层和 storage 工具持久化的本地用户数据。
 - `MistakeTypeStats` 和 `Mistake` 支持按 `click`、`spelling`、`speaking` 分别记录弱项，包括错误次数、连续答对次数、掌握进度和最近错误时间。
 - `QuizQuestion`、`QuizRound` 和 `QuizAnswerResult` 为后续 Listen + Spell、Listen + Speak 和错题复习流程提供可复用业务类型。
@@ -350,7 +350,7 @@ $env:PATH = "D:\SceneEnglish\.tools\node-v24.11.1-win-x64;$env:PATH"
 每个单词记录包含：
 
 - 基础内容：`id`、`sceneId`、`cn`、`en`、`phonetic`。
-- 学习内容：`exampleEn`、`exampleCn`、`expressionEn`、`expressionCn`。
+- 学习内容：`exampleEn`、`exampleCn`、`expressionEn`、`expressionCn`。其中 `exampleEn` / `exampleCn` 仅作为底层保留字段，当前 MVP 展示内容以 `expressionEn` / `expressionCn` 为准。
 - 资源与交互：`audioUrl`、`position`。
 
 当前 `position` 坐标为基于 1920 × 1080 原始画布的临时合理值，后续在 Step 1.4 准备占位图和正式视觉资源后需要重新校准。

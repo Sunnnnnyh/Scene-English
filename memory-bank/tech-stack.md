@@ -201,6 +201,8 @@ type Word = {
 };
 ```
 
+`exampleEn` / `exampleCn` 仅作为底层数据字段保留，当前 MVP 的 Memory Mode 和 Favorites 不展示 Example / 例句区块。用户可见的句子内容只使用 `expressionEn` / `expressionCn`，且实用表达应覆盖请求、指令、提醒、问题描述、场景说明、物品状态等类型，不能全部写成问句。
+
 ### 6.3 本地缓存 key
 
 ```text

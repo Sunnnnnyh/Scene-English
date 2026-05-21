@@ -216,8 +216,8 @@ export const classroomWords: Word[] = [
     phonetic: "/tʃɑːk/",
     exampleEn: "The teacher writes with chalk.",
     exampleCn: "老师用粉笔写字。",
-    expressionEn: "There is no chalk left, so the teacher cannot finish the example on the board.",
-    expressionCn: "没有粉笔了，所以老师没法把黑板上的例题写完。",
+    expressionEn: "There is no chalk left, so the teacher cannot finish the note on the board.",
+    expressionCn: "没有粉笔了，所以老师没法把黑板上的内容写完。",
     audioUrl: "/assets/audio/chalk.mp3",
     position: { x: 735, y: 450, width: 160, height: 45 }
   },

@@ -768,3 +768,21 @@
 - 遗留问题：
   - 当前只完成 Step 6.1.5 的图片接入与旧占位图清理，尚未替换 20 个真实单词音频。
   - 当前 20 个单词热区坐标仍基于旧占位图，需要按新 Classroom 图片重新校准后再进入 Step 6.2。
+
+### 2026-05-21 — 文档口径与实用表达维护
+
+- 完成内容：
+  - 根据用户反馈清理产品设计文档中的旧内容口径，明确当前 MVP 用户界面不展示 Example / 例句区块。
+  - 将 `memory-bank/design-document.md` 的教室词表改为只列 MVP 展示内容：中文、英文、音标和 1 条实用表达。
+  - 将设计文档中的 20 条 Useful expression 同步为当前 implementation 使用的自然课堂 / 校园表达，并补充“不能全部写成问句”的内容原则。
+  - 更新设计文档中的 Classroom 图片路径示例为 `/assets/picture/classroom.png`，避免旧占位图路径继续误导实现。
+  - 在 `memory-bank/tech-stack.md` 和 `memory-bank/architecture.md` 中补充说明 `exampleEn` / `exampleCn` 仅作为底层保留字段，当前 MVP 展示以 `expressionEn` / `expressionCn` 为准。
+  - 将 chalk 的 Useful expression 中容易造成歧义的英文 `example on the board` 改为 `note on the board`，并同步更新中文翻译。
+- 验证结果：
+  - 本地已验证数据相关测试通过：`tests/scenes.test.ts`、`tests/wordService.test.ts`、`tests/sceneMemoryWordCard.test.ts`，共 21 个测试用例通过。
+  - 本地已验证 TypeScript 小程序与测试配置类型检查通过。
+  - 本地已验证 ESLint 通过。
+  - 本地已验证 Prettier 范围检查通过。
+  - 本地已验证全量 Vitest 通过，显示 30 个测试文件、124 个测试用例通过。
+- 遗留问题：
+  - 当前 `exampleEn` / `exampleCn` 仍保留在底层数据结构中，用于数据完整性、测试兼容和后续可能的学习形态；MVP 用户界面不展示。
