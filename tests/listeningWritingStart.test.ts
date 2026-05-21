@@ -46,6 +46,16 @@ describe("Listen + Spell start state inside the Learn tab", () => {
     expect(sceneMarkup).not.toContain("{{listeningWritingState.currentQuestion.en}}");
   });
 
+  it("renders Listen + Spell hotspots for click judging without exposing the target word", () => {
+    expect(sceneMarkup).toContain("listening-writing-scene-preview");
+    expect(sceneMarkup).toContain("listening-writing-hotspot");
+    expect(sceneMarkup).toContain('catchtap="onListeningWritingHotspotTap"');
+    expect(sceneMarkup).toContain('bindtap="onListeningWritingBlankTap"');
+    expect(sceneMarkup).toContain("listeningWritingTargetWordId");
+    expect(sceneMarkup).toContain("listeningWritingState.currentQuestion.wordId");
+    expect(sceneMarkup).not.toContain("{{listeningWritingState.currentQuestion.en}}");
+  });
+
   it("manages target word audio playback in the scene page runtime", () => {
     expect(scenePageScript).toContain("listeningWritingAudioContext");
     expect(scenePageScript).toContain("stopListeningWritingAudio");
@@ -56,9 +66,34 @@ describe("Listen + Spell start state inside the Learn tab", () => {
     expect(scenePageScript).toContain("音频暂时无法播放");
   });
 
+  it("judges Listen + Spell object taps and records first click mistakes", () => {
+    expect(scenePageScript).toContain("onListeningWritingHotspotTap");
+    expect(scenePageScript).toContain("onListeningWritingBlankTap");
+    expect(scenePageScript).toContain("recordMistake");
+    expect(scenePageScript).toContain('"click"');
+    expect(scenePageScript).toContain("listeningWritingClickAttemptCount");
+    expect(scenePageScript).toContain("listeningWritingPhase");
+    expect(scenePageScript).toContain("spellingReady");
+    expect(scenePageScript).toContain("listeningWritingTargetWordId");
+  });
+
+  it("only enables object selection after the target audio has finished playing", () => {
+    expect(scenePageScript).toContain("listeningWritingCanSelectObject");
+    expect(scenePageScript).toContain("audioContext.onEnded");
+    expect(scenePageScript).toContain("listeningWritingCanSelectObject: true");
+    expect(scenePageScript).toContain("!this.data.listeningWritingCanSelectObject");
+  });
+
+  it("ignores further object taps after the correct object has been found", () => {
+    expect(scenePageScript).toContain('this.data.listeningWritingPhase === "spellingReady"');
+  });
+
   it("adds stable styles for the Listen + Spell start panel", () => {
     expect(sceneStyles).toContain(".listening-writing-start");
     expect(sceneStyles).toContain(".listening-writing-progress");
     expect(sceneStyles).toContain(".listening-writing-play");
+    expect(sceneStyles).toContain(".listening-writing-hotspot");
+    expect(sceneStyles).toContain(".listening-writing-hotspot--target");
+    expect(sceneStyles).toContain(".listening-writing-feedback");
   });
 });

@@ -1,5 +1,6 @@
 import { addFavorite, isFavorite, removeFavorite } from "../../services/favoriteService";
 import { getSceneProgress, recordLearnedWord } from "../../services/progressService";
+import { recordMistake } from "../../services/mistakeService";
 import { getSceneById } from "../../services/sceneService";
 import { getWordById, getWordsBySceneId } from "../../services/wordService";
 import {
@@ -35,6 +36,14 @@ type SceneEntryTapEvent = WechatMiniprogram.BaseEvent & {
 };
 
 type MemoryHotspotTapEvent = WechatMiniprogram.BaseEvent & {
+  currentTarget: {
+    dataset: {
+      wordId?: string;
+    };
+  };
+};
+
+type ListeningWritingHotspotTapEvent = WechatMiniprogram.BaseEvent & {
   currentTarget: {
     dataset: {
       wordId?: string;
@@ -127,7 +136,8 @@ function releaseListeningWritingAudio() {
 
 function playListeningWritingAudio(
   src: SceneListeningWritingQuestion["audioUrl"],
-  onError: () => void
+  onError: () => void,
+  onEnded: () => void
 ) {
   releaseListeningWritingAudio();
 
@@ -136,6 +146,7 @@ function playListeningWritingAudio(
     listeningWritingAudioContext = audioContext;
     audioContext.src = src;
     audioContext.onError(onError);
+    audioContext.onEnded(onEnded);
     audioContext.play();
   } catch {
     onError();
@@ -206,7 +217,12 @@ function createListeningWritingModeData(sceneId: Scene["id"]) {
 
   return {
     listeningWritingRound,
-    listeningWritingState: createListeningWritingStartState(listeningWritingRound, words)
+    listeningWritingState: createListeningWritingStartState(listeningWritingRound, words),
+    listeningWritingClickAttemptCount: 0,
+    listeningWritingFeedback: "",
+    listeningWritingPhase: "locating" as const,
+    listeningWritingTargetWordId: "",
+    listeningWritingCanSelectObject: false
   };
 }
 
@@ -257,7 +273,12 @@ Page({
         ? createListeningWritingModeData(sceneId)
         : {
             listeningWritingRound: null,
-            listeningWritingState: createEmptyListeningWritingState()
+            listeningWritingState: createEmptyListeningWritingState(),
+            listeningWritingClickAttemptCount: 0,
+            listeningWritingFeedback: "",
+            listeningWritingPhase: "locating" as const,
+            listeningWritingTargetWordId: "",
+            listeningWritingCanSelectObject: false
           };
 
     stopMemoryWordAudio();
@@ -288,7 +309,12 @@ Page({
       selectedMemoryWordId: "",
       selectedMemoryWordCard: null,
       listeningWritingRound: null,
-      listeningWritingState: createEmptyListeningWritingState()
+      listeningWritingState: createEmptyListeningWritingState(),
+      listeningWritingClickAttemptCount: 0,
+      listeningWritingFeedback: "",
+      listeningWritingPhase: "locating",
+      listeningWritingTargetWordId: "",
+      listeningWritingCanSelectObject: false
     });
   },
 
@@ -332,7 +358,7 @@ Page({
     });
     playMemoryWordAudio(selectedWord.audioUrl, () => {
       wx.showToast({
-        title: "闊抽鏆傛椂鏃犳硶鎾斁",
+        title: "音频暂时无法播放",
         icon: "none"
       });
     });
@@ -423,11 +449,85 @@ Page({
       return;
     }
 
-    playListeningWritingAudio(audioUrl, () => {
+    this.setData({
+      listeningWritingCanSelectObject: false,
+      listeningWritingFeedback: ""
+    });
+
+    playListeningWritingAudio(
+      audioUrl,
+      () => {
+        wx.showToast({
+          title: "音频暂时无法播放",
+          icon: "none"
+        });
+      },
+      () => {
+        this.setData({
+          listeningWritingCanSelectObject: true,
+          listeningWritingFeedback: "Now tap the object you heard."
+        });
+      }
+    );
+  },
+
+  onListeningWritingHotspotTap(event: ListeningWritingHotspotTapEvent) {
+    if (this.data.listeningWritingPhase === "spellingReady") {
+      return;
+    }
+
+    if (!this.data.listeningWritingCanSelectObject) {
       wx.showToast({
-        title: "音频暂时无法播放",
+        title: "Listen to the word first",
         icon: "none"
       });
+      return;
+    }
+
+    const { wordId } = event.currentTarget.dataset;
+    const sceneId = this.data.sceneId;
+    const listeningWritingState = this.data.listeningWritingState as SceneListeningWritingState;
+    const targetWordId = listeningWritingState.currentQuestion?.wordId;
+
+    if (!wordId || !sceneId || !targetWordId) {
+      return;
+    }
+
+    if (wordId === targetWordId) {
+      this.setData({
+        listeningWritingClickAttemptCount: 0,
+        listeningWritingFeedback: "Correct! Get ready to spell.",
+        listeningWritingPhase: "spellingReady",
+        listeningWritingTargetWordId: targetWordId
+      });
+      return;
+    }
+
+    const nextAttemptCount = this.data.listeningWritingClickAttemptCount + 1;
+
+    if (nextAttemptCount === 1) {
+      recordMistake(targetWordId, sceneId, "click");
+      this.setData({
+        listeningWritingClickAttemptCount: nextAttemptCount,
+        listeningWritingFeedback: "Try again. Listen once more and tap the matching object.",
+        listeningWritingPhase: "locating",
+        listeningWritingTargetWordId: ""
+      });
+      return;
+    }
+
+    this.setData({
+      listeningWritingClickAttemptCount: nextAttemptCount,
+      listeningWritingFeedback: "This is the correct object. Get ready to spell.",
+      listeningWritingPhase: "spellingReady",
+      listeningWritingTargetWordId: targetWordId
+    });
+  },
+
+  onListeningWritingBlankTap() {
+    wx.showToast({
+      title: "Tap an object in the picture",
+      icon: "none"
     });
   },
 

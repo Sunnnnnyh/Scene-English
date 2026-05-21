@@ -62,6 +62,11 @@ export type SceneViewModel = {
   selectedMemoryWordCard: SceneMemoryWordCard | null;
   listeningWritingRound: QuizRound | null;
   listeningWritingState: SceneListeningWritingState;
+  listeningWritingClickAttemptCount: number;
+  listeningWritingFeedback: string;
+  listeningWritingPhase: "locating" | "spellingReady";
+  listeningWritingTargetWordId: string;
+  listeningWritingCanSelectObject: boolean;
 };
 
 export type SceneEntryAction = {
@@ -163,7 +168,12 @@ export function createSceneViewModel(
     selectedMemoryWordId: "",
     selectedMemoryWordCard: null,
     listeningWritingRound: null,
-    listeningWritingState: createEmptyListeningWritingState()
+    listeningWritingState: createEmptyListeningWritingState(),
+    listeningWritingClickAttemptCount: 0,
+    listeningWritingFeedback: "",
+    listeningWritingPhase: "locating",
+    listeningWritingTargetWordId: "",
+    listeningWritingCanSelectObject: false
   };
 }
 

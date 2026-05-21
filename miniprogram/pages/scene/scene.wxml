@@ -119,14 +119,27 @@
     </block>
 
     <block wx:elif="{{activeMode === 'listeningWriting'}}">
-      <view class="scene-preview mode-page-preview">
+      <view
+        class="scene-preview mode-page-preview listening-writing-scene-preview"
+        data-target-word-id="{{listeningWritingState.currentQuestion.wordId}}"
+        bindtap="onListeningWritingBlankTap"
+      >
         <image class="scene-image" src="{{sceneImage}}" mode="aspectFill" />
+        <block wx:for="{{memoryHotspots}}" wx:key="wordId">
+          <view
+            class="listening-writing-hotspot {{listeningWritingTargetWordId === item.wordId ? 'listening-writing-hotspot--target' : ''}}"
+            style="{{item.style}}"
+            data-word-id="{{item.wordId}}"
+            catchtap="onListeningWritingHotspotTap"
+          ></view>
+        </block>
       </view>
 
       <view class="mode-page-panel listening-writing-start">
         <view class="listening-writing-progress">
           <text class="listening-writing-progress-label">Question</text>
           <text class="listening-writing-progress-count">{{listeningWritingState.questionLabel}}</text>
+          <text wx:if="{{listeningWritingFeedback}}" class="listening-writing-feedback">{{listeningWritingFeedback}}</text>
         </view>
         <text class="mode-page-note">听发音，找到对应的教室物品，再准备拼写。</text>
         <button class="listening-writing-play" bindtap="onPlayListeningWritingAudio">播放单词音频</button>

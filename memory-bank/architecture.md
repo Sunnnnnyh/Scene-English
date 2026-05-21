@@ -1,54 +1,12 @@
 # SceneEnglish 架构记录
 
-## 39. 阶段 6 / Step 6.1.5 正式单词音频资源更新
-
-Classroom 的 20 个单词音频现在已经从静音 / 临时占位资源替换为可听的短 MP3 单词发音文件。音频文件继续放在 `miniprogram/assets/audio/` 下，文件名与 `miniprogram/data/scenes.ts` 中各单词的 `audioUrl` 保持一致，因此 Memory 单词卡、Favorites 播放和 Listen + Spell 当前题目播放都复用同一批资源路径。
-
-当前职责：
-- `miniprogram/assets/audio/*.mp3` 保存 Classroom 20 个单词的短 MP3 发音资源。
-- `miniprogram/data/scenes.ts` 继续作为音频路径的唯一数据来源，每个 `Word.audioUrl` 指向对应文件。
-- `tests/assets.test.ts` 校验所有 Classroom 音频文件存在、体积符合短单词 MP3 资源预期，并且文件头为 MP3 格式。
-
-运行时注意事项：
-
-- 当前音频可用于 MVP 演示和用户测试，但不是品牌级定制录音；后续扩展多场景时，可以将这套路径约定保留，把生产方式升级为稳定 TTS 流程或人工审核录音。
-- 如果后续替换任一音频文件，应保持文件名和 `audioUrl` 不变，除非同步更新数据文件和资源测试。
-- Memory 单词卡、Favorites 和 Listen + Spell 均依赖同一批音频资源，因此替换文件时需要至少抽查这三个入口的播放行为。
-
-文件变更记录补充：
-| File path | Purpose | Created / updated phase |
-|---|---|---|
-| `miniprogram/assets/audio/*.mp3` | 保存 Classroom 20 个单词的正式短 MP3 发音资源，供 Memory、Favorites 和 Listen + Spell 复用。 | 阶段 6 / Step 6.1.5 |
-| `tests/assets.test.ts` | 将音频资源校验更新为真实 MP3 文件校验，覆盖文件存在、短音频体积和 MP3 文件头。 | 阶段 6 / Step 6.1.5 |
-
-## 40. Memory 单词卡自动播放体验优化
-
-Memory 热区点击打开单词卡时，现在会自动播放当前单词音频一次。该能力直接复用 `miniprogram/pages/scene/scene.ts` 中既有的页面内音频上下文管理，不新增 service、不引入依赖，也不改变 Favorites 或 Listen + Spell 的播放入口。
-
-当前职责：
-- `onMemoryHotspotTap` 负责在找到目标单词、记录已学、刷新单词卡数据后，调用 `playMemoryWordAudio(selectedWord.audioUrl, ...)` 自动播放一次。
-- `playMemoryWordAudio` 继续负责释放旧 Memory 音频上下文、创建新的 `wx.createInnerAudioContext()`、设置 `src`、绑定错误提示并播放。
-- 单词卡上的 `onPlayMemoryWordAudio` 仍作为手动复听入口，行为与自动播放共用同一套底层播放逻辑。
-
-运行时注意事项：
-
-- 快速点击不同热区时，旧音频会先释放，再播放新单词，避免多段音频重叠。
-- 关闭单词卡、切回 Classroom、页面隐藏或卸载时，仍沿用既有停止 / 释放逻辑。
-- 自动播放失败只给轻提示，不阻塞单词卡查看。
-
-文件变更记录补充：
-| File path | Purpose | Created / updated phase |
-|---|---|---|
-| `miniprogram/pages/scene/scene.ts` | 在 Memory 热区打开单词卡后自动播放当前单词音频，同时保留手动播放按钮复听能力。 | Memory 单词卡自动播放体验优化 |
-| `tests/sceneMemoryWordCard.test.ts` | 补充 Memory 热区打开单词卡时会触发自动播放的回归测试。 | Memory 单词卡自动播放体验优化 |
-
 > 作用：记录项目结构、模块职责、数据流、测试策略和后续新增文件说明。写任何代码前必须阅读本文档；每完成一个重大功能或新增关键模块后，必须更新本文档。
 
 ---
 
 ## 1. 当前阶段
 
-当前项目已完成阶段 5 / Step 5.2，并完成 Learn tab 学习模式内联切换体验修复。项目已初始化微信小程序 TypeScript 工程，建立基础目录结构和全部规划页面占位，配置基础开发质量工具，完成核心类型、场景数据、Classroom 20 个单词静态数据、占位图片 / 音频资源，并实现本地缓存工具、字符串标准化工具、热区计算工具、场景服务、单词服务、收藏服务、学习进度服务、错题服务、抽题服务、音频服务和 mock 口语识别服务。首页已接入场景选择页，可以展示 Classroom 主场景和 Lecture Hall、Dormitory、Cafeteria 三个 Coming soon 场景；底部导航已包含 Home / Learn / Review / Me。Home 负责选择学习场景，Learn 负责进入当前学习场景；MVP 阶段只有 Classroom，因此直接点击 Learn 默认进入 Classroom 学习首页。Classroom 学习首页可查看场景预览、学习进度和三个学习模式入口，Coming soon 场景只提示不跳转。点击学习模式入口时，当前采用 Learn tab 内部状态切换，不再 `navigateTo` 普通页面，从而避免底部 tabBar 在过渡中消失。Review 页已预留收藏夹和错题夹全局入口，Me 页已展示本地轻量统计和 mock ASR 状态。Memory Mode 当前优先在 Learn tab 内联视图中推进：已能稳定展示 Classroom 场景图，并根据 Classroom 20 个单词数据覆盖透明热区；Memory 视图标题下方同样展示 `单词进度`、`Learned x / 20` 和进度条；点击热区会打开对应单词卡，卡片展示英文、中文、美式音标、音频播放入口、收藏状态和 1 条 Useful expression；点击 Useful expression 英文句子可展开或收起中文翻译，并通过 `sceneenglish:onboarding` 记录表达翻译轻引导完成状态。点击热区打开单词卡时会通过 `progressService` 记录该词为已学，并刷新 `Learned x / 20` 进度；点击星标会通过 `favoriteService` 写入或移除收藏。Favorites 页面已接入真实收藏列表：从本地收藏记录生成列表项，支持空状态，允许点击多个收藏项同时展开音标和 Useful expression，并在展开详情中支持播放单词音频和取消收藏；取消收藏后会写入 `sceneenglish:favorites` 并立即刷新列表。点击空白区域只给轻提示。首次进入单词记忆模式时会展示一次性轻引导，高亮 `projector` 并通过 `sceneenglish:onboarding` 本地缓存记录完成状态。工程可以被微信开发者工具识别，所有已注册页面都能打开；TypeScript、ESLint、Prettier 和 Vitest 命令均可运行。
+当前项目已完成阶段 6 / Step 6.2 听音找物点击判断。项目已初始化微信小程序 TypeScript 工程，建立基础目录结构和全部规划页面占位，配置基础开发质量工具，完成核心类型、场景数据、Classroom 20 个单词静态数据、正式 Classroom 图片、正式热区校准和真实单词音频资源，并实现本地缓存工具、字符串标准化工具、热区计算工具、场景服务、单词服务、收藏服务、学习进度服务、错题服务、抽题服务、音频服务和 mock 口语识别服务。首页已接入场景选择页，可以展示 Classroom 主场景和 Lecture Hall、Dormitory、Cafeteria 三个 Coming soon 场景；底部导航已包含 Home / Learn / Review / Me。Home 负责选择学习场景，Learn 负责进入当前学习场景；MVP 阶段只有 Classroom，因此直接点击 Learn 默认进入 Classroom 学习首页。Classroom 学习首页可查看场景预览、学习进度和三个学习模式入口，Coming soon 场景只提示不跳转。点击学习模式入口时，当前采用 Learn tab 内部状态切换，不再 `navigateTo` 普通页面，从而避免底部 tabBar 在过渡中消失。Review 页已预留收藏夹和错题夹全局入口，Me 页已展示本地轻量统计和 mock ASR 状态。Memory Mode 当前优先在 Learn tab 内联视图中推进：已能稳定展示 Classroom 场景图，并根据 Classroom 20 个单词数据覆盖透明热区；Memory 视图标题下方同样展示 `单词进度`、`Learned x / 20` 和进度条；点击热区会打开对应单词卡，卡片展示英文、中文、美式音标、音频播放入口、收藏状态和 1 条 Useful expression；点击 Useful expression 英文句子可展开或收起中文翻译，并通过 `sceneenglish:onboarding` 记录表达翻译轻引导完成状态。点击热区打开单词卡时会通过 `progressService` 记录该词为已学，并刷新 `Learned x / 20` 进度；点击星标会通过 `favoriteService` 写入或移除收藏；打开单词卡时会自动播放当前单词音频一次，用户也可以手动复听。Favorites 页面已接入真实收藏列表：从本地收藏记录生成列表项，支持空状态，允许点击多个收藏项同时展开音标和 Useful expression，并在展开详情中支持播放单词音频和取消收藏；取消收藏后会写入 `sceneenglish:favorites` 并立即刷新列表。Listen + Spell 当前已能生成 5 题练习开始状态、播放当前题音频，并完成听音找物点击判断：目标音频播放结束前点击热区不会进入判定，播放结束后才允许选择物品；点对后进入拼写准备状态，后续热区点击不再重复判错；首次点错会记录 `click` 类型错题并允许重试，第二次点错会提示正确物品并进入拼写准备状态。点击空白区域只给轻提示。首次进入单词记忆模式时会展示一次性轻引导，高亮 `projector` 并通过 `sceneenglish:onboarding` 本地缓存记录完成状态。工程可以被微信开发者工具识别，所有已注册页面都能打开；TypeScript、ESLint、Prettier 和 Vitest 命令均可运行。
 
 当前源码目录为：
 
@@ -1434,3 +1392,72 @@ Classroom 正式图片热区现在已重新校准。该更新继续落在 `minip
 | `tests/scenes.test.ts` | 补充正式图片尺寸和 20 个热区校准坐标约束。 | 阶段 6 / Step 6.1.5 |
 | `tests/sceneMemoryHotspots.test.ts` | 更新 Memory 热区百分比样式预期，确保使用新图尺寸换算。 | 阶段 6 / Step 6.1.5 |
 | `tests/memoryViewModel.test.ts` | 更新 Memory 展示模型中的正式图比例预期。 | 阶段 6 / Step 6.1.5 |
+
+## 39. 阶段 6 / Step 6.1.5 正式单词音频资源更新
+
+Classroom 的 20 个单词音频现在已经从静音 / 临时占位资源替换为可听的短 MP3 单词发音文件。音频文件继续放在 `miniprogram/assets/audio/` 下，文件名与 `miniprogram/data/scenes.ts` 中各单词的 `audioUrl` 保持一致，因此 Memory 单词卡、Favorites 播放和 Listen + Spell 当前题目播放都复用同一批资源路径。
+
+当前职责：
+- `miniprogram/assets/audio/*.mp3` 保存 Classroom 20 个单词的短 MP3 发音资源。
+- `miniprogram/data/scenes.ts` 继续作为音频路径的唯一数据来源，每个 `Word.audioUrl` 指向对应文件。
+- `tests/assets.test.ts` 校验所有 Classroom 音频文件存在、体积符合短单词 MP3 资源预期，并且文件头为 MP3 格式。
+
+运行时注意事项：
+
+- 当前音频可用于 MVP 演示和用户测试，但不是品牌级定制录音；后续扩展多场景时，可以将这套路径约定保留，把生产方式升级为稳定 TTS 流程或人工审核录音。
+- 如果后续替换任一音频文件，应保持文件名和 `audioUrl` 不变，除非同步更新数据文件和资源测试。
+- Memory 单词卡、Favorites 和 Listen + Spell 均依赖同一批音频资源，因此替换文件时需要至少抽查这三个入口的播放行为。
+
+文件变更记录补充：
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `miniprogram/assets/audio/*.mp3` | 保存 Classroom 20 个单词的正式短 MP3 发音资源，供 Memory、Favorites 和 Listen + Spell 复用。 | 阶段 6 / Step 6.1.5 |
+| `tests/assets.test.ts` | 将音频资源校验更新为真实 MP3 文件校验，覆盖文件存在、短音频体积和 MP3 文件头。 | 阶段 6 / Step 6.1.5 |
+
+## 40. Memory 单词卡自动播放体验优化
+
+Memory 热区点击打开单词卡时，现在会自动播放当前单词音频一次。该能力直接复用 `miniprogram/pages/scene/scene.ts` 中既有的页面内音频上下文管理，不新增 service、不引入依赖，也不改变 Favorites 或 Listen + Spell 的播放入口。
+
+当前职责：
+- `onMemoryHotspotTap` 负责在找到目标单词、记录已学、刷新单词卡数据后，调用 `playMemoryWordAudio(selectedWord.audioUrl, ...)` 自动播放一次。
+- `playMemoryWordAudio` 继续负责释放旧 Memory 音频上下文、创建新的 `wx.createInnerAudioContext()`、设置 `src`、绑定错误提示并播放。
+- 单词卡上的 `onPlayMemoryWordAudio` 仍作为手动复听入口，行为与自动播放共用同一套底层播放逻辑。
+
+运行时注意事项：
+
+- 快速点击不同热区时，旧音频会先释放，再播放新单词，避免多段音频重叠。
+- 关闭单词卡、切回 Classroom、页面隐藏或卸载时，仍沿用既有停止 / 释放逻辑。
+- 自动播放失败只给轻提示，不阻塞单词卡查看。
+
+文件变更记录补充：
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `miniprogram/pages/scene/scene.ts` | 在 Memory 热区打开单词卡后自动播放当前单词音频，同时保留手动播放按钮复听能力。 | Memory 单词卡自动播放体验优化 |
+| `tests/sceneMemoryWordCard.test.ts` | 补充 Memory 热区打开单词卡时会触发自动播放的回归测试。 | Memory 单词卡自动播放体验优化 |
+
+## 41. 阶段 6 / Step 6.2 听音找物点击判断
+
+Listen + Spell 当前题目进入后，用户需要先播放并听完目标单词音频，随后才能点击 Classroom 图片中的透明热区选择物品。该步骤复用 Memory Mode 已校准的 20 个 Classroom 热区，不新增图片、服务或依赖。
+
+当前职责：
+- `scene.wxml` 在 Listen + Spell 模式中渲染 Classroom 场景图、透明热区层和当前练习反馈。
+- `scene.ts` 的 `onPlayListeningWritingAudio` 播放当前题音频，并在音频 `onEnded` 后将 `listeningWritingCanSelectObject` 置为 `true`。
+- `scene.ts` 的 `onListeningWritingHotspotTap` 负责听音找物判定：音频未听完时只提示先听音频；点对后进入 `spellingReady`；点错一次记录 `click` 类型错题并允许重试；第二次点错提示正确物品并进入 `spellingReady`。
+- `sceneViewModel.ts` 维护 `listeningWritingCanSelectObject`，确保新题、切换模式和返回首页时都回到不可点击状态。
+- `mistakeService.recordMistake(..., "click")` 继续承载点击选择错误的错题记录。
+
+运行时注意事项：
+
+- 音频未播放或尚未播放结束时，点击热区不会判对错，也不会写入错题。
+- 已经点对并进入 `spellingReady` 后，继续点击其他物品不会再次判错。
+- 点击图片空白区域只给轻提示，不计入错题。
+- 当前 Step 6.2 只完成“听音找物”点击判断；后续拼写输入与答案校验应继续作为下一步实现。
+
+文件变更记录补充：
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `miniprogram/pages/scene/scene.wxml` | 在 Listen + Spell 模式中渲染 Classroom 图片热区层和点击反馈入口。 | 阶段 6 / Step 6.2 |
+| `miniprogram/pages/scene/scene.wxss` | 补充 Listen + Spell 场景图片、热区、高亮和反馈样式。 | 阶段 6 / Step 6.2 |
+| `miniprogram/pages/scene/scene.ts` | 实现听完音频后才允许点击、热区判定、错题记录、正确高亮和进入拼写准备状态。 | 阶段 6 / Step 6.2 |
+| `miniprogram/pages/scene/sceneViewModel.ts` | 新增 `listeningWritingCanSelectObject` 状态，用于控制听音找物点击门禁。 | 阶段 6 / Step 6.2 |
+| `tests/listeningWritingStart.test.ts` | 覆盖 Listen + Spell 热区渲染、点击判定、答对后忽略后续点击和音频结束后才允许选择的回归测试。 | 阶段 6 / Step 6.2 |

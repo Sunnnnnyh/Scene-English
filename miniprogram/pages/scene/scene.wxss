@@ -290,6 +290,38 @@
   background: #e8754f;
 }
 
+.listening-writing-scene-preview {
+  position: relative;
+}
+
+.listening-writing-hotspot {
+  position: absolute;
+  z-index: 2;
+  box-sizing: border-box;
+  background: rgba(255, 148, 111, 0);
+}
+
+.listening-writing-hotspot:active {
+  border: 2rpx solid rgba(25, 50, 77, 0.35);
+  background: rgba(255, 148, 111, 0.22);
+}
+
+.listening-writing-hotspot--target {
+  border: 4rpx solid #ff7f5f;
+  border-radius: 18rpx;
+  background: rgba(255, 148, 111, 0.24);
+  box-shadow: 0 0 0 10rpx rgba(255, 148, 111, 0.16);
+}
+
+.listening-writing-feedback {
+  display: block;
+  flex-basis: 100%;
+  color: #19324d;
+  font-size: 24rpx;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
 .memory-word-card {
   position: relative;
   z-index: 1;
