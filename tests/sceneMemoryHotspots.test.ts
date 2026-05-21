@@ -44,7 +44,7 @@ describe("scene page memory hotspots", () => {
     });
     expect(
       viewModel.memoryHotspots.find((hotspot) => hotspot.wordId === "projector")?.style
-    ).toContain("left: 45.3125%;");
+    ).toContain("left: 54.72488038277512%;");
   });
 
   it("renders hotspot overlays only inside the Memory mode scene image", () => {

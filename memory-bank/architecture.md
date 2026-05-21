@@ -1326,7 +1326,7 @@ Learn tab 内联“听力 + 默写”模式现在可以开始一轮练习。该�
 
 ## 37. 阶段 6 / Step 6.1.5 正式 Classroom 图片资源更新
 
-Classroom 当前已从低保真占位图切换为正式风格场景图。该更新只完成 Step 6.1.5 的图片资源部分，热区校准和真实音频替换仍需在后续继续完成。
+Classroom 当前已从低保真占位图切换为正式风格场景图。该更新完成 Step 6.1.5 的图片资源部分；热区校准已在后续同一步维护中完成，真实音频替换仍需继续完成。
 
 当前职责：
 
@@ -1338,8 +1338,8 @@ Classroom 当前已从低保真占位图切换为正式风格场景图。该更�
 
 运行时注意事项：
 
-- 因为当前 Classroom 图片已经更换，`classroomWords[].position` 中的 20 个热区坐标需要重新校准；在校准前，Memory Mode 中点击区域可能与新图物品位置不完全一致。
-- 当前图片只解决正式视觉资源接入；20 个 `miniprogram/assets/audio/*.mp3` 仍是静音占位音频。
+- 当前图片和热区坐标已经绑定到正式 Classroom 图；如果后续再次替换图片，必须重新校准 `classroomWords[].position`。
+- 当前图片只解决正式视觉资源接入和热区校准；20 个 `miniprogram/assets/audio/*.mp3` 仍是静音占位音频。
 
 文件变更记录补充：
 
@@ -1352,3 +1352,43 @@ Classroom 当前已从低保真占位图切换为正式风格场景图。该更�
 | `tests/assets.test.ts` | 更新 Classroom 图片资源测试文案，继续覆盖图片存在性和 PNG 文件头。 | 阶段 6 / Step 6.1.5 |
 | `tests/memoryViewModel.test.ts` | 更新 Memory 展示模型中的 Classroom 场景图路径预期。 | 阶段 6 / Step 6.1.5 |
 | `tests/sceneViewModel.test.ts` | 更新 Learn tab 场景展示模型中的 Classroom 场景图路径预期。 | 阶段 6 / Step 6.1.5 |
+
+## 38. 阶段 6 / Step 6.1.5 正式 Classroom 热区校准更新
+
+Classroom 正式图片热区现在已重新校准。该更新继续落在 `miniprogram/data/scenes.ts` 的静态词表数据中，不新增页面、服务或依赖。
+
+当前职责：
+
+- Classroom 场景的 `baseWidth` / `baseHeight` 已从旧占位图尺寸改为正式图片实际尺寸 `1672 x 941`。
+- `classroomWords[].position` 已基于正式 Classroom 图片重新标定 20 个物品热区。
+- 热区坐标仍使用原始图片像素坐标，由 `miniprogram/utils/hotspot.ts` 在页面渲染时换算为百分比。
+- 小物件热区优先保证移动端可点击性，其中 chalk 的热区覆盖黑板托盘上的单根粉笔并适度放大。
+- `memory-bank/design-document.md` 中 Classroom 数据样例同步记录正式图片尺寸。
+
+运行时注意事项：
+
+- Memory Mode 当前热区点击应与正式 Classroom 图片物品位置对齐。
+- 后续 Step 6.2 的听音找物点击判断可以复用同一组 `classroomWords[].position` 数据。
+- 如果后续再次更换 Classroom 图片或裁切比例，必须同步更新 `baseWidth` / `baseHeight`、20 个 `position` 和对应测试。
+- 真实音频替换尚未完成，当前 `miniprogram/assets/audio/*.mp3` 仍为静音占位文件。
+
+`tests/scenes.test.ts` 验证：
+
+- Classroom 正式图片尺寸为 `1672 x 941`；
+- 20 个 Classroom 热区坐标与当前正式图校准结果一致；
+- 词表数量、音频路径、音标和 Useful expression 质量约束继续通过。
+
+`tests/sceneMemoryHotspots.test.ts` 和 `tests/memoryViewModel.test.ts` 验证：
+
+- Memory 热区百分比样式使用新图尺寸换算；
+- Memory 展示模型中的图片比例与正式图尺寸一致。
+
+文件变更记录补充：
+
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `miniprogram/data/scenes.ts` | 将 Classroom 基准尺寸更新为 `1672 x 941`，并重新标定 20 个正式图热区坐标。 | 阶段 6 / Step 6.1.5 |
+| `memory-bank/design-document.md` | 同步 Classroom 数据样例中的正式图片基准尺寸。 | 阶段 6 / Step 6.1.5 |
+| `tests/scenes.test.ts` | 补充正式图片尺寸和 20 个热区校准坐标约束。 | 阶段 6 / Step 6.1.5 |
+| `tests/sceneMemoryHotspots.test.ts` | 更新 Memory 热区百分比样式预期，确保使用新图尺寸换算。 | 阶段 6 / Step 6.1.5 |
+| `tests/memoryViewModel.test.ts` | 更新 Memory 展示模型中的正式图比例预期。 | 阶段 6 / Step 6.1.5 |

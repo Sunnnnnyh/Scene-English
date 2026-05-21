@@ -786,3 +786,23 @@
   - 本地已验证全量 Vitest 通过，显示 30 个测试文件、124 个测试用例通过。
 - 遗留问题：
   - 当前 `exampleEn` / `exampleCn` 仍保留在底层数据结构中，用于数据完整性、测试兼容和后续可能的学习形态；MVP 用户界面不展示。
+
+### 2026-05-21 — 阶段 6 / Step 6.1.5 正式 Classroom 热区校准
+
+- 完成内容：
+  - 将 Classroom 场景的 `baseWidth` / `baseHeight` 从旧占位图尺寸更新为正式图片实际尺寸 `1672 x 941`。
+  - 根据正式 Classroom 图片重新标定 20 个单词的 `position` 热区坐标。
+  - 对小物件热区做可点击性调整，尤其是 chalk 使用稍大的点击区域覆盖黑板托盘上的单根粉笔，避免手机端难以点中。
+  - 同步更新 `memory-bank/design-document.md` 中 Classroom 数据样例的图片基准尺寸。
+  - 新增 `tests/scenes.test.ts` 热区校准约束，锁定正式图尺寸和 20 个热区坐标。
+  - 更新 `tests/sceneMemoryHotspots.test.ts` 和 `tests/memoryViewModel.test.ts` 中的新图比例 / 百分比坐标预期。
+- 验证结果：
+  - 新增测试先在旧尺寸和旧热区坐标下失败，随后更新数据后通过。
+  - 本地已验证 `tests/scenes.test.ts`、`tests/sceneMemoryHotspots.test.ts`、`tests/hotspot.test.ts` 通过，共 20 个测试用例通过。
+  - 本地已验证 TypeScript 小程序与测试配置类型检查通过。
+  - 本地已验证 ESLint 通过。
+  - 本地已验证 Prettier 范围检查通过。
+  - 本地已验证全量 Vitest 通过，显示 30 个测试文件、126 个测试用例通过。
+  - 用户已在微信开发者工具中验证 20 个正式 Classroom 热区点击通过。
+- 遗留问题：
+  - 当前只完成正式图片和热区校准，20 个 `miniprogram/assets/audio/*.mp3` 仍是静音占位音频；后续需要替换为真实单词发音文件。

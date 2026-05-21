@@ -7,8 +7,8 @@ export const scenes: Scene[] = [
     nameEn: "Classroom",
     coverImage: "/assets/picture/classroom.png",
     sceneImage: "/assets/picture/classroom.png",
-    baseWidth: 1920,
-    baseHeight: 1080,
+    baseWidth: 1672,
+    baseHeight: 941,
     wordCount: 20,
     status: "available"
   },
@@ -63,7 +63,7 @@ export const classroomWords: Word[] = [
     expressionEn: "The key term is on the blackboard, so everyone can copy it down.",
     expressionCn: "关键词在黑板上，大家可以抄下来。",
     audioUrl: "/assets/audio/blackboard.mp3",
-    position: { x: 520, y: 170, width: 720, height: 260 }
+    position: { x: 322, y: 157, width: 506, height: 312 }
   },
   {
     id: "whiteboard",
@@ -76,7 +76,7 @@ export const classroomWords: Word[] = [
     expressionEn: "The homework is written on the right side of the whiteboard.",
     expressionCn: "作业写在白板右侧。",
     audioUrl: "/assets/audio/whiteboard.mp3",
-    position: { x: 1250, y: 180, width: 430, height: 240 }
+    position: { x: 856, y: 176, width: 431, height: 292 }
   },
   {
     id: "projector",
@@ -89,7 +89,7 @@ export const classroomWords: Word[] = [
     expressionEn: "The projector needs to be adjusted before everyone can see the slide clearly.",
     expressionCn: "投影仪需要先调一下，大家才能看清幻灯片。",
     audioUrl: "/assets/audio/projector.mp3",
-    position: { x: 870, y: 30, width: 190, height: 120 }
+    position: { x: 915, y: 36, width: 176, height: 101 }
   },
   {
     id: "podium",
@@ -102,7 +102,7 @@ export const classroomWords: Word[] = [
     expressionEn: "Please come to the podium when you are ready to present your group work.",
     expressionCn: "准备好展示小组作业后，请到讲台前来。",
     audioUrl: "/assets/audio/podium.mp3",
-    position: { x: 780, y: 510, width: 380, height: 220 }
+    position: { x: 699, y: 487, width: 311, height: 246 }
   },
   {
     id: "desk",
@@ -115,7 +115,7 @@ export const classroomWords: Word[] = [
     expressionEn: "Move this desk a little so there is more room for the chair.",
     expressionCn: "把这张课桌挪一点，椅子就有更多空间。",
     audioUrl: "/assets/audio/desk.mp3",
-    position: { x: 360, y: 720, width: 360, height: 210 }
+    position: { x: 36, y: 583, width: 790, height: 228 }
   },
   {
     id: "chair",
@@ -128,7 +128,7 @@ export const classroomWords: Word[] = [
     expressionEn: "This chair is free, but someone may need it for the next class.",
     expressionCn: "这把椅子现在空着，但下一节课可能有人要用。",
     audioUrl: "/assets/audio/chair.mp3",
-    position: { x: 760, y: 760, width: 210, height: 260 }
+    position: { x: 0, y: 643, width: 425, height: 298 }
   },
   {
     id: "backpack",
@@ -141,7 +141,7 @@ export const classroomWords: Word[] = [
     expressionEn: "I left my backpack in the classroom, so I need to go back before lunch.",
     expressionCn: "我把书包落在教室里了，所以午饭前得回去一趟。",
     audioUrl: "/assets/audio/backpack.mp3",
-    position: { x: 170, y: 805, width: 180, height: 210 }
+    position: { x: 1018, y: 616, width: 240, height: 298 }
   },
   {
     id: "textbook",
@@ -154,7 +154,7 @@ export const classroomWords: Word[] = [
     expressionEn: "Bring this textbook tomorrow because the teacher may start the new unit.",
     expressionCn: "明天带这本课本，因为老师可能会开始新单元。",
     audioUrl: "/assets/audio/textbook.mp3",
-    position: { x: 430, y: 675, width: 190, height: 80 }
+    position: { x: 164, y: 590, width: 194, height: 75 }
   },
   {
     id: "notebook",
@@ -167,7 +167,7 @@ export const classroomWords: Word[] = [
     expressionEn: "I forgot to bring my notebook, so I need to copy the notes after class.",
     expressionCn: "我忘记带笔记本了，所以下课后需要补抄笔记。",
     audioUrl: "/assets/audio/notebook.mp3",
-    position: { x: 1210, y: 720, width: 210, height: 90 }
+    position: { x: 348, y: 605, width: 195, height: 100 }
   },
   {
     id: "pencil",
@@ -180,7 +180,7 @@ export const classroomWords: Word[] = [
     expressionEn: "Use a pencil for the diagram because the lines may need to change.",
     expressionCn: "画这张练习纸上的图要用铅笔，因为线条可能需要修改。",
     audioUrl: "/assets/audio/pencil.mp3",
-    position: { x: 625, y: 675, width: 120, height: 45 }
+    position: { x: 563, y: 618, width: 53, height: 98 }
   },
   {
     id: "pen",
@@ -193,7 +193,7 @@ export const classroomWords: Word[] = [
     expressionEn: "My pen is out of ink, so I need another one for the quiz.",
     expressionCn: "我的笔没墨水了，所以小测需要换一支。",
     audioUrl: "/assets/audio/pen.mp3",
-    position: { x: 1435, y: 700, width: 125, height: 45 }
+    position: { x: 620, y: 633, width: 47, height: 93 }
   },
   {
     id: "eraser",
@@ -206,7 +206,7 @@ export const classroomWords: Word[] = [
     expressionEn: "Use the eraser carefully so the answer box stays clean.",
     expressionCn: "小心使用橡皮，让答案框保持干净。",
     audioUrl: "/assets/audio/eraser.mp3",
-    position: { x: 560, y: 735, width: 95, height: 55 }
+    position: { x: 681, y: 669, width: 48, height: 61 }
   },
   {
     id: "chalk",
@@ -219,7 +219,7 @@ export const classroomWords: Word[] = [
     expressionEn: "There is no chalk left, so the teacher cannot finish the note on the board.",
     expressionCn: "没有粉笔了，所以老师没法把黑板上的内容写完。",
     audioUrl: "/assets/audio/chalk.mp3",
-    position: { x: 735, y: 450, width: 160, height: 45 }
+    position: { x: 395, y: 421, width: 80, height: 35 }
   },
   {
     id: "ruler",
@@ -232,7 +232,7 @@ export const classroomWords: Word[] = [
     expressionEn: "I need a ruler to measure the margin before I draw the chart.",
     expressionCn: "画图表之前，我需要一把尺子量一下边距。",
     audioUrl: "/assets/audio/ruler.mp3",
-    position: { x: 1180, y: 810, width: 230, height: 45 }
+    position: { x: 742, y: 624, width: 48, height: 98 }
   },
   {
     id: "window",
@@ -245,7 +245,7 @@ export const classroomWords: Word[] = [
     expressionEn: "Open the window a little because the classroom feels warm.",
     expressionCn: "教室有点热，把窗户打开一点。",
     audioUrl: "/assets/audio/window.mp3",
-    position: { x: 80, y: 190, width: 330, height: 360 }
+    position: { x: 0, y: 76, width: 178, height: 477 }
   },
   {
     id: "curtain",
@@ -258,7 +258,7 @@ export const classroomWords: Word[] = [
     expressionEn: "Close the curtain so the sunlight does not cover the screen.",
     expressionCn: "拉上窗帘，别让阳光挡住屏幕。",
     audioUrl: "/assets/audio/curtain.mp3",
-    position: { x: 35, y: 155, width: 85, height: 430 }
+    position: { x: 177, y: 60, width: 111, height: 470 }
   },
   {
     id: "door",
@@ -271,7 +271,7 @@ export const classroomWords: Word[] = [
     expressionEn: "Leave the door open so late students can come in quietly.",
     expressionCn: "把门开着，让迟到的同学可以安静进来。",
     audioUrl: "/assets/audio/door.mp3",
-    position: { x: 1690, y: 250, width: 190, height: 560 }
+    position: { x: 1357, y: 214, width: 251, height: 467 }
   },
   {
     id: "clock",
@@ -284,7 +284,7 @@ export const classroomWords: Word[] = [
     expressionEn: "The clock is five minutes fast, so we still have time before class ends.",
     expressionCn: "这个时钟快了五分钟，所以离下课还有一点时间。",
     audioUrl: "/assets/audio/clock.mp3",
-    position: { x: 1370, y: 70, width: 150, height: 150 }
+    position: { x: 1387, y: 62, width: 128, height: 129 }
   },
   {
     id: "socket",
@@ -297,7 +297,7 @@ export const classroomWords: Word[] = [
     expressionEn: "There is a socket near my seat where I can charge my laptop.",
     expressionCn: "我的座位附近有一个可以给笔记本电脑充电的插座。",
     audioUrl: "/assets/audio/socket.mp3",
-    position: { x: 1500, y: 610, width: 90, height: 80 }
+    position: { x: 1242, y: 557, width: 47, height: 68 }
   },
   {
     id: "trash-can",
@@ -310,6 +310,6 @@ export const classroomWords: Word[] = [
     expressionEn: "The paper from the group activity goes into the trash can.",
     expressionCn: "小组活动用过的纸放进垃圾桶。",
     audioUrl: "/assets/audio/trash-can.mp3",
-    position: { x: 1570, y: 790, width: 170, height: 230 }
+    position: { x: 1401, y: 715, width: 158, height: 185 }
   }
 ];

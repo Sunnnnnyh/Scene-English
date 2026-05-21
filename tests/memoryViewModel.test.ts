@@ -17,7 +17,7 @@ describe("memory page view model", () => {
       subtitle: "观察教室里的物品，准备建立物品与英文单词的连接。",
       sceneName: "教室 Classroom",
       sceneImage: "/assets/picture/classroom.png",
-      imageAspectRatio: "16 / 9",
+      imageAspectRatio: "13.933333333333334 / 7.841666666666667",
       backLabel: "返回 Classroom",
       backAction: {
         type: "switchTab",

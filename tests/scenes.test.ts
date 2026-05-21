@@ -30,6 +30,32 @@ const expectedAmericanPhonetics: Record<string, string> = {
   "trash-can": "/ˈtræʃ ˌkæn/"
 };
 
+const expectedClassroomHotspots: Record<
+  string,
+  { x: number; y: number; width: number; height: number }
+> = {
+  blackboard: { x: 322, y: 157, width: 506, height: 312 },
+  whiteboard: { x: 856, y: 176, width: 431, height: 292 },
+  projector: { x: 915, y: 36, width: 176, height: 101 },
+  podium: { x: 699, y: 487, width: 311, height: 246 },
+  desk: { x: 36, y: 583, width: 790, height: 228 },
+  chair: { x: 0, y: 643, width: 425, height: 298 },
+  backpack: { x: 1018, y: 616, width: 240, height: 298 },
+  textbook: { x: 164, y: 590, width: 194, height: 75 },
+  notebook: { x: 348, y: 605, width: 195, height: 100 },
+  pencil: { x: 563, y: 618, width: 53, height: 98 },
+  pen: { x: 620, y: 633, width: 47, height: 93 },
+  eraser: { x: 681, y: 669, width: 48, height: 61 },
+  chalk: { x: 395, y: 421, width: 80, height: 35 },
+  ruler: { x: 742, y: 624, width: 48, height: 98 },
+  window: { x: 0, y: 76, width: 178, height: 477 },
+  curtain: { x: 177, y: 60, width: 111, height: 470 },
+  door: { x: 1357, y: 214, width: 251, height: 467 },
+  clock: { x: 1387, y: 62, width: 128, height: 129 },
+  socket: { x: 1242, y: 557, width: 47, height: 68 },
+  "trash-can": { x: 1401, y: 715, width: 158, height: 185 }
+};
+
 describe("scene data", () => {
   it("contains the MVP classroom scene and coming soon scenes", () => {
     expect(scenes.map((scene) => scene.id)).toEqual([
@@ -94,6 +120,16 @@ describe("scene data", () => {
     expect(classroom?.wordCount).toBe(classroomWords.length);
   });
 
+  it("uses the real classroom image dimensions for hotspot conversion", () => {
+    const classroom = scenes.find((scene) => scene.id === "classroom");
+
+    expect(classroom).toMatchObject({
+      sceneImage: "/assets/picture/classroom.png",
+      baseWidth: 1672,
+      baseHeight: 941
+    });
+  });
+
   it("keeps classroom phonetics aligned with the reviewed American IPA list", () => {
     expect(Object.fromEntries(classroomWords.map((word) => [word.id, word.phonetic]))).toEqual(
       expectedAmericanPhonetics
@@ -117,5 +153,11 @@ describe("scene data", () => {
 
     expect(questionExpressions.length).toBeLessThanOrEqual(8);
     expect(questionTranslations.length).toBeLessThanOrEqual(8);
+  });
+
+  it("keeps classroom hotspots calibrated to the current classroom artwork", () => {
+    expect(Object.fromEntries(classroomWords.map((word) => [word.id, word.position]))).toEqual(
+      expectedClassroomHotspots
+    );
   });
 });

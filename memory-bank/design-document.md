@@ -521,8 +521,8 @@ MVP 词表不是简单罗列教室物品，而是优先选择能体现产品价�
   "nameEn": "Classroom",
   "coverImage": "/assets/picture/classroom.png",
   "sceneImage": "/assets/picture/classroom.png",
-  "baseWidth": 1920,
-  "baseHeight": 1080,
+  "baseWidth": 1672,
+  "baseHeight": 941,
   "wordCount": 20
 }
 ```
