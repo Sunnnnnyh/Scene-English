@@ -1,5 +1,47 @@
 # SceneEnglish 架构记录
 
+## 39. 阶段 6 / Step 6.1.5 正式单词音频资源更新
+
+Classroom 的 20 个单词音频现在已经从静音 / 临时占位资源替换为可听的短 MP3 单词发音文件。音频文件继续放在 `miniprogram/assets/audio/` 下，文件名与 `miniprogram/data/scenes.ts` 中各单词的 `audioUrl` 保持一致，因此 Memory 单词卡、Favorites 播放和 Listen + Spell 当前题目播放都复用同一批资源路径。
+
+当前职责：
+- `miniprogram/assets/audio/*.mp3` 保存 Classroom 20 个单词的短 MP3 发音资源。
+- `miniprogram/data/scenes.ts` 继续作为音频路径的唯一数据来源，每个 `Word.audioUrl` 指向对应文件。
+- `tests/assets.test.ts` 校验所有 Classroom 音频文件存在、体积符合短单词 MP3 资源预期，并且文件头为 MP3 格式。
+
+运行时注意事项：
+
+- 当前音频可用于 MVP 演示和用户测试，但不是品牌级定制录音；后续扩展多场景时，可以将这套路径约定保留，把生产方式升级为稳定 TTS 流程或人工审核录音。
+- 如果后续替换任一音频文件，应保持文件名和 `audioUrl` 不变，除非同步更新数据文件和资源测试。
+- Memory 单词卡、Favorites 和 Listen + Spell 均依赖同一批音频资源，因此替换文件时需要至少抽查这三个入口的播放行为。
+
+文件变更记录补充：
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `miniprogram/assets/audio/*.mp3` | 保存 Classroom 20 个单词的正式短 MP3 发音资源，供 Memory、Favorites 和 Listen + Spell 复用。 | 阶段 6 / Step 6.1.5 |
+| `tests/assets.test.ts` | 将音频资源校验更新为真实 MP3 文件校验，覆盖文件存在、短音频体积和 MP3 文件头。 | 阶段 6 / Step 6.1.5 |
+
+## 40. Memory 单词卡自动播放体验优化
+
+Memory 热区点击打开单词卡时，现在会自动播放当前单词音频一次。该能力直接复用 `miniprogram/pages/scene/scene.ts` 中既有的页面内音频上下文管理，不新增 service、不引入依赖，也不改变 Favorites 或 Listen + Spell 的播放入口。
+
+当前职责：
+- `onMemoryHotspotTap` 负责在找到目标单词、记录已学、刷新单词卡数据后，调用 `playMemoryWordAudio(selectedWord.audioUrl, ...)` 自动播放一次。
+- `playMemoryWordAudio` 继续负责释放旧 Memory 音频上下文、创建新的 `wx.createInnerAudioContext()`、设置 `src`、绑定错误提示并播放。
+- 单词卡上的 `onPlayMemoryWordAudio` 仍作为手动复听入口，行为与自动播放共用同一套底层播放逻辑。
+
+运行时注意事项：
+
+- 快速点击不同热区时，旧音频会先释放，再播放新单词，避免多段音频重叠。
+- 关闭单词卡、切回 Classroom、页面隐藏或卸载时，仍沿用既有停止 / 释放逻辑。
+- 自动播放失败只给轻提示，不阻塞单词卡查看。
+
+文件变更记录补充：
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `miniprogram/pages/scene/scene.ts` | 在 Memory 热区打开单词卡后自动播放当前单词音频，同时保留手动播放按钮复听能力。 | Memory 单词卡自动播放体验优化 |
+| `tests/sceneMemoryWordCard.test.ts` | 补充 Memory 热区打开单词卡时会触发自动播放的回归测试。 | Memory 单词卡自动播放体验优化 |
+
 > 作用：记录项目结构、模块职责、数据流、测试策略和后续新增文件说明。写任何代码前必须阅读本文档；每完成一个重大功能或新增关键模块后，必须更新本文档。
 
 ---

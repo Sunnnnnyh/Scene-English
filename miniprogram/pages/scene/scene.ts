@@ -330,6 +330,12 @@ Page({
       showMemoryTranslationGuide: shouldShowMemoryTranslationGuide(),
       ...refreshSceneProgress(selectedWord.sceneId)
     });
+    playMemoryWordAudio(selectedWord.audioUrl, () => {
+      wx.showToast({
+        title: "闊抽鏆傛椂鏃犳硶鎾斁",
+        icon: "none"
+      });
+    });
     this.completeMemoryGuideIfNeeded();
   },
 

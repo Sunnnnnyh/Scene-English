@@ -135,6 +135,16 @@ describe("scene page Memory word card", () => {
     expect(sceneScript).toContain("onCloseMemoryWordCard");
   });
 
+  it("automatically plays the word audio once when opening a Memory word card", () => {
+    const handlerPattern = new RegExp(
+      "onMemoryHotspotTap\\(event: MemoryHotspotTapEvent\\) \\{[\\s\\S]*?\\n\\s{2}\\},"
+    );
+    const hotspotHandler = sceneScript.match(handlerPattern)?.[0] ?? "";
+
+    expect(hotspotHandler).toContain("selectedWord.audioUrl");
+    expect(hotspotHandler).toContain("playMemoryWordAudio(selectedWord.audioUrl");
+  });
+
   it("styles the word card to expand in the page flow with a small circular close control", () => {
     const wordCardRule = sceneStyles.match(/\.memory-word-card\s*\{[^}]*\}/)?.[0] ?? "";
     const wordCardPanelRule = sceneStyles.match(/\.memory-word-card__panel\s*\{[^}]*\}/)?.[0] ?? "";

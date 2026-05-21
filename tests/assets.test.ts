@@ -42,12 +42,18 @@ describe("static assets", () => {
     }
   });
 
-  it("contains a placeholder audio file for every classroom word", () => {
+  it("contains a generated MP3 audio file for every classroom word", () => {
     for (const word of classroomWords) {
       const fullPath = resolveMiniProgramAsset(word.audioUrl);
 
       expect(existsSync(fullPath)).toBe(true);
-      expect(readFileSync(fullPath).length).toBeGreaterThan(0);
+
+      const bytes = readFileSync(fullPath);
+      const startsWithId3Tag = bytes.subarray(0, 3).toString("ascii") === "ID3";
+      const startsWithMp3Frame = bytes[0] === 0xff && (bytes[1] & 0xe0) === 0xe0;
+
+      expect(bytes.length).toBeGreaterThan(5_000);
+      expect(startsWithId3Tag || startsWithMp3Frame).toBe(true);
     }
   });
 });
