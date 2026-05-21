@@ -1323,3 +1323,32 @@ Learn tab 内联“听力 + 默写”模式现在可以开始一轮练习。该�
 | `miniprogram/pages/scene/scene.wxss` | 为听写开始面板、题号展示和播放按钮补充基础样式。 | 阶段 6 / Step 6.1 |
 | `tests/listeningWritingStart.test.ts` | 约束听写模式开始状态、题号展示、播放入口、运行时依赖边界和样式。 | 阶段 6 / Step 6.1 |
 | `tests/sceneViewModel.test.ts` | 补充听写开始状态的首题题号和音频路径单元测试。 | 阶段 6 / Step 6.1 |
+
+## 37. 阶段 6 / Step 6.1.5 正式 Classroom 图片资源更新
+
+Classroom 当前已从低保真占位图切换为正式风格场景图。该更新只完成 Step 6.1.5 的图片资源部分，热区校准和真实音频替换仍需在后续继续完成。
+
+当前职责：
+
+- `miniprogram/assets/picture/classroom.png` 是当前 Classroom 正式场景图资源，用于 Classroom 封面图和场景图展示。
+- `miniprogram/data/scenes.ts` 中 Classroom 的 `coverImage` 和 `sceneImage` 均指向 `/assets/picture/classroom.png`。
+- `miniprogram/assets/images/classroom-cover.png` 和 `miniprogram/assets/images/classroom.png` 已删除，避免旧占位图继续留在资源目录中造成混淆。
+- `miniprogram/assets/images/coming-soon-cover.png` 继续保留，供 Lecture Hall、Dormitory、Cafeteria 三个 Coming soon 场景使用。
+- `tests/assets.test.ts` 继续验证所有被场景数据引用的图片资源存在、非空且为 PNG。
+
+运行时注意事项：
+
+- 因为当前 Classroom 图片已经更换，`classroomWords[].position` 中的 20 个热区坐标需要重新校准；在校准前，Memory Mode 中点击区域可能与新图物品位置不完全一致。
+- 当前图片只解决正式视觉资源接入；20 个 `miniprogram/assets/audio/*.mp3` 仍是静音占位音频。
+
+文件变更记录补充：
+
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `miniprogram/assets/picture/classroom.png` | 当前 Classroom 正式场景图资源，同时作为 Classroom 封面和学习场景图使用。 | 阶段 6 / Step 6.1.5 |
+| `miniprogram/assets/images/classroom-cover.png` | 已删除，旧 Classroom 封面占位图不再使用。 | 阶段 6 / Step 6.1.5 |
+| `miniprogram/assets/images/classroom.png` | 已删除，旧 Classroom 场景占位图不再使用。 | 阶段 6 / Step 6.1.5 |
+| `miniprogram/data/scenes.ts` | 将 Classroom 的 `coverImage` 和 `sceneImage` 更新为 `/assets/picture/classroom.png`。 | 阶段 6 / Step 6.1.5 |
+| `tests/assets.test.ts` | 更新 Classroom 图片资源测试文案，继续覆盖图片存在性和 PNG 文件头。 | 阶段 6 / Step 6.1.5 |
+| `tests/memoryViewModel.test.ts` | 更新 Memory 展示模型中的 Classroom 场景图路径预期。 | 阶段 6 / Step 6.1.5 |
+| `tests/sceneViewModel.test.ts` | 更新 Learn tab 场景展示模型中的 Classroom 场景图路径预期。 | 阶段 6 / Step 6.1.5 |

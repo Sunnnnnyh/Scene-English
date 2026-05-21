@@ -31,7 +31,7 @@ describe("scene page view model", () => {
 
     expect(viewModel).toMatchObject({
       title: "教室 Classroom",
-      sceneImage: "/assets/images/classroom.png",
+      sceneImage: "/assets/picture/classroom.png",
       progressLabel: "Learned 0 / 20",
       progressPercent: 0
     });

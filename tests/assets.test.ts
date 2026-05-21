@@ -25,7 +25,7 @@ describe("static assets", () => {
     }
   });
 
-  it("contains the classroom cover and scene placeholder images", () => {
+  it("contains the classroom cover and scene image", () => {
     const classroom = scenes.find((scene) => scene.id === "classroom");
 
     expect(classroom).toBeDefined();

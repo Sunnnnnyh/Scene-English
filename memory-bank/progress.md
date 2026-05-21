@@ -750,3 +750,21 @@
   - 当前 Step 6.1 只实现听写模式一轮开始状态、题号展示和目标音频播放入口，尚未实现听音找物点击判断、拼写输入或结束页。
   - 当前 `miniprogram/assets/audio/*.mp3` 仍是静音占位音频，因此听写模式点击播放没有可听声音是预期现象。
   - 按更新后的实施计划，下一步应先进入 Step 6.1.5：替换正式 Classroom 图片、20 个真实单词音频并重新校准热区，然后再开始 Step 6.2。
+
+### 2026-05-21 — 阶段 6 / Step 6.1.5 正式 Classroom 图片接入
+
+- 完成内容：
+  - 新增 `miniprogram/assets/picture/classroom.png`，作为当前 Classroom 正式场景图资源。
+  - 将 Classroom 的 `coverImage` 和 `sceneImage` 从旧占位图路径切换为 `/assets/picture/classroom.png`。
+  - 删除旧的低保真占位图片 `miniprogram/assets/images/classroom-cover.png` 和 `miniprogram/assets/images/classroom.png`。
+  - 同步更新图片资源测试和相关 view model 测试中的 Classroom 图片路径预期。
+- 验证结果：
+  - 本地已验证 `npm test -- tests/assets.test.ts tests/memoryViewModel.test.ts tests/sceneViewModel.test.ts` 通过。
+  - 本地已验证 `npm run typecheck` 通过。
+  - 本地已验证 `npm run lint` 通过。
+  - 本地已验证 `npm run format:check` 通过。
+  - 本地已验证 `npm test` 通过，显示 30 个测试文件、124 个测试用例通过。
+  - 用户已在微信开发者工具中验证正式 Classroom 图片展示通过。
+- 遗留问题：
+  - 当前只完成 Step 6.1.5 的图片接入与旧占位图清理，尚未替换 20 个真实单词音频。
+  - 当前 20 个单词热区坐标仍基于旧占位图，需要按新 Classroom 图片重新校准后再进入 Step 6.2。
