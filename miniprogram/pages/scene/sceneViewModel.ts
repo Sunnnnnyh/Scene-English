@@ -63,10 +63,20 @@ export type SceneViewModel = {
   listeningWritingRound: QuizRound | null;
   listeningWritingState: SceneListeningWritingState;
   listeningWritingClickAttemptCount: number;
+  listeningWritingStepLabel: string;
+  listeningWritingTaskTitle: string;
+  listeningWritingInstruction: string;
   listeningWritingFeedback: string;
+  listeningWritingFeedbackKind: "" | "success" | "error" | "info";
   listeningWritingPhase: "locating" | "spellingReady";
   listeningWritingTargetWordId: string;
   listeningWritingCanSelectObject: boolean;
+  listeningWritingSpellingInput: string;
+  listeningWritingSpellingAttemptCount: number;
+  listeningWritingIsRoundComplete: boolean;
+  listeningWritingPendingNextQuestion: boolean;
+  listeningWritingPendingNextQuestionIndex: number;
+  listeningWritingContinueLabel: string;
 };
 
 export type SceneEntryAction = {
@@ -170,10 +180,20 @@ export function createSceneViewModel(
     listeningWritingRound: null,
     listeningWritingState: createEmptyListeningWritingState(),
     listeningWritingClickAttemptCount: 0,
+    listeningWritingStepLabel: "Listen",
+    listeningWritingTaskTitle: "Listen",
+    listeningWritingInstruction: "Play audio, then find it.",
     listeningWritingFeedback: "",
+    listeningWritingFeedbackKind: "",
     listeningWritingPhase: "locating",
     listeningWritingTargetWordId: "",
-    listeningWritingCanSelectObject: false
+    listeningWritingCanSelectObject: false,
+    listeningWritingSpellingInput: "",
+    listeningWritingSpellingAttemptCount: 0,
+    listeningWritingIsRoundComplete: false,
+    listeningWritingPendingNextQuestion: false,
+    listeningWritingPendingNextQuestionIndex: -1,
+    listeningWritingContinueLabel: "Continue"
   };
 }
 

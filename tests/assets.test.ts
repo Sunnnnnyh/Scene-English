@@ -56,4 +56,20 @@ describe("static assets", () => {
       expect(startsWithId3Tag || startsWithMp3Frame).toBe(true);
     }
   });
+
+  it("contains WAV feedback sound assets for Listen + Spell answer feedback", () => {
+    for (const audioPath of [
+      "/assets/audio/feedback-correct.wav",
+      "/assets/audio/feedback-wrong.wav"
+    ]) {
+      const fullPath = resolveMiniProgramAsset(audioPath);
+
+      expect(existsSync(fullPath)).toBe(true);
+
+      const bytes = readFileSync(fullPath);
+      expect(bytes.length).toBeGreaterThan(1_000);
+      expect(bytes.subarray(0, 4).toString("ascii")).toBe("RIFF");
+      expect(bytes.subarray(8, 12).toString("ascii")).toBe("WAVE");
+    }
+  });
 });

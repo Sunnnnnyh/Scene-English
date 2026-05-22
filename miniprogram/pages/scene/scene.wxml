@@ -37,8 +37,15 @@
   </block>
 
   <block wx:if="{{activeMode}}">
-    <text class="scene-kicker">{{title}}</text>
-    <text class="scene-title">{{selectedModeTitle}}</text>
+    <view class="mode-topbar">
+      <view class="mode-back-icon" bindtap="onBackToSceneHome" aria-label="Back to Classroom">
+        <text class="mode-back-chevron">‹</text>
+      </view>
+      <view class="mode-heading">
+        <text class="scene-kicker">{{title}}</text>
+        <text class="scene-title">{{selectedModeTitle}}</text>
+      </view>
+    </view>
     <text class="mode-page-subtitle">{{selectedModeSubtitle}}</text>
 
     <view wx:if="{{activeMode === 'memory'}}" class="memory-progress-section">
@@ -119,31 +126,110 @@
     </block>
 
     <block wx:elif="{{activeMode === 'listeningWriting'}}">
-      <view
-        class="scene-preview mode-page-preview listening-writing-scene-preview"
-        data-target-word-id="{{listeningWritingState.currentQuestion.wordId}}"
-        bindtap="onListeningWritingBlankTap"
-      >
-        <image class="scene-image" src="{{sceneImage}}" mode="aspectFill" />
-        <block wx:for="{{memoryHotspots}}" wx:key="wordId">
-          <view
-            class="listening-writing-hotspot {{listeningWritingTargetWordId === item.wordId ? 'listening-writing-hotspot--target' : ''}}"
-            style="{{item.style}}"
-            data-word-id="{{item.wordId}}"
-            catchtap="onListeningWritingHotspotTap"
-          ></view>
-        </block>
+      <view wx:if="{{listeningWritingIsRoundComplete}}" class="mode-page-panel listening-writing-complete">
+        <text class="listening-writing-complete-title">Round complete</text>
+        <text class="listening-writing-complete-text">
+          You finished this 5-word set. Start a new set when you are ready.
+        </text>
+        <view class="listening-writing-complete-actions">
+          <button class="listening-writing-next-set" bindtap="onRestartListeningWritingRound">
+            New 5-word set
+          </button>
+          <button class="listening-writing-end-practice" bindtap="onEndListeningWritingPractice">
+            End practice
+          </button>
+        </view>
       </view>
 
-      <view class="mode-page-panel listening-writing-start">
-        <view class="listening-writing-progress">
-          <text class="listening-writing-progress-label">Question</text>
-          <text class="listening-writing-progress-count">{{listeningWritingState.questionLabel}}</text>
-          <text wx:if="{{listeningWritingFeedback}}" class="listening-writing-feedback">{{listeningWritingFeedback}}</text>
+      <block wx:else>
+        <view
+          class="scene-preview mode-page-preview listening-writing-scene-preview"
+          data-target-word-id="{{listeningWritingState.currentQuestion.wordId}}"
+          bindtap="onListeningWritingBlankTap"
+        >
+          <image class="scene-image" src="{{sceneImage}}" mode="aspectFill" />
+          <block wx:for="{{memoryHotspots}}" wx:key="wordId">
+            <view
+              class="listening-writing-hotspot {{listeningWritingTargetWordId === item.wordId ? 'listening-writing-hotspot--target listening-writing-hotspot--flash' : ''}}"
+              style="{{item.style}}"
+              data-word-id="{{item.wordId}}"
+              catchtap="onListeningWritingHotspotTap"
+            ></view>
+          </block>
         </view>
-        <text class="mode-page-note">听发音，找到对应的教室物品，再准备拼写。</text>
-        <button class="listening-writing-play" bindtap="onPlayListeningWritingAudio">播放单词音频</button>
-      </view>
+
+        <view class="mode-page-panel listening-writing-start">
+          <view class="listening-writing-progress">
+            <text class="listening-writing-progress-label">Question</text>
+            <text class="listening-writing-progress-count">{{listeningWritingState.questionLabel}}</text>
+          </view>
+
+          <view
+            wx:if="{{!listeningWritingPendingNextQuestion && listeningWritingPhase !== 'spellingReady'}}"
+            class="listening-writing-cue"
+          >
+            <text class="listening-writing-cue-title">{{listeningWritingTaskTitle}}</text>
+            <text
+              wx:if="{{listeningWritingInstruction && listeningWritingPhase !== 'spellingReady'}}"
+              class="listening-writing-cue-text"
+            >
+              {{listeningWritingInstruction}}
+            </text>
+          </view>
+
+          <view wx:if="{{listeningWritingAnswerReveal}}" class="listening-writing-answer-card">
+            <text class="listening-writing-answer-label">Correct spelling</text>
+            <text class="listening-writing-answer-word">{{listeningWritingAnswerReveal}}</text>
+          </view>
+
+          <view
+            wx:if="{{listeningWritingFeedback}}"
+            class="listening-writing-feedback-card {{listeningWritingFeedbackKind === 'success' ? 'listening-writing-feedback-card--success' : ''}} {{listeningWritingFeedbackKind === 'error' ? 'listening-writing-feedback-card--error' : ''}}"
+          >
+            <text class="listening-writing-feedback">{{listeningWritingFeedback}}</text>
+          </view>
+
+          <button
+            wx:if="{{!listeningWritingPendingNextQuestion && listeningWritingPhase !== 'spellingReady'}}"
+            class="listening-writing-play"
+            bindtap="onPlayListeningWritingAudio"
+          >
+            Play Word Audio
+          </button>
+
+          <view
+            wx:if="{{listeningWritingPhase === 'spellingReady' && !listeningWritingPendingNextQuestion}}"
+            class="listening-writing-spelling"
+          >
+            <view class="listening-writing-spell-focus">
+              <text class="listening-writing-spell-title">Spell now</text>
+            </view>
+            <input
+              class="listening-writing-input"
+              value="{{listeningWritingSpellingInput}}"
+              placeholder="Type the word you heard"
+              confirm-type="done"
+              bindinput="onListeningWritingSpellingInput"
+            />
+            <view class="listening-writing-spell-actions">
+              <button class="listening-writing-play-inline" bindtap="onPlayListeningWritingAudio">
+                Play audio
+              </button>
+              <button class="listening-writing-submit" bindtap="onSubmitListeningWritingSpelling">
+                Submit
+              </button>
+            </view>
+          </view>
+
+          <button
+            wx:if="{{listeningWritingPendingNextQuestion}}"
+            class="listening-writing-continue"
+            bindtap="onContinueListeningWritingQuestion"
+          >
+            {{listeningWritingContinueLabel}}
+          </button>
+        </view>
+      </block>
     </block>
 
     <block wx:else>
@@ -155,7 +241,5 @@
         <text class="mode-page-note">当前先保持基础模式视图，后续步骤会继续接入具体练习交互。</text>
       </view>
     </block>
-
-    <button class="back-button" bindtap="onBackToSceneHome">返回 Classroom</button>
   </block>
 </view>

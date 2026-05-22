@@ -6,7 +6,7 @@
 
 ## 1. 当前阶段
 
-当前项目已完成阶段 6 / Step 6.2 听音找物点击判断。项目已初始化微信小程序 TypeScript 工程，建立基础目录结构和全部规划页面占位，配置基础开发质量工具，完成核心类型、场景数据、Classroom 20 个单词静态数据、正式 Classroom 图片、正式热区校准和真实单词音频资源，并实现本地缓存工具、字符串标准化工具、热区计算工具、场景服务、单词服务、收藏服务、学习进度服务、错题服务、抽题服务、音频服务和 mock 口语识别服务。首页已接入场景选择页，可以展示 Classroom 主场景和 Lecture Hall、Dormitory、Cafeteria 三个 Coming soon 场景；底部导航已包含 Home / Learn / Review / Me。Home 负责选择学习场景，Learn 负责进入当前学习场景；MVP 阶段只有 Classroom，因此直接点击 Learn 默认进入 Classroom 学习首页。Classroom 学习首页可查看场景预览、学习进度和三个学习模式入口，Coming soon 场景只提示不跳转。点击学习模式入口时，当前采用 Learn tab 内部状态切换，不再 `navigateTo` 普通页面，从而避免底部 tabBar 在过渡中消失。Review 页已预留收藏夹和错题夹全局入口，Me 页已展示本地轻量统计和 mock ASR 状态。Memory Mode 当前优先在 Learn tab 内联视图中推进：已能稳定展示 Classroom 场景图，并根据 Classroom 20 个单词数据覆盖透明热区；Memory 视图标题下方同样展示 `单词进度`、`Learned x / 20` 和进度条；点击热区会打开对应单词卡，卡片展示英文、中文、美式音标、音频播放入口、收藏状态和 1 条 Useful expression；点击 Useful expression 英文句子可展开或收起中文翻译，并通过 `sceneenglish:onboarding` 记录表达翻译轻引导完成状态。点击热区打开单词卡时会通过 `progressService` 记录该词为已学，并刷新 `Learned x / 20` 进度；点击星标会通过 `favoriteService` 写入或移除收藏；打开单词卡时会自动播放当前单词音频一次，用户也可以手动复听。Favorites 页面已接入真实收藏列表：从本地收藏记录生成列表项，支持空状态，允许点击多个收藏项同时展开音标和 Useful expression，并在展开详情中支持播放单词音频和取消收藏；取消收藏后会写入 `sceneenglish:favorites` 并立即刷新列表。Listen + Spell 当前已能生成 5 题练习开始状态、播放当前题音频，并完成听音找物点击判断：目标音频播放结束前点击热区不会进入判定，播放结束后才允许选择物品；点对后进入拼写准备状态，后续热区点击不再重复判错；首次点错会记录 `click` 类型错题并允许重试，第二次点错会提示正确物品并进入拼写准备状态。点击空白区域只给轻提示。首次进入单词记忆模式时会展示一次性轻引导，高亮 `projector` 并通过 `sceneenglish:onboarding` 本地缓存记录完成状态。工程可以被微信开发者工具识别，所有已注册页面都能打开；TypeScript、ESLint、Prettier 和 Vitest 命令均可运行。
+当前项目已完成阶段 6 / Step 6.4 Listen + Spell 拼写输入、答案校验和基础完成页。项目已初始化微信小程序 TypeScript 工程，建立基础目录结构和全部规划页面占位，配置基础开发质量工具，完成核心类型、场景数据、Classroom 20 个单词静态数据、正式 Classroom 图片、正式热区校准和真实单词音频资源，并实现本地缓存工具、字符串标准化工具、热区计算工具、场景服务、单词服务、收藏服务、学习进度服务、错题服务、抽题服务、音频服务和 mock 口语识别服务。首页已接入场景选择页，可以展示 Classroom 主场景和 Lecture Hall、Dormitory、Cafeteria 三个 Coming soon 场景；底部导航已包含 Home / Learn / Review / Me。Home 负责选择学习场景，Learn 负责进入当前学习场景；MVP 阶段只有 Classroom，因此直接点击 Learn 默认进入 Classroom 学习首页。Classroom 学习首页可查看场景预览、学习进度和三个学习模式入口，Coming soon 场景只提示不跳转。点击学习模式入口时，当前采用 Learn tab 内部状态切换，不再 `navigateTo` 普通页面，从而避免底部 tabBar 在过渡中消失。Review 页已预留收藏夹和错题夹全局入口，Me 页已展示本地轻量统计和 mock ASR 状态。Memory Mode 当前优先在 Learn tab 内联视图中推进：已能稳定展示 Classroom 场景图，并根据 Classroom 20 个单词数据覆盖透明热区；Memory 视图标题下方同样展示 `单词进度`、`Learned x / 20` 和进度条；点击热区会打开对应单词卡，卡片展示英文、中文、美式音标、音频播放入口、收藏状态和 1 条 Useful expression；点击 Useful expression 英文句子可展开或收起中文翻译，并通过 `sceneenglish:onboarding` 记录表达翻译轻引导完成状态。点击热区打开单词卡时会通过 `progressService` 记录该词为已学，并刷新 `Learned x / 20` 进度；点击星标会通过 `favoriteService` 写入或移除收藏；打开单词卡时会自动播放当前单词音频一次，用户也可以手动复听。Favorites 页面已接入真实收藏列表：从本地收藏记录生成列表项，支持空状态，允许点击多个收藏项同时展开音标和 Useful expression，并在展开详情中支持播放单词音频和取消收藏；取消收藏后会写入 `sceneenglish:favorites` 并立即刷新列表。Listen + Spell 当前已能生成 5 题练习开始状态、播放当前题音频、完成听音找物点击判断并进入拼写输入：目标音频播放结束前点击热区不会进入判定，播放结束后才允许选择物品；点对后进入 `spellingReady`，输入框和并排的 `Play audio` / `Submit` 按钮成为视觉焦点；首次点错会记录 `click` 类型错题并允许重试，第二次点错会高亮正确物品并进入拼写；首次拼写错误会记录 `spelling` 类型错题并允许再试一次，第二次拼写错误会展示正确拼写并等待用户继续；答题后通过 `Continue` 进入下一题，完成 5 题后展示 `Round complete`，可开启新一组或结束练习。正确和错误反馈已补充短 WAV 音效，其中错误音效保留但更柔和并降低播放音量。点击空白区域只给轻提示。首次进入单词记忆模式时会展示一次性轻引导，高亮 `projector` 并通过 `sceneenglish:onboarding` 本地缓存记录完成状态。工程可以被微信开发者工具识别，所有已注册页面都能打开；TypeScript、ESLint、Prettier 和 Vitest 命令均可运行。
 
 当前源码目录为：
 
@@ -1461,3 +1461,36 @@ Listen + Spell 当前题目进入后，用户需要先播放并听完目标单�
 | `miniprogram/pages/scene/scene.ts` | 实现听完音频后才允许点击、热区判定、错题记录、正确高亮和进入拼写准备状态。 | 阶段 6 / Step 6.2 |
 | `miniprogram/pages/scene/sceneViewModel.ts` | 新增 `listeningWritingCanSelectObject` 状态，用于控制听音找物点击门禁。 | 阶段 6 / Step 6.2 |
 | `tests/listeningWritingStart.test.ts` | 覆盖 Listen + Spell 热区渲染、点击判定、答对后忽略后续点击和音频结束后才允许选择的回归测试。 | 阶段 6 / Step 6.2 |
+
+## 42. 阶段 6 / Step 6.3-6.4 Listen + Spell 拼写闭环与界面返修
+
+Listen + Spell 当前在听音找物后继续进入拼写输入和本轮完成状态。该更新仍位于 Learn tab 内联 `scene` 页面中，不新增独立页面、不新增依赖，并继续复用 `normalize`、`mistakeService` 和当前题音频资源。
+
+当前职责：
+- `scene.wxml` 在 `spellingReady` 阶段渲染拼写输入区，并将 `Play audio` 和 `Submit` 两个操作按钮并排放在输入框下方；听音 / 找物阶段仍保留顶部大号 `Play Word Audio` 按钮。
+- `scene.ts` 使用 `isNormalizedSpellingMatch` 判断拼写，忽略大小写和首尾空格；首次拼写错误记录 `spelling` 类型错题并允许重试，第二次拼写错误展示正确拼写。
+- `scene.ts` 通过 `prepareListeningWritingNextStep` 让用户在答题反馈后点击 `Continue` 再进入下一题；最后一题完成后进入 `Round complete`。
+- `scene.ts` 通过 `onRestartListeningWritingRound` 开启新 5 题，并优先排除上一轮单词；通过 `onEndListeningWritingPractice` 返回 Classroom 学习首页。
+- `scene.ts` 管理正确 / 错误反馈短音效，错误音效保留但降低播放音量，不阻塞学习流程。
+- `scene.wxss` 负责拼写区、并排按钮、正确拼写展示、完成页双按钮和柔和目标高亮样式。
+- `tests/listeningWritingStart.test.ts` 约束拼写输入、拼写错误记录、继续按钮、完成页、反馈音效、柔和高亮和拼写阶段按钮布局。
+- `tests/assets.test.ts` 约束 Listen + Spell 反馈 WAV 音效资源存在且格式正确。
+
+运行时注意事项：
+
+- 拼写阶段不再显示上方的重复步骤提示框，避免 `Spell now` 被重复展示。
+- 拼写阶段隐藏顶部大号 `Play Word Audio`，改由输入框下方的 `Play audio` 按钮承担复听入口。
+- 完成页的 `New 5-word set` 和 `End practice` 并排展示，分别对应重新开始一轮和返回 Classroom 学习首页。
+- 当前完成页仍是基础完成状态，后续如需展示正确数、错误数、新增错题数，可继续在 Step 6.4 的统计增强中补充。
+
+文件变更记录补充：
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `miniprogram/pages/scene/scene.wxml` | 补充 Listen + Spell 拼写输入区、拼写阶段并排操作按钮、正确答案展示、继续按钮和完成页双按钮。 | 阶段 6 / Step 6.3-6.4 |
+| `miniprogram/pages/scene/scene.wxss` | 补充拼写输入区、反馈卡、柔和高亮、并排按钮和完成页布局样式。 | 阶段 6 / Step 6.3-6.4 |
+| `miniprogram/pages/scene/scene.ts` | 实现拼写判断、`spelling` 错题记录、反馈音效、下一题推进、新一组练习和结束练习逻辑。 | 阶段 6 / Step 6.3-6.4 |
+| `miniprogram/pages/scene/sceneViewModel.ts` | 扩展 Listen + Spell 页面状态，包含步骤文案、反馈类型、拼写输入、答案展示、完成页和继续按钮状态。 | 阶段 6 / Step 6.3-6.4 |
+| `miniprogram/assets/audio/feedback-correct.wav` | Listen + Spell 正确反馈短音效资源。 | 阶段 6 / Step 6.3-6.4 |
+| `miniprogram/assets/audio/feedback-wrong.wav` | Listen + Spell 错误反馈短音效资源，当前为柔和短提示音。 | 阶段 6 / Step 6.3-6.4 |
+| `tests/listeningWritingStart.test.ts` | 覆盖 Listen + Spell 拼写闭环、完成页、反馈音效和界面返修约束。 | 阶段 6 / Step 6.3-6.4 |
+| `tests/assets.test.ts` | 补充反馈 WAV 音效资源存在性与格式校验。 | 阶段 6 / Step 6.3-6.4 |

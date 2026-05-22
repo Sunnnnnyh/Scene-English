@@ -42,7 +42,8 @@ describe("Listen + Spell start state inside the Learn tab", () => {
     expect(sceneMarkup).toContain(`wx:elif="{{activeMode === 'listeningWriting'}}"`);
     expect(sceneMarkup).toContain("{{listeningWritingState.questionLabel}}");
     expect(sceneMarkup).toContain('bindtap="onPlayListeningWritingAudio"');
-    expect(sceneMarkup).toContain("播放单词音频");
+    expect(sceneMarkup).toContain("Play Word Audio");
+    expect(sceneMarkup).not.toContain("播放单词音频");
     expect(sceneMarkup).not.toContain("{{listeningWritingState.currentQuestion.en}}");
   });
 
@@ -84,8 +85,148 @@ describe("Listen + Spell start state inside the Learn tab", () => {
     expect(scenePageScript).toContain("!this.data.listeningWritingCanSelectObject");
   });
 
+  it("keeps task instruction separate from answer feedback during audio replay", () => {
+    expect(sceneViewModelScript).toContain("listeningWritingStepLabel");
+    expect(sceneViewModelScript).toContain("listeningWritingTaskTitle");
+    expect(sceneViewModelScript).toContain("listeningWritingInstruction");
+    expect(scenePageScript).toContain("handleListeningWritingAudioEnded");
+    expect(scenePageScript).not.toContain("shouldPreserveListeningWritingFeedbackOnReplay");
+  });
+
+  it("keeps the scene visible and hides replay while reviewing an answer", () => {
+    expect(sceneMarkup).toContain("listening-writing-scene-preview");
+    expect(sceneMarkup).toContain(
+      `wx:if="{{!listeningWritingPendingNextQuestion && listeningWritingPhase !== 'spellingReady'}}"`
+    );
+    expect(sceneMarkup).toContain('class="listening-writing-play"');
+    expect(sceneMarkup).toContain('wx:if="{{listeningWritingPendingNextQuestion}}"');
+    expect(scenePageScript).toContain("listeningWritingPendingNextQuestion: true");
+  });
+
+  it("uses a lightweight cue before spelling without repeating the spelling title", () => {
+    expect(sceneMarkup).toContain("listening-writing-cue");
+    expect(sceneMarkup).toContain("listening-writing-cue-title");
+    expect(sceneMarkup).toContain(
+      `wx:if="{{!listeningWritingPendingNextQuestion && listeningWritingPhase !== 'spellingReady'}}"`
+    );
+    expect(sceneStyles).toContain(".listening-writing-cue");
+    expect(sceneMarkup).not.toContain("listening-writing-cue--spell");
+    expect(sceneStyles).not.toContain(".listening-writing-cue--spell");
+    expect(sceneMarkup).not.toContain("listening-writing-task-card");
+    expect(sceneStyles).not.toContain(".listening-writing-task-card");
+    expect(sceneMarkup).not.toContain("listening-writing-step-chip");
+    expect(sceneStyles).not.toContain(".listening-writing-step-chip");
+  });
+
   it("ignores further object taps after the correct object has been found", () => {
     expect(scenePageScript).toContain('this.data.listeningWritingPhase === "spellingReady"');
+  });
+
+  it("renders spelling input only after the target object is found", () => {
+    expect(sceneMarkup).toContain(
+      `wx:if="{{listeningWritingPhase === 'spellingReady' && !listeningWritingPendingNextQuestion}}"`
+    );
+    expect(sceneMarkup).toContain("listening-writing-spelling");
+    expect(sceneMarkup).toContain("listening-writing-spell-focus");
+    expect(sceneMarkup).toContain("listening-writing-spell-actions");
+    expect(sceneMarkup).toContain("Spell now");
+    expect(sceneMarkup).toContain("listening-writing-play-inline");
+    expect(sceneMarkup).toContain("Play audio");
+    expect(sceneMarkup).not.toContain("Replay audio");
+    expect(sceneMarkup).toContain('bindinput="onListeningWritingSpellingInput"');
+    expect(sceneMarkup).toContain('bindtap="onSubmitListeningWritingSpelling"');
+    expect(sceneMarkup).toContain("{{listeningWritingSpellingInput}}");
+  });
+
+  it("checks spelling with normalized input and records the first spelling mistake", () => {
+    expect(scenePageScript).toContain("isNormalizedSpellingMatch");
+    expect(scenePageScript).toContain("onListeningWritingSpellingInput");
+    expect(scenePageScript).toContain("onSubmitListeningWritingSpelling");
+    expect(scenePageScript).toContain('"spelling"');
+    expect(scenePageScript).toContain("listeningWritingSpellingAttemptCount");
+  });
+
+  it("waits for the user to continue after spelling feedback", () => {
+    expect(scenePageScript).toContain("prepareListeningWritingNextStep");
+    expect(scenePageScript).toContain("listeningWritingPendingNextQuestion: true");
+    expect(scenePageScript).toContain("listeningWritingPendingNextQuestionIndex");
+    expect(scenePageScript).toContain("onContinueListeningWritingQuestion");
+    expect(scenePageScript).toContain('listeningWritingContinueLabel: "Continue"');
+    expect(scenePageScript).not.toContain("Continue to Next Word");
+    expect(sceneMarkup).toContain('bindtap="onContinueListeningWritingQuestion"');
+    expect(sceneMarkup).toContain("{{listeningWritingContinueLabel}}");
+  });
+
+  it("automatically plays the next word only after the user switches questions", () => {
+    expect(scenePageScript).toContain("playListeningWritingAudioForCurrentQuestion");
+    expect(scenePageScript).toContain("autoPlayNextQuestion");
+    expect(scenePageScript).toContain(
+      "this.playListeningWritingAudioForCurrentQuestion({ autoPlayNextQuestion: true })"
+    );
+    expect(scenePageScript).toContain("listeningWritingPendingNextQuestion: false");
+  });
+
+  it("plays distinct feedback sounds for correct and wrong answers", () => {
+    expect(scenePageScript).toContain("LISTENING_WRITING_CORRECT_SOUND_URL");
+    expect(scenePageScript).toContain("LISTENING_WRITING_WRONG_SOUND_URL");
+    expect(scenePageScript).toContain("listeningWritingFeedbackAudioContext");
+    expect(scenePageScript).toContain("playListeningWritingFeedbackSound");
+    expect(scenePageScript).toContain("audioContext.volume");
+    expect(scenePageScript).toContain('playListeningWritingFeedbackSound("correct")');
+    expect(scenePageScript).toContain('playListeningWritingFeedbackSound("wrong")');
+    expect(scenePageScript).toContain("/assets/audio/feedback-correct.wav");
+    expect(scenePageScript).toContain("/assets/audio/feedback-wrong.wav");
+  });
+
+  it("flashes the target object and reveals the answer after the final spelling miss", () => {
+    expect(scenePageScript).toContain("listeningWritingAnswerReveal");
+    expect(scenePageScript).toContain("listeningWritingAnswerReveal: targetWord.en");
+    expect(sceneMarkup).toContain("listening-writing-hotspot--flash");
+    expect(sceneMarkup).toContain("listening-writing-answer-card");
+    expect(sceneMarkup).toContain("listening-writing-answer-word");
+    expect(sceneMarkup).toContain("{{listeningWritingAnswerReveal}}");
+    expect(sceneStyles).not.toMatch(/\.listening-writing-hotspot--target\s*\{[^}]*#19324d/);
+    expect(sceneStyles).toContain("@keyframes targetFlash");
+    expect(sceneStyles).toContain("targetFlash 0.42s ease-in-out 3");
+  });
+
+  it("renders a clear completion state after the final spelling answer", () => {
+    expect(sceneViewModelScript).toContain("listeningWritingIsRoundComplete");
+    expect(scenePageScript).toContain("listeningWritingIsRoundComplete: true");
+    expect(sceneMarkup).toContain("listening-writing-complete");
+    expect(sceneMarkup).toContain("Round complete");
+    expect(sceneMarkup).toContain('bindtap="onRestartListeningWritingRound"');
+    expect(sceneMarkup).toContain('bindtap="onEndListeningWritingPractice"');
+    expect(sceneMarkup).toContain("New 5-word set");
+    expect(sceneMarkup).toContain("End practice");
+    expect(sceneMarkup).toContain("listening-writing-next-set");
+    expect(sceneMarkup).toContain("listening-writing-end-practice");
+    expect(scenePageScript).toContain("onEndListeningWritingPractice");
+    expect(sceneMarkup).not.toContain("Practice Again");
+  });
+
+  it("starts a new five-word set by excluding the previous round first", () => {
+    expect(scenePageScript).toContain("excludeWordIds");
+    expect(scenePageScript).toContain("previousRound.questions.map");
+    expect(scenePageScript).toContain("excludedWordIdSet");
+    expect(scenePageScript).toContain("availableWords");
+    expect(scenePageScript).toContain("fallbackWords");
+    expect(scenePageScript).toContain("createListeningWritingModeData(sceneId, previousWordIds)");
+  });
+
+  it("uses a single lightweight top back control instead of a bottom orange back button", () => {
+    expect(sceneMarkup).toContain("mode-topbar");
+    expect(sceneMarkup).toContain("mode-back-icon");
+    expect(sceneMarkup).toContain("mode-back-chevron");
+    expect(sceneMarkup).toContain("‹");
+    expect(sceneMarkup).toContain('aria-label="Back to Classroom"');
+    expect(sceneStyles).toContain(".mode-topbar");
+    expect(sceneStyles).toContain(".mode-back-icon");
+    expect(sceneStyles).toContain(".mode-back-chevron");
+    expect(sceneStyles).not.toMatch(/\.mode-back-icon\s*\{[^}]*border-radius: 50%/);
+    expect(sceneStyles).not.toContain(".back-button");
+    expect(sceneMarkup).not.toContain("back-button");
+    expect(sceneMarkup).not.toContain("返回 Classroom");
   });
 
   it("adds stable styles for the Listen + Spell start panel", () => {
@@ -95,5 +236,18 @@ describe("Listen + Spell start state inside the Learn tab", () => {
     expect(sceneStyles).toContain(".listening-writing-hotspot");
     expect(sceneStyles).toContain(".listening-writing-hotspot--target");
     expect(sceneStyles).toContain(".listening-writing-feedback");
+    expect(sceneStyles).toContain(".listening-writing-feedback-card");
+    expect(sceneStyles).toContain(".listening-writing-feedback-card--success");
+    expect(sceneStyles).toContain(".listening-writing-feedback-card--error");
+    expect(sceneStyles).toContain(".listening-writing-cue");
+    expect(sceneStyles).toContain(".listening-writing-spell-focus");
+    expect(sceneStyles).toContain(".listening-writing-spell-actions");
+    expect(sceneStyles).toContain(".listening-writing-play-inline");
+    expect(sceneStyles).toContain(".listening-writing-continue");
+    expect(sceneStyles).toContain(".listening-writing-end-practice");
+    expect(sceneStyles).toContain(".listening-writing-spelling");
+    expect(sceneStyles).toContain(".listening-writing-input");
+    expect(sceneStyles).toContain(".listening-writing-submit");
+    expect(sceneStyles).toContain(".listening-writing-complete");
   });
 });
