@@ -1545,3 +1545,29 @@ Listen + Spell 的错误反馈音效继续使用本地 WAV 资源，不引入新
 | `miniprogram/assets/audio/feedback-wrong.wav` | Listen + Spell 错误反馈短音效资源，当前版本已由用户确认可接受。 | Listen + Spell 错误反馈音效小修 |
 | `miniprogram/pages/scene/scene.ts` | 调整错误反馈音效播放音量，保持错误反馈存在但不过分突兀。 | Listen + Spell 错误反馈音效小修 |
 | `tests/assets.test.ts` | 增加反馈 WAV 非静音校验，防止格式合法但无声的资源问题回归。 | Listen + Spell 错误反馈音效小修 |
+
+## 45. 阶段 7 / Step 7.1 错题列表
+
+错题夹页面现在从 `mistakeService.getMistakes()` 读取本地错题记录，并将记录整理为可展示的列表。当前 Step 只负责展示，不提供手动移出、自动移出或专项练习入口。
+
+当前职责：
+- `miniprogram/pages/mistakes/mistakes.ts` 在页面初始化和 `onShow` 时刷新本地错题列表。
+- `miniprogram/pages/mistakes/mistakes.ts` 会结合 `wordService.getWordById` 和 `sceneService.getSceneById` 补全单词与场景展示信息。
+- 错题列表按总错误次数递减排序；总错误次数来自该单词所有错误类型的 `mistakeCount` 之和。
+- 每个错题项展示英文、中文、场景、总错误次数、最近错误日期，以及每个错误类型的错误次数、最近错误日期和掌握进度。
+- `miniprogram/pages/mistakes/mistakesViewModel.ts` 提供同等的展示模型生成逻辑，供单元测试稳定验证。
+- `tests/mistakesPage.test.ts` 约束错题列表模型、排序规则、空状态、页面结构、刷新逻辑和样式类名。
+
+运行时注意事项：
+- 当前页面不会修改错题数据；Step 7.2 再实现手动移出错题。
+- 当前页面只展示已有掌握进度；Step 7.3 再实现通过专项练习更新掌握进度并自动移除弱项。
+- 当前页面不提供 `Practice` 入口；Step 7.4 再根据错误类型进入对应专项练习。
+
+文件变更记录补充：
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `miniprogram/pages/mistakes/mistakes.ts` | 将错题夹页面接入本地错题记录，生成按总错误次数递减排序的错题列表，并在 `onShow` 时刷新。 | 阶段 7 / Step 7.1 |
+| `miniprogram/pages/mistakes/mistakes.wxml` | 渲染错题列表、错误类型明细、掌握进度条和空状态。 | 阶段 7 / Step 7.1 |
+| `miniprogram/pages/mistakes/mistakes.wxss` | 补充错题列表、错误类型卡片、进度条和空状态样式。 | 阶段 7 / Step 7.1 |
+| `miniprogram/pages/mistakes/mistakesViewModel.ts` | 提供错题夹展示模型生成逻辑，便于测试错题聚合、排序和展示字段。 | 阶段 7 / Step 7.1 |
+| `tests/mistakesPage.test.ts` | 覆盖错题夹列表展示、总错误次数递减排序、空状态、页面刷新和样式约束。 | 阶段 7 / Step 7.1 |

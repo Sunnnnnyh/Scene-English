@@ -1,9 +1,16 @@
-import { getMistakes } from "../../services/mistakeService";
 import { getSceneById } from "../../services/sceneService";
 import { getWordById } from "../../services/wordService";
 import type { MasteryProgress, Mistake, MistakeType, Scene, Word } from "../../types";
 
-type MistakeTypeItem = {
+const mistakeTypeLabels: Record<MistakeType, string> = {
+  click: "Object",
+  spelling: "Spelling",
+  speaking: "Speaking"
+};
+
+const mistakeTypeOrder: MistakeType[] = ["click", "spelling", "speaking"];
+
+export type MistakeTypeItem = {
   type: MistakeType;
   label: string;
   mistakeCount: number;
@@ -12,7 +19,7 @@ type MistakeTypeItem = {
   lastMistakeAt: string;
 };
 
-type MistakeListItem = {
+export type MistakeListItem = {
   wordId: Word["id"];
   en: Word["en"];
   cn: Word["cn"];
@@ -23,13 +30,14 @@ type MistakeListItem = {
   typeItems: MistakeTypeItem[];
 };
 
-const mistakeTypeLabels: Record<MistakeType, string> = {
-  click: "Object",
-  spelling: "Spelling",
-  speaking: "Speaking"
+export type MistakesViewModel = {
+  title: string;
+  subtitle: string;
+  emptyTitle: string;
+  emptyDescription: string;
+  isEmpty: boolean;
+  mistakeItems: MistakeListItem[];
 };
-
-const mistakeTypeOrder: MistakeType[] = ["click", "spelling", "speaking"];
 
 function formatMistakeDate(value: string): string {
   return value.split("T")[0] || value;
@@ -56,8 +64,8 @@ function createMistakeTypeItems(mistake: Mistake): MistakeTypeItem[] {
   });
 }
 
-function createMistakeItems(mistakes: Mistake[]): MistakeListItem[] {
-  return mistakes
+export function createMistakesViewModel(mistakes: Mistake[]): MistakesViewModel {
+  const mistakeItems = mistakes
     .flatMap((mistake) => {
       const word = getWordById(mistake.wordId);
       const scene = getSceneById(mistake.sceneId);
@@ -82,10 +90,6 @@ function createMistakeItems(mistakes: Mistake[]): MistakeListItem[] {
       ];
     })
     .sort((left, right) => right.totalMistakeCount - left.totalMistakeCount);
-}
-
-function createPageData() {
-  const mistakeItems = createMistakeItems(getMistakes());
 
   return {
     title: "Mistakes",
@@ -96,11 +100,3 @@ function createPageData() {
     mistakeItems
   };
 }
-
-Page({
-  data: createPageData(),
-
-  onShow() {
-    this.setData(createPageData());
-  }
-});

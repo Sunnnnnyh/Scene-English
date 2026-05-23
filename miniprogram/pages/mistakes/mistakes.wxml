@@ -1,4 +1,49 @@
-<view class="placeholder-page">
-  <text class="placeholder-title">{{title}}</text>
-  <text class="placeholder-copy">{{description}}</text>
+<view class="mistakes-page">
+  <view class="mistakes-header">
+    <text class="mistakes-title">{{title}}</text>
+    <text class="mistakes-subtitle">{{subtitle}}</text>
+  </view>
+
+  <view wx:if="{{isEmpty}}" class="mistakes-empty">
+    <text class="mistakes-empty-title">{{emptyTitle}}</text>
+    <text class="mistakes-empty-description">{{emptyDescription}}</text>
+  </view>
+
+  <view wx:else class="mistakes-list">
+    <view wx:for="{{mistakeItems}}" wx:key="wordId" class="mistake-item">
+      <view class="mistake-summary">
+        <view class="mistake-copy">
+          <text class="mistake-word">{{item.en}}</text>
+          <text class="mistake-cn">{{item.cn}}</text>
+        </view>
+        <view class="mistake-meta">
+          <text class="mistake-scene">{{item.sceneName}}</text>
+          <text class="mistake-count">{{item.totalMistakeCount}} mistakes</text>
+        </view>
+      </view>
+
+      <text class="mistake-time">Last mistake {{item.lastMistakeAt}}</text>
+
+      <view class="mistake-type-list">
+        <view
+          wx:for="{{item.typeItems}}"
+          wx:for-item="typeItem"
+          wx:key="type"
+          class="mistake-type-item"
+        >
+          <view class="mistake-type-row">
+            <text class="mistake-type-label">{{typeItem.label}}</text>
+            <text class="mistake-type-count">{{typeItem.mistakeCount}}x</text>
+          </view>
+          <view class="mistake-progress-row">
+            <view class="mistake-progress-track">
+              <view class="mistake-progress-fill" style="width: {{typeItem.progressLabel}}"></view>
+            </view>
+            <text class="mistake-progress-label">{{typeItem.progressLabel}}</text>
+          </view>
+          <text class="mistake-type-time">Last {{typeItem.lastMistakeAt}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
 </view>
