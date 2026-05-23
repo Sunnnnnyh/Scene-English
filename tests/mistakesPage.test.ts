@@ -141,6 +141,20 @@ describe("mistakes page", () => {
     expect(viewModel.mistakeItems).toEqual([]);
   });
 
+  it("treats fully mastered mistake records as removed from the list", () => {
+    const viewModel = createMistakesViewModel([
+      {
+        wordId: "projector",
+        sceneId: "classroom",
+        lastMistakeAt: "2026-05-18T10:12:00.000Z",
+        typeStats: {}
+      }
+    ]);
+
+    expect(viewModel.isEmpty).toBe(true);
+    expect(viewModel.mistakeItems).toEqual([]);
+  });
+
   it("renders a real mistake list and empty state instead of a placeholder page", () => {
     expect(mistakesMarkup).toContain("mistakes-page");
     expect(mistakesMarkup).toContain("mistakeItems");

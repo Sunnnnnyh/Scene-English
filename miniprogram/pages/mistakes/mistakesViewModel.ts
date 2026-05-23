@@ -76,6 +76,10 @@ export function createMistakesViewModel(mistakes: Mistake[]): MistakesViewModel 
 
       const typeItems = createMistakeTypeItems(mistake);
 
+      if (typeItems.length === 0) {
+        return [];
+      }
+
       return [
         {
           wordId: word.id,

@@ -1594,3 +1594,23 @@ Listen + Spell 的错误反馈音效继续使用本地 WAV 资源，不引入新
 | `miniprogram/pages/mistakes/mistakes.wxml` | 在每个错题项中新增 `Remove` 操作按钮并绑定当前 `wordId`。 | 阶段 7 / Step 7.2 |
 | `miniprogram/pages/mistakes/mistakes.wxss` | 补充错题项操作区和移出按钮样式。 | 阶段 7 / Step 7.2 |
 | `tests/mistakesPage.test.ts` | 覆盖手动移出错题入口、确认弹窗、确认后刷新和弹窗文案回归。 | 阶段 7 / Step 7.2 |
+## 47. 阶段 7 / Step 7.3 自动移出边界修正
+
+错题服务层已经具备 `recordMistakeCorrectAnswer()`：同一错误类型答对 1 次后进度为 50%，连续答对 2 次后移除该错误类型，所有错误类型移除后整词从错题记录中移除。本次页面层补充一个边界防线：如果本地数据中出现 `typeStats` 已为空的错题记录，错题夹展示层不会再渲染该词，而是把它视为已掌握并自动移出列表。
+
+当前职责：
+- `miniprogram/pages/mistakes/mistakesViewModel.ts` 在生成 `MistakeListItem` 时跳过 `typeItems.length === 0` 的记录，保证测试模型不会展示已无弱项的错题。
+- `miniprogram/pages/mistakes/mistakes.ts` 同步运行时内联聚合逻辑，避免微信小程序实际页面渲染 0 错误空卡片。
+- `tests/mistakesPage.test.ts` 覆盖空 `typeStats` 记录被视为已移出，页面进入空状态的回归行为。
+
+运行时注意事项：
+- 本次修正只处理“已无弱项的错题记录不应出现在错题夹中”的展示边界。
+- 真实练习中答对后调用 `recordMistakeCorrectAnswer()` 的流程尚未接入；下一步需要把该服务调用接入练习答对路径。
+- 错题专项练习入口仍属于 Step 7.4，尚未实现。
+
+文件变更记录补充：
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `miniprogram/pages/mistakes/mistakes.ts` | 过滤没有任何错误类型的错题记录，避免运行时展示已掌握空卡片。 | 阶段 7 / Step 7.3 自动移出边界修正 |
+| `miniprogram/pages/mistakes/mistakesViewModel.ts` | 让测试用错题展示模型同样跳过空弱项记录。 | 阶段 7 / Step 7.3 自动移出边界修正 |
+| `tests/mistakesPage.test.ts` | 增加空 `typeStats` 被视为已移出并显示空状态的回归测试。 | 阶段 7 / Step 7.3 自动移出边界修正 |

@@ -76,6 +76,10 @@ function createMistakeItems(mistakes: Mistake[]): MistakeListItem[] {
 
       const typeItems = createMistakeTypeItems(mistake);
 
+      if (typeItems.length === 0) {
+        return [];
+      }
+
       return [
         {
           wordId: word.id,
