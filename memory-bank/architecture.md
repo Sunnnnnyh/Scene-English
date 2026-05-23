@@ -1571,3 +1571,26 @@ Listen + Spell 的错误反馈音效继续使用本地 WAV 资源，不引入新
 | `miniprogram/pages/mistakes/mistakes.wxss` | 补充错题列表、错误类型卡片、进度条和空状态样式。 | 阶段 7 / Step 7.1 |
 | `miniprogram/pages/mistakes/mistakesViewModel.ts` | 提供错题夹展示模型生成逻辑，便于测试错题聚合、排序和展示字段。 | 阶段 7 / Step 7.1 |
 | `tests/mistakesPage.test.ts` | 覆盖错题夹列表展示、总错误次数递减排序、空状态、页面刷新和样式约束。 | 阶段 7 / Step 7.1 |
+## 46. 阶段 7 / Step 7.2 手动移出错题
+
+错题夹页面现在支持用户从列表中手动移出某个错题单词。该能力复用既有 `mistakeService.removeMistake(wordId)`，不新增数据结构、不改变错题记录规则，也不进入掌握进度自动移出或错题专项练习入口范围。
+
+当前职责：
+- `miniprogram/pages/mistakes/mistakes.ts` 引入 `removeMistake`，并新增 `onRemoveMistake` 事件处理；点击后先弹出确认框，确认后移出对应 `wordId` 的错题记录并调用 `setData(createPageData())` 刷新页面。
+- `miniprogram/pages/mistakes/mistakes.wxml` 在每个错题项中渲染 `Remove` 按钮，并通过 `data-word-id` 把当前单词 id 传给页面事件。
+- `miniprogram/pages/mistakes/mistakes.wxss` 补充错题项底部操作区和移出按钮样式。
+- `tests/mistakesPage.test.ts` 约束手动移出入口、确认弹窗、确认后刷新逻辑，以及弹窗说明不再出现“answering wrong later”一类引导再次答错的文案。
+
+运行时注意事项：
+- 取消确认弹窗不会修改本地错题数据。
+- 确认移出会删除该单词的整条错题记录，而不是只移除某一种错误类型。
+- 当前弹窗说明文案为 `This word will leave your mistake list.`，避免暗示用户需要再次答错才能恢复。
+- Step 7.3 的自动移出和 Step 7.4 的错题专项练习入口尚未实现。
+
+文件变更记录补充：
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `miniprogram/pages/mistakes/mistakes.ts` | 新增错题手动移出事件，确认后调用 `removeMistake` 并刷新列表。 | 阶段 7 / Step 7.2 |
+| `miniprogram/pages/mistakes/mistakes.wxml` | 在每个错题项中新增 `Remove` 操作按钮并绑定当前 `wordId`。 | 阶段 7 / Step 7.2 |
+| `miniprogram/pages/mistakes/mistakes.wxss` | 补充错题项操作区和移出按钮样式。 | 阶段 7 / Step 7.2 |
+| `tests/mistakesPage.test.ts` | 覆盖手动移出错题入口、确认弹窗、确认后刷新和弹窗文案回归。 | 阶段 7 / Step 7.2 |

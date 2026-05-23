@@ -168,6 +168,22 @@ describe("mistakes page", () => {
     expect(mistakesScript).toContain("setData");
   });
 
+  it("supports manually removing a mistake after confirmation", () => {
+    expect(mistakesMarkup).toContain("Remove");
+    expect(mistakesMarkup).toContain('data-word-id="{{item.wordId}}"');
+    expect(mistakesMarkup).toContain('catchtap="onRemoveMistake"');
+    expect(mistakesMarkup).toContain("mistake-remove-button");
+
+    expect(mistakesScript).toContain("removeMistake");
+    expect(mistakesScript).toContain("onRemoveMistake");
+    expect(mistakesScript).toContain("showModal");
+    expect(mistakesScript).toContain("Remove this mistake?");
+    expect(mistakesScript).toContain("This word will leave your mistake list.");
+    expect(mistakesScript).not.toContain("answering wrong later");
+    expect(mistakesScript).toContain("confirm");
+    expect(mistakesScript).toContain("setData(createPageData())");
+  });
+
   it("styles list rows, type badges, progress bars, and the empty state", () => {
     expect(mistakesStyles).toContain(".mistakes-page");
     expect(mistakesStyles).toContain(".mistakes-list");
@@ -177,6 +193,8 @@ describe("mistakes page", () => {
     expect(mistakesStyles).toContain(".mistake-type-item");
     expect(mistakesStyles).toContain(".mistake-progress-track");
     expect(mistakesStyles).toContain(".mistake-progress-fill");
+    expect(mistakesStyles).toContain(".mistake-actions");
+    expect(mistakesStyles).toContain(".mistake-remove-button");
     expect(mistakesStyles).toContain(".mistakes-empty");
   });
 });

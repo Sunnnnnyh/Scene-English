@@ -1,4 +1,4 @@
-import { getMistakes } from "../../services/mistakeService";
+import { getMistakes, removeMistake } from "../../services/mistakeService";
 import { getSceneById } from "../../services/sceneService";
 import { getWordById } from "../../services/wordService";
 import type { MasteryProgress, Mistake, MistakeType, Scene, Word } from "../../types";
@@ -21,6 +21,14 @@ type MistakeListItem = {
   lastMistakeAt: string;
   totalMistakeCount: number;
   typeItems: MistakeTypeItem[];
+};
+
+type MistakeTapEvent = WechatMiniprogram.BaseEvent & {
+  currentTarget: {
+    dataset: {
+      wordId?: Word["id"];
+    };
+  };
 };
 
 const mistakeTypeLabels: Record<MistakeType, string> = {
@@ -102,5 +110,28 @@ Page({
 
   onShow() {
     this.setData(createPageData());
+  },
+
+  onRemoveMistake(event: MistakeTapEvent) {
+    const { wordId } = event.currentTarget.dataset;
+
+    if (!wordId) {
+      return;
+    }
+
+    wx.showModal({
+      title: "Remove this mistake?",
+      content: "This word will leave your mistake list.",
+      confirmText: "Remove",
+      confirmColor: "#c95445",
+      success: (result) => {
+        if (!result.confirm) {
+          return;
+        }
+
+        removeMistake(wordId);
+        this.setData(createPageData());
+      }
+    });
   }
 });

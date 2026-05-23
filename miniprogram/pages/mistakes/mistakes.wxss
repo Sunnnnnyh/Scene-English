@@ -164,6 +164,30 @@
   font-size: 22rpx;
 }
 
+.mistake-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 22rpx;
+}
+
+.mistake-remove-button {
+  min-width: 180rpx;
+  min-height: 68rpx;
+  margin: 0;
+  padding: 0 26rpx;
+  border: 2rpx solid #c95445;
+  border-radius: 999rpx;
+  background: #fff7f5;
+  color: #c95445;
+  font-size: 23rpx;
+  font-weight: 800;
+  line-height: 68rpx;
+}
+
+.mistake-remove-button:active {
+  transform: translateY(1rpx);
+}
+
 .mistakes-empty {
   margin-top: 42rpx;
   padding: 32rpx;

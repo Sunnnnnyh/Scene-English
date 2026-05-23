@@ -44,6 +44,16 @@
           <text class="mistake-type-time">Last {{typeItem.lastMistakeAt}}</text>
         </view>
       </view>
+
+      <view class="mistake-actions">
+        <button
+          class="mistake-remove-button"
+          data-word-id="{{item.wordId}}"
+          catchtap="onRemoveMistake"
+        >
+          Remove
+        </button>
+      </view>
     </view>
   </view>
 </view>
