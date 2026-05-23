@@ -18,6 +18,7 @@ type CreatePracticeQuizRoundParams = {
   words: Word[];
   learnedWordIds: Word["id"][];
   questionCount?: number;
+  random?: () => number;
 };
 
 type CreateMistakePracticeQuizRoundParams = {
@@ -40,6 +41,16 @@ type MistakePracticeCandidate = {
 
 const takeQuestions = <T>(items: T[], questionCount: number): T[] =>
   items.slice(0, Math.max(0, questionCount));
+
+const shuffleWords = <T>(items: T[], random: () => number): T[] =>
+  items
+    .map((item, index) => ({
+      item,
+      index,
+      sortKey: random()
+    }))
+    .sort((first, second) => first.sortKey - second.sortKey || first.index - second.index)
+    .map(({ item }) => item);
 
 const createQuizQuestion = (
   sceneId: Scene["id"],
@@ -77,12 +88,16 @@ export function createPracticeQuizRound({
   mode,
   words,
   learnedWordIds,
-  questionCount = DEFAULT_QUIZ_QUESTION_COUNT
+  questionCount = DEFAULT_QUIZ_QUESTION_COUNT,
+  random = Math.random
 }: CreatePracticeQuizRoundParams): QuizRound {
   const learnedWordIdSet = new Set(learnedWordIds);
   const learnedWords = words.filter((word) => learnedWordIdSet.has(word.id));
   const unlearnedWords = words.filter((word) => !learnedWordIdSet.has(word.id));
-  const selectedWords = takeQuestions([...learnedWords, ...unlearnedWords], questionCount);
+  const selectedWords = takeQuestions(
+    [...shuffleWords(learnedWords, random), ...shuffleWords(unlearnedWords, random)],
+    questionCount
+  );
 
   return createQuizRound(
     sceneId,

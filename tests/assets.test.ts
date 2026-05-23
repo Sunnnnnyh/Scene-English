@@ -70,6 +70,18 @@ describe("static assets", () => {
       expect(bytes.length).toBeGreaterThan(1_000);
       expect(bytes.subarray(0, 4).toString("ascii")).toBe("RIFF");
       expect(bytes.subarray(8, 12).toString("ascii")).toBe("WAVE");
+
+      const samples = new Int16Array(
+        bytes.buffer,
+        bytes.byteOffset + 44,
+        Math.floor((bytes.byteLength - 44) / 2)
+      );
+      const peak = samples.reduce(
+        (currentPeak, sample) => Math.max(currentPeak, Math.abs(sample)),
+        0
+      );
+
+      expect(peak).toBeGreaterThan(1_000);
     }
   });
 });

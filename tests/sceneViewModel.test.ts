@@ -80,7 +80,8 @@ describe("scene page view model", () => {
       sceneId: "classroom",
       mode: "listeningWriting",
       words: classroomWords,
-      learnedWordIds: classroomWords.slice(0, 5).map((word) => word.id)
+      learnedWordIds: classroomWords.slice(0, 5).map((word) => word.id),
+      random: () => 0
     });
 
     const state = createListeningWritingStartState(round, classroomWords);

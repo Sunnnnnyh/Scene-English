@@ -220,7 +220,7 @@ function playListeningWritingFeedbackSound(kind: "correct" | "wrong") {
     const audioContext = wx.createInnerAudioContext();
     listeningWritingFeedbackAudioContext = audioContext;
     audioContext.src = src;
-    audioContext.volume = kind === "wrong" ? 0.36 : 0.62;
+    audioContext.volume = kind === "wrong" ? 0.44 : 0.62;
     audioContext.play();
   } catch {
     // Feedback sounds should never block the learning flow.
@@ -262,6 +262,17 @@ function refreshSceneProgress(sceneId: Scene["id"]) {
   };
 }
 
+function shuffleWords<T>(items: T[]): T[] {
+  return items
+    .map((item, index) => ({
+      item,
+      index,
+      sortKey: Math.random()
+    }))
+    .sort((first, second) => first.sortKey - second.sortKey || first.index - second.index)
+    .map(({ item }) => item);
+}
+
 function createPracticeQuizRound({
   sceneId,
   mode,
@@ -279,7 +290,7 @@ function createPracticeQuizRound({
   const excludedWordIdSet = new Set(excludeWordIds);
   const learnedWords = words.filter((word) => learnedWordIdSet.has(word.id));
   const unlearnedWords = words.filter((word) => !learnedWordIdSet.has(word.id));
-  const orderedWords = [...learnedWords, ...unlearnedWords];
+  const orderedWords = [...shuffleWords(learnedWords), ...shuffleWords(unlearnedWords)];
   const availableWords = orderedWords.filter((word) => !excludedWordIdSet.has(word.id));
   const fallbackWords = orderedWords.filter((word) => excludedWordIdSet.has(word.id));
   const selectedWords = [...availableWords, ...fallbackWords].slice(

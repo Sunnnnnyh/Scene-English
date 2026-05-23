@@ -208,6 +208,7 @@ describe("Listen + Spell start state inside the Learn tab", () => {
   it("starts a new five-word set by excluding the previous round first", () => {
     expect(scenePageScript).toContain("excludeWordIds");
     expect(scenePageScript).toContain("previousRound.questions.map");
+    expect(scenePageScript).toContain("shuffleWords");
     expect(scenePageScript).toContain("excludedWordIdSet");
     expect(scenePageScript).toContain("availableWords");
     expect(scenePageScript).toContain("fallbackWords");

@@ -6,7 +6,7 @@
 
 ## 1. 当前阶段
 
-当前项目已完成阶段 6 / Step 6.4 Listen + Spell 拼写输入、答案校验和基础完成页。项目已初始化微信小程序 TypeScript 工程，建立基础目录结构和全部规划页面占位，配置基础开发质量工具，完成核心类型、场景数据、Classroom 20 个单词静态数据、正式 Classroom 图片、正式热区校准和真实单词音频资源，并实现本地缓存工具、字符串标准化工具、热区计算工具、场景服务、单词服务、收藏服务、学习进度服务、错题服务、抽题服务、音频服务和 mock 口语识别服务。首页已接入场景选择页，可以展示 Classroom 主场景和 Lecture Hall、Dormitory、Cafeteria 三个 Coming soon 场景；底部导航已包含 Home / Learn / Review / Me。Home 负责选择学习场景，Learn 负责进入当前学习场景；MVP 阶段只有 Classroom，因此直接点击 Learn 默认进入 Classroom 学习首页。Classroom 学习首页可查看场景预览、学习进度和三个学习模式入口，Coming soon 场景只提示不跳转。点击学习模式入口时，当前采用 Learn tab 内部状态切换，不再 `navigateTo` 普通页面，从而避免底部 tabBar 在过渡中消失。Review 页已预留收藏夹和错题夹全局入口，Me 页已展示本地轻量统计和 mock ASR 状态。Memory Mode 当前优先在 Learn tab 内联视图中推进：已能稳定展示 Classroom 场景图，并根据 Classroom 20 个单词数据覆盖透明热区；Memory 视图标题下方同样展示 `单词进度`、`Learned x / 20` 和进度条；点击热区会打开对应单词卡，卡片展示英文、中文、美式音标、音频播放入口、收藏状态和 1 条 Useful expression；点击 Useful expression 英文句子可展开或收起中文翻译，并通过 `sceneenglish:onboarding` 记录表达翻译轻引导完成状态。点击热区打开单词卡时会通过 `progressService` 记录该词为已学，并刷新 `Learned x / 20` 进度；点击星标会通过 `favoriteService` 写入或移除收藏；打开单词卡时会自动播放当前单词音频一次，用户也可以手动复听。Favorites 页面已接入真实收藏列表：从本地收藏记录生成列表项，支持空状态，允许点击多个收藏项同时展开音标和 Useful expression，并在展开详情中支持播放单词音频和取消收藏；取消收藏后会写入 `sceneenglish:favorites` 并立即刷新列表。Listen + Spell 当前已能生成 5 题练习开始状态、播放当前题音频、完成听音找物点击判断并进入拼写输入：目标音频播放结束前点击热区不会进入判定，播放结束后才允许选择物品；点对后进入 `spellingReady`，输入框和并排的 `Play audio` / `Submit` 按钮成为视觉焦点；首次点错会记录 `click` 类型错题并允许重试，第二次点错会高亮正确物品并进入拼写；首次拼写错误会记录 `spelling` 类型错题并允许再试一次，第二次拼写错误会展示正确拼写并等待用户继续；答题后通过 `Continue` 进入下一题，完成 5 题后展示 `Round complete`，可开启新一组或结束练习。正确和错误反馈已补充短 WAV 音效，其中错误音效保留但更柔和并降低播放音量。点击空白区域只给轻提示。首次进入单词记忆模式时会展示一次性轻引导，高亮 `projector` 并通过 `sceneenglish:onboarding` 本地缓存记录完成状态。工程可以被微信开发者工具识别，所有已注册页面都能打开；TypeScript、ESLint、Prettier 和 Vitest 命令均可运行。
+当前项目已完成阶段 6 / Step 6.5 Listen + Spell 拼写输入、答案校验和基础完成页。项目已初始化微信小程序 TypeScript 工程，建立基础目录结构和全部规划页面占位，配置基础开发质量工具，完成核心类型、场景数据、Classroom 20 个单词静态数据、正式 Classroom 图片、正式热区校准和真实单词音频资源，并实现本地缓存工具、字符串标准化工具、热区计算工具、场景服务、单词服务、收藏服务、学习进度服务、错题服务、抽题服务、音频服务和 mock 口语识别服务。首页已接入场景选择页，可以展示 Classroom 主场景和 Lecture Hall、Dormitory、Cafeteria 三个 Coming soon 场景；底部导航已包含 Home / Learn / Review / Me。Home 负责选择学习场景，Learn 负责进入当前学习场景；MVP 阶段只有 Classroom，因此直接点击 Learn 默认进入 Classroom 学习首页。Classroom 学习首页可查看场景预览、学习进度和三个学习模式入口，Coming soon 场景只提示不跳转。点击学习模式入口时，当前采用 Learn tab 内部状态切换，不再 `navigateTo` 普通页面，从而避免底部 tabBar 在过渡中消失。Review 页已预留收藏夹和错题夹全局入口，Me 页已展示本地轻量统计和 mock ASR 状态。Memory Mode 当前优先在 Learn tab 内联视图中推进：已能稳定展示 Classroom 场景图，并根据 Classroom 20 个单词数据覆盖透明热区；Memory 视图标题下方同样展示 `单词进度`、`Learned x / 20` 和进度条；点击热区会打开对应单词卡，卡片展示英文、中文、美式音标、音频播放入口、收藏状态和 1 条 Useful expression；点击 Useful expression 英文句子可展开或收起中文翻译，并通过 `sceneenglish:onboarding` 记录表达翻译轻引导完成状态。点击热区打开单词卡时会通过 `progressService` 记录该词为已学，并刷新 `Learned x / 20` 进度；点击星标会通过 `favoriteService` 写入或移除收藏；打开单词卡时会自动播放当前单词音频一次，用户也可以手动复听。Favorites 页面已接入真实收藏列表：从本地收藏记录生成列表项，支持空状态，允许点击多个收藏项同时展开音标和 Useful expression，并在展开详情中支持播放单词音频和取消收藏；取消收藏后会写入 `sceneenglish:favorites` 并立即刷新列表。Listen + Spell 当前已能生成 5 题练习开始状态、播放当前题音频、完成听音找物点击判断并进入拼写输入：目标音频播放结束前点击热区不会进入判定，播放结束后才允许选择物品；点对后进入 `spellingReady`，输入框和并排的 `Play audio` / `Submit` 按钮成为视觉焦点；首次点错会记录 `click` 类型错题并允许重试，第二次点错会高亮正确物品并进入拼写；首次拼写错误会记录 `spelling` 类型错题并允许再试一次，第二次拼写错误会展示正确拼写并等待用户继续；答题后通过 `Continue` 进入下一题，完成 5 题后展示 `Round complete`，可开启新一组或结束练习。正确和错误反馈已补充短 WAV 音效，其中错误音效保留但更柔和并降低播放音量。点击空白区域只给轻提示。首次进入单词记忆模式时会展示一次性轻引导，高亮 `projector` 并通过 `sceneenglish:onboarding` 本地缓存记录完成状态。工程可以被微信开发者工具识别，所有已注册页面都能打开；TypeScript、ESLint、Prettier 和 Vitest 命令均可运行。
 
 当前源码目录为：
 
@@ -1494,3 +1494,54 @@ Listen + Spell 当前在听音找物后继续进入拼写输入和本轮完成�
 | `miniprogram/assets/audio/feedback-wrong.wav` | Listen + Spell 错误反馈短音效资源，当前为柔和短提示音。 | 阶段 6 / Step 6.3-6.4 |
 | `tests/listeningWritingStart.test.ts` | 覆盖 Listen + Spell 拼写闭环、完成页、反馈音效和界面返修约束。 | 阶段 6 / Step 6.3-6.4 |
 | `tests/assets.test.ts` | 补充反馈 WAV 音效资源存在性与格式校验。 | 阶段 6 / Step 6.3-6.4 |
+
+## 43. 阶段 6 / Step 6.5 抽题优先级验证更新
+
+Listen + Spell 的普通练习抽题规则现在明确为“已学词优先随机，不足 5 题时由未学词随机补足”。该规则同时落在 service 层和 Learn tab 内联运行时代码中，保证单元测试可验证、微信小程序运行时也能按相同规则生成题目。
+
+当前职责：
+
+- `miniprogram/services/quizService.ts` 的 `createPracticeQuizRound` 先拆分 learned / unlearned 两个词池，再分别洗牌；已学词池优先进入本轮题目，数量不足时再从未学词池补足。
+- `createPracticeQuizRound` 支持注入 `random` 函数，便于用确定性随机序列测试抽题优先级，不影响生产运行时默认随机行为。
+- `miniprogram/pages/scene/scene.ts` 保留页面内联抽题实现，以避开微信运行时 helper module 解析边界；该内联实现同步使用相同的 learned-first 随机补足规则。
+- 新一轮 Listen + Spell 仍优先排除上一轮已经出现过的词，再按已学词优先规则抽题，降低连续两轮重复感。
+- `createMistakePracticeQuizRound` 保持错题专项的弱项优先规则：按目标错误类型过滤，再综合低掌握度、高错误次数、较新的最近错误时间和词表顺序排序。
+
+运行时注意事项：
+
+- 普通 Listen + Spell 从学习过的词中优先随机抽题；如果用户已学词少于 5 个，未学词会自动补齐本轮。
+- 错题专项的端到端入口尚未进入当前阶段；目前通过 service 层单元测试保障弱项优先规则，等 Step 7.4 完成入口后再做手动流程验证。
+
+测试覆盖：
+
+- `tests/quizService.test.ts` 覆盖普通抽题的 learned-first 随机补足、可注入随机函数，以及错题专项的弱项排序。
+- `tests/listeningWritingStart.test.ts` 覆盖 Learn tab 内联 Listen + Spell 抽题规则和新一轮排除上一轮词的行为。
+- `tests/sceneViewModel.test.ts` 继续覆盖首题显示状态、题号和音频路径等展示模型。
+
+文件变更记录补充：
+
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `miniprogram/services/quizService.ts` | 更新普通练习抽题为已学词优先随机、不足时未学词补足，并支持注入随机函数用于确定性测试。 | 阶段 6 / Step 6.5 |
+| `miniprogram/pages/scene/scene.ts` | 同步 Learn tab 内联 Listen + Spell 抽题规则，并保留新一轮优先排除上一轮词的逻辑。 | 阶段 6 / Step 6.5 |
+| `tests/quizService.test.ts` | 补充普通抽题优先级、随机性注入和错题专项弱项优先规则测试。 | 阶段 6 / Step 6.5 |
+| `tests/listeningWritingStart.test.ts` | 补充 Listen + Spell 页面内联抽题与新一轮排除上一轮词的回归测试。 | 阶段 6 / Step 6.5 |
+| `tests/sceneViewModel.test.ts` | 保持听写开始状态展示模型覆盖，随 Step 6.5 抽题行为同步验证。 | 阶段 6 / Step 6.5 |
+
+## 44. Listen + Spell 错误反馈音效小修记录
+
+Listen + Spell 的错误反馈音效继续使用本地 WAV 资源，不引入新依赖、不新增音频服务。当前版本保留短促错误提示音，用于点击错误物品或拼写错误时的即时反馈；最终声音风格可在后续 UI / 体验精修阶段统一处理。
+
+当前职责：
+
+- `miniprogram/assets/audio/feedback-wrong.wav` 保存当前错误反馈短音效。
+- `miniprogram/pages/scene/scene.ts` 继续通过 `playListeningWritingFeedbackSound("wrong")` 播放错误反馈，并将错误音效音量控制为低于正确音效。
+- `tests/assets.test.ts` 除了校验反馈 WAV 存在和格式正确外，也校验音频采样峰值大于静音阈值，避免出现合法 WAV 但完全无声的资源回归。
+
+文件变更记录补充：
+
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `miniprogram/assets/audio/feedback-wrong.wav` | Listen + Spell 错误反馈短音效资源，当前版本已由用户确认可接受。 | Listen + Spell 错误反馈音效小修 |
+| `miniprogram/pages/scene/scene.ts` | 调整错误反馈音效播放音量，保持错误反馈存在但不过分突兀。 | Listen + Spell 错误反馈音效小修 |
+| `tests/assets.test.ts` | 增加反馈 WAV 非静音校验，防止格式合法但无声的资源问题回归。 | Listen + Spell 错误反馈音效小修 |

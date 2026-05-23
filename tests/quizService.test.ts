@@ -21,6 +21,17 @@ const createMistake = (
   lastMistakeAt
 });
 
+const createSequenceRandom = (values: number[]) => {
+  let index = 0;
+
+  return () => {
+    const value = values[index] ?? 0;
+    index += 1;
+
+    return value;
+  };
+};
+
 describe("quizService", () => {
   beforeEach(() => {
     vi.useFakeTimers();
@@ -32,7 +43,8 @@ describe("quizService", () => {
       sceneId: "classroom",
       mode: "listeningWriting",
       words,
-      learnedWordIds: words.slice(0, 6).map((word) => word.id)
+      learnedWordIds: words.slice(0, 6).map((word) => word.id),
+      random: createSequenceRandom([0.4, 0.1, 0.3, 0.2, 0.5, 0])
     });
 
     expect(round).toMatchObject({
@@ -43,7 +55,7 @@ describe("quizService", () => {
     });
     expect(round.questions).toHaveLength(DEFAULT_QUIZ_QUESTION_COUNT);
     expect(round.questions.map((question) => question.wordId)).toEqual(
-      words.slice(0, 5).map((word) => word.id)
+      [words[5], words[1], words[3], words[2], words[0]].map((word) => word.id)
     );
   });
 
@@ -52,15 +64,16 @@ describe("quizService", () => {
       sceneId: "classroom",
       mode: "listeningSpeaking",
       words,
-      learnedWordIds: [words[2].id, words[5].id]
+      learnedWordIds: [words[2].id, words[5].id],
+      random: createSequenceRandom([0.6, 0.1, 0.9, 0.2, 0.8, 0.3, 0.7, 0.4])
     });
 
     expect(round.questions.map((question) => question.wordId)).toEqual([
-      words[2].id,
       words[5].id,
-      words[0].id,
+      words[2].id,
       words[1].id,
-      words[3].id
+      words[4].id,
+      words[7].id
     ]);
   });
 
