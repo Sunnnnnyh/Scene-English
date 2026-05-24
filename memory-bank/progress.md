@@ -965,3 +965,22 @@
 - 遗留问题：
   - 当前错题消除需要回到 Listen + Spell 普通练习中重新遇到该词并答对；错题夹内的 `Practice` 专项入口仍属于 Step 7.4，尚未实现。
   - 当前只接入 Listen + Spell 的 `click` 和 `spelling` 掌握进度更新；`speaking` 类型需要在 Listen + Speak 流程实现后接入。
+
+### 2026-05-24 - Phase 7 / Step 7.4 Mistake practice entry
+
+- Completed:
+  - Added one top-level `Practice` entry on the Mistakes page instead of per-word practice buttons.
+  - Tapping `Practice` opens a choice between `Object` and `Spelling`; `Object` maps to `click` mistakes and `Spelling` maps to `spelling` mistakes.
+  - Added a pending mistake practice request service so the Mistakes page can hand the selected practice type to the Scene page.
+  - Scene page now consumes the pending request, starts the matching mistake-focused round, and returns directly to the Mistakes page after the practice round finishes.
+  - Object mistake practice now stops after the object-selection answer; Spelling mistake practice continues through the Listen + Spell spelling flow.
+  - Simplified the Mistakes card UI: removed per-type timestamps, removed visible progress percentages, kept one card-level last mistake date, right-aligned `1x`, and made `Practice` / `Remove` compact badge-style controls.
+- Verification:
+  - User validated the updated Mistakes UI and the post-practice return behavior in WeChat DevTools.
+  - `npm run typecheck` passed.
+  - `npm run lint` passed.
+  - `npm run format:check` passed.
+  - `npm test` passed: 32 test files, 157 tests.
+- Remaining:
+  - `speaking` mistake practice remains out of scope until the Listen + Speak flow is implemented.
+  - Further visual polish can continue in the later UI refinement phase.

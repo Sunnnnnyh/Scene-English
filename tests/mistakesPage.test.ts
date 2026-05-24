@@ -164,11 +164,15 @@ describe("mistakes page", () => {
     expect(mistakesMarkup).toContain("{{item.sceneName}}");
     expect(mistakesMarkup).toContain("{{item.totalMistakeCount}}");
     expect(mistakesMarkup).toContain("{{item.lastMistakeAt}}");
+    expect(mistakesMarkup).not.toContain("{{typeItem.lastMistakeAt}}");
     expect(mistakesMarkup).toContain('wx:for="{{item.typeItems}}"');
     expect(mistakesMarkup).toContain("{{typeItem.label}}");
     expect(mistakesMarkup).toContain("{{typeItem.mistakeCount}}");
-    expect(mistakesMarkup).toContain("{{typeItem.progressLabel}}");
+    expect(mistakesMarkup).toContain("mistake-type-trailing");
     expect(mistakesMarkup).toContain('style="width: {{typeItem.progressLabel}}"');
+    expect(mistakesMarkup).not.toContain("mistake-progress-label");
+    expect(mistakesMarkup).not.toContain('data-mistake-type="{{typeItem.type}}"');
+    expect(mistakesMarkup).not.toContain('catchtap="onPracticeMistake"');
     expect(mistakesMarkup).toContain('wx:if="{{isEmpty}}"');
     expect(mistakesMarkup).toContain("mistakes-empty");
     expect(mistakesMarkup).not.toContain("placeholder-page");
@@ -198,6 +202,22 @@ describe("mistakes page", () => {
     expect(mistakesScript).toContain("setData(createPageData())");
   });
 
+  it("starts mistake practice from a top-level type picker", () => {
+    expect(mistakesMarkup).toContain("Practice");
+    expect(mistakesMarkup).toContain('bindtap="onPracticeMistakes"');
+    expect(mistakesMarkup).toContain("mistakes-practice-button");
+    expect(mistakesMarkup).not.toContain("<button");
+    expect(mistakesMarkup).not.toContain("mistake-practice-button");
+    expect(mistakesMarkup).not.toContain("mistake-type-actions");
+
+    expect(mistakesScript).toContain("savePendingMistakePracticeRequest");
+    expect(mistakesScript).toContain("onPracticeMistakes");
+    expect(mistakesScript).toContain("showActionSheet");
+    expect(mistakesScript).toContain('itemList: ["Object", "Spelling"]');
+    expect(mistakesScript).toContain('const practiceTypes: MistakeType[] = ["click", "spelling"]');
+    expect(mistakesScript).toContain('wx.switchTab({ url: "/pages/scene/scene" })');
+  });
+
   it("styles list rows, type badges, progress bars, and the empty state", () => {
     expect(mistakesStyles).toContain(".mistakes-page");
     expect(mistakesStyles).toContain(".mistakes-list");
@@ -209,6 +229,23 @@ describe("mistakes page", () => {
     expect(mistakesStyles).toContain(".mistake-progress-fill");
     expect(mistakesStyles).toContain(".mistake-actions");
     expect(mistakesStyles).toContain(".mistake-remove-button");
+    expect(mistakesStyles).toContain(".mistake-type-trailing");
+    expect(mistakesStyles).toContain(".mistakes-practice-button");
+    expect(mistakesStyles).not.toContain("width: 116rpx");
+    expect(mistakesStyles).not.toContain("width: auto");
+    expect(mistakesStyles).not.toContain("width: 78rpx");
+    expect(mistakesStyles).toContain("align-self: flex-start");
+    expect(mistakesStyles).toContain("padding: 12rpx 24rpx");
+    expect(mistakesStyles).toContain("padding: 11rpx 20rpx");
+    expect(mistakesStyles).toContain("font-size: 24rpx");
+    expect(mistakesStyles).toContain("font-size: 23rpx");
+    expect(mistakesStyles).toContain("margin-left: auto");
+    expect(mistakesStyles).toContain("justify-content: center");
+    expect(mistakesStyles).not.toContain(".mistake-type-copy");
+    expect(mistakesStyles).not.toContain(".mistake-type-meta");
+    expect(mistakesStyles).not.toContain(".mistake-progress-label");
+    expect(mistakesStyles).not.toContain(".mistake-type-actions");
+    expect(mistakesStyles).not.toContain(".mistake-type-time");
     expect(mistakesStyles).toContain(".mistakes-empty");
   });
 });

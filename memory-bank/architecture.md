@@ -1634,3 +1634,41 @@ Listen + Spell 现在会在真实答题成功路径中调用错题服务的掌�
 |---|---|---|
 | `miniprogram/pages/scene/scene.ts` | 在 Listen + Spell 点对物品和拼写答对路径中调用 `recordMistakeCorrectAnswer`，推进错题掌握进度。 | 阶段 7 / Step 7.3 |
 | `tests/listeningWritingStart.test.ts` | 增加 Listen + Spell 答对后更新错题掌握进度的回归测试。 | 阶段 7 / Step 7.3 |
+
+## 49. Phase 7 / Step 7.4 Mistake practice entry
+
+The Mistakes page now owns one top-level practice entry instead of rendering a separate practice button for each word or mistake type. The page lets the user choose `Object` or `Spelling`, stores that choice as a short-lived pending request, and hands control to the Scene page. The Scene page consumes the request on show, creates a mistake-focused round, and returns directly to the Mistakes page when the round is finished.
+
+Current responsibilities:
+- `miniprogram/services/mistakePracticeService.ts` stores and consumes `PendingMistakePracticeRequest` in local settings storage. The request contains `sceneId`, `mistakeType`, and `createdAt`; it does not pin a single `wordId`, so the resulting round can cover all current mistakes of the selected type.
+- `miniprogram/pages/mistakes/mistakes.ts` checks whether the current mistake list has `click` or `spelling` items, opens the `Object` / `Spelling` action sheet, saves the selected request, and switches to the Scene tab.
+- `miniprogram/pages/mistakes/mistakes.wxml` renders the simplified card structure: one card-level last mistake date, per-type labels and right-aligned counts, progress bars without visible percentage text, a top `Practice` control, and a compact centered `Remove` control.
+- `miniprogram/pages/mistakes/mistakes.wxss` keeps the practice and remove controls badge-like and content-sized, avoiding native button stretching and avoiding fixed full-width controls inside mistake cards.
+- `miniprogram/pages/scene/scene.ts` consumes pending mistake practice requests, starts Object mistake practice through the object-selection path, starts Spelling mistake practice through the Listen + Spell path, and navigates back to `/pages/mistakes/mistakes` after the final `Finish` action.
+- `miniprogram/pages/scene/sceneViewModel.ts` carries `listeningWritingPracticeMistakeType` so the inline Listen + Spell state can distinguish normal rounds from mistake-focused rounds.
+
+Runtime notes:
+- `Object` practice maps to the existing `click` mistake type and completes each question after the correct object is selected; it skips the spelling input step.
+- `Spelling` practice maps to the existing `spelling` mistake type and uses the existing Listen + Spell spelling flow.
+- `speaking` mistake practice remains out of scope until Listen + Speak is implemented.
+- After mistake practice finishes, the user returns directly to the Mistakes page instead of landing on the normal Listen + Spell completion screen.
+
+Test coverage:
+- `tests/mistakePracticeService.test.ts` covers saving, consuming, and clearing pending mistake practice requests.
+- `tests/mistakesPage.test.ts` covers the top-level practice action sheet, type availability checks, compact control markup/styles, and the simplified mistake card UI.
+- `tests/listeningWritingStart.test.ts` covers consuming pending mistake practice requests and returning to the Mistakes page after focused practice finishes.
+- `tests/sceneInlineMode.test.ts` keeps normal scene entry navigation behavior covered while allowing the new mistake-practice return navigation.
+
+File change record:
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `miniprogram/services/mistakePracticeService.ts` | Stores and consumes pending mistake practice requests between the Mistakes page and Scene page. | Phase 7 / Step 7.4 |
+| `miniprogram/pages/mistakes/mistakes.ts` | Adds the top-level mistake practice picker and request handoff. | Phase 7 / Step 7.4 |
+| `miniprogram/pages/mistakes/mistakes.wxml` | Simplifies Mistakes card markup and removes per-card practice controls, per-type time labels, and visible percentage labels. | Phase 7 / Step 7.4 |
+| `miniprogram/pages/mistakes/mistakes.wxss` | Adds compact badge-style `Practice` and `Remove` controls and revised mistake type rows. | Phase 7 / Step 7.4 |
+| `miniprogram/pages/scene/scene.ts` | Consumes pending mistake practice requests, starts focused practice rounds, and returns to Mistakes after completion. | Phase 7 / Step 7.4 |
+| `miniprogram/pages/scene/sceneViewModel.ts` | Tracks the active mistake practice type in the Listen + Spell page state. | Phase 7 / Step 7.4 |
+| `tests/mistakePracticeService.test.ts` | Covers the pending request service. | Phase 7 / Step 7.4 |
+| `tests/mistakesPage.test.ts` | Covers the Mistakes page practice picker and simplified UI constraints. | Phase 7 / Step 7.4 |
+| `tests/listeningWritingStart.test.ts` | Covers pending request consumption and post-practice return behavior. | Phase 7 / Step 7.4 |
+| `tests/sceneInlineMode.test.ts` | Keeps scene entry behavior covered with the new mistake-practice navigation path. | Phase 7 / Step 7.4 |

@@ -221,6 +221,32 @@ describe("Listen + Spell start state inside the Learn tab", () => {
     expect(scenePageScript).toContain("createListeningWritingModeData(sceneId, previousWordIds)");
   });
 
+  it("starts a mistake practice round from a pending mistake practice request", () => {
+    expect(scenePageScript).toContain("consumePendingMistakePracticeRequest");
+    expect(scenePageScript).toContain("startPendingMistakePracticeIfNeeded");
+    expect(scenePageScript).toContain("createMistakePracticeModeData");
+    expect(scenePageScript).toContain("listeningWritingPracticeMistakeType");
+    expect(scenePageScript).toContain("targetMistakeType: mistakeType");
+    expect(scenePageScript).toContain(
+      "createMistakePracticeModeData(request.sceneId, request.mistakeType)"
+    );
+    expect(scenePageScript).toContain("onShow()");
+  });
+
+  it("keeps click mistake practice focused on object selection only", () => {
+    expect(scenePageScript).toContain('this.data.listeningWritingPracticeMistakeType === "click"');
+    expect(scenePageScript).toContain(
+      'this.prepareListeningWritingNextStep("Correct object.", "success")'
+    );
+  });
+
+  it("returns to the mistakes page after a mistake practice round finishes", () => {
+    expect(scenePageScript).toContain("returnToMistakesAfterPractice");
+    expect(scenePageScript).toContain("this.data.listeningWritingPracticeMistakeType");
+    expect(scenePageScript).toContain('wx.navigateTo({ url: "/pages/mistakes/mistakes" })');
+    expect(scenePageScript).toContain("this.returnToMistakesAfterPractice()");
+  });
+
   it("uses a single lightweight top back control instead of a bottom orange back button", () => {
     expect(sceneMarkup).toContain("mode-topbar");
     expect(sceneMarkup).toContain("mode-back-icon");

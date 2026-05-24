@@ -1,4 +1,5 @@
 import { getMistakes, removeMistake } from "../../services/mistakeService";
+import { savePendingMistakePracticeRequest } from "../../services/mistakePracticeService";
 import { getSceneById } from "../../services/sceneService";
 import { getWordById } from "../../services/wordService";
 import type { MasteryProgress, Mistake, MistakeType, Scene, Word } from "../../types";
@@ -38,6 +39,17 @@ const mistakeTypeLabels: Record<MistakeType, string> = {
 };
 
 const mistakeTypeOrder: MistakeType[] = ["click", "spelling", "speaking"];
+const practiceTypes: MistakeType[] = ["click", "spelling"];
+
+function isMistakeType(value: unknown): value is MistakeType {
+  return value === "click" || value === "spelling" || value === "speaking";
+}
+
+function hasPracticeMistakes(mistakeType: MistakeType): boolean {
+  return getMistakes().some(
+    (mistake) => mistake.sceneId === "classroom" && Boolean(mistake.typeStats[mistakeType])
+  );
+}
 
 function formatMistakeDate(value: string): string {
   return value.split("T")[0] || value;
@@ -135,6 +147,33 @@ Page({
 
         removeMistake(wordId);
         this.setData(createPageData());
+      }
+    });
+  },
+
+  onPracticeMistakes() {
+    wx.showActionSheet({
+      itemList: ["Object", "Spelling"],
+      success: (result) => {
+        const mistakeType = practiceTypes[result.tapIndex];
+
+        if (!isMistakeType(mistakeType)) {
+          return;
+        }
+
+        if (!hasPracticeMistakes(mistakeType)) {
+          wx.showToast({
+            title: `No ${mistakeTypeLabels[mistakeType]} mistakes`,
+            icon: "none"
+          });
+          return;
+        }
+
+        savePendingMistakePracticeRequest({
+          sceneId: "classroom",
+          mistakeType
+        });
+        wx.switchTab({ url: "/pages/scene/scene" });
       }
     });
   }

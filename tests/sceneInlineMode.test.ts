@@ -13,7 +13,12 @@ const sceneMarkup = readFileSync(
 
 describe("scene page in-tab learning mode navigation", () => {
   it("selects learning modes inside the Learn tab instead of navigating away", () => {
-    expect(sceneScript).not.toContain("wx.navigateTo");
+    const entryTapHandler = sceneScript.match(
+      /onEntryTap\(event: SceneEntryTapEvent\) \{[\s\S]*?\n {2}\},/
+    );
+
+    expect(entryTapHandler?.[0]).toBeDefined();
+    expect(entryTapHandler?.[0]).not.toContain("wx.navigateTo");
     expect(sceneScript).toContain("onBackToSceneHome");
     expect(sceneMarkup).toContain('wx:if="{{!activeMode}}"');
     expect(sceneMarkup).toContain('wx:if="{{activeMode}}"');

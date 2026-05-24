@@ -1,4 +1,12 @@
-import type { QuizQuestion, QuizRound, Scene, StudyMode, UserProgress, Word } from "../../types";
+import type {
+  MistakeType,
+  QuizQuestion,
+  QuizRound,
+  Scene,
+  StudyMode,
+  UserProgress,
+  Word
+} from "../../types";
 import { createHotspotStyle } from "../../utils/hotspot";
 
 export type SceneEntryId = StudyMode;
@@ -77,6 +85,7 @@ export type SceneViewModel = {
   listeningWritingPendingNextQuestion: boolean;
   listeningWritingPendingNextQuestionIndex: number;
   listeningWritingContinueLabel: string;
+  listeningWritingPracticeMistakeType: MistakeType | "";
 };
 
 export type SceneEntryAction = {
@@ -193,7 +202,8 @@ export function createSceneViewModel(
     listeningWritingIsRoundComplete: false,
     listeningWritingPendingNextQuestion: false,
     listeningWritingPendingNextQuestionIndex: -1,
-    listeningWritingContinueLabel: "Continue"
+    listeningWritingContinueLabel: "Continue",
+    listeningWritingPracticeMistakeType: ""
   };
 }
 

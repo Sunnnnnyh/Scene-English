@@ -1,6 +1,11 @@
 import { addFavorite, isFavorite, removeFavorite } from "../../services/favoriteService";
 import { getSceneProgress, recordLearnedWord } from "../../services/progressService";
-import { recordMistake, recordMistakeCorrectAnswer } from "../../services/mistakeService";
+import {
+  getMistakes,
+  recordMistake,
+  recordMistakeCorrectAnswer
+} from "../../services/mistakeService";
+import { consumePendingMistakePracticeRequest } from "../../services/mistakePracticeService";
 import { getSceneById } from "../../services/sceneService";
 import { getWordById, getWordsBySceneId } from "../../services/wordService";
 import { isNormalizedSpellingMatch } from "../../utils/normalize";
@@ -22,7 +27,7 @@ import {
   type SceneEntryId,
   type SceneViewModel
 } from "./sceneViewModel";
-import type { QuizQuestion, QuizRound, Scene, Word } from "../../types";
+import type { Mistake, MistakeType, QuizQuestion, QuizRound, Scene, Word } from "../../types";
 
 type ScenePageOptions = {
   sceneId?: string;
@@ -315,6 +320,77 @@ function createPracticeQuizRound({
   };
 }
 
+type MistakePracticeCandidate = {
+  word: Word;
+  mistakeType: MistakeType;
+  mistakeCount: number;
+  masteryProgress: number;
+  lastMistakeAt: string;
+  wordOrder: number;
+};
+
+function createMistakePracticeQuizRound({
+  sceneId,
+  mode,
+  words,
+  mistakes,
+  targetMistakeType
+}: {
+  sceneId: Scene["id"];
+  mode: "listeningWriting";
+  words: Word[];
+  mistakes: Mistake[];
+  targetMistakeType: MistakeType;
+}): QuizRound {
+  const wordsById = new Map(words.map((word, index) => [word.id, { word, index }]));
+  const candidates: MistakePracticeCandidate[] = mistakes
+    .filter((mistake) => mistake.sceneId === sceneId)
+    .flatMap((mistake) => {
+      const wordEntry = wordsById.get(mistake.wordId);
+      const stats = mistake.typeStats[targetMistakeType];
+
+      if (!wordEntry || !stats) {
+        return [];
+      }
+
+      return [
+        {
+          word: wordEntry.word,
+          mistakeType: targetMistakeType,
+          mistakeCount: stats.mistakeCount,
+          masteryProgress: stats.masteryProgress,
+          lastMistakeAt: stats.lastMistakeAt,
+          wordOrder: wordEntry.index
+        }
+      ];
+    })
+    .sort(
+      (first, second) =>
+        first.masteryProgress - second.masteryProgress ||
+        second.mistakeCount - first.mistakeCount ||
+        second.lastMistakeAt.localeCompare(first.lastMistakeAt) ||
+        first.wordOrder - second.wordOrder
+    );
+  const selectedCandidates = candidates.slice(0, DEFAULT_LISTENING_WRITING_QUESTION_COUNT);
+  const startedAt = new Date().toISOString();
+  const questions: QuizQuestion[] = selectedCandidates.map((candidate, index) => ({
+    id: `${sceneId}:${mode}:${candidate.word.id}:${index + 1}`,
+    sceneId,
+    wordId: candidate.word.id,
+    mode,
+    targetMistakeType: candidate.mistakeType
+  }));
+
+  return {
+    id: `${sceneId}:${mode}:${startedAt}`,
+    sceneId,
+    mode,
+    questions,
+    currentIndex: 0,
+    startedAt
+  };
+}
+
 function createListeningWritingModeData(sceneId: Scene["id"], excludeWordIds: Word["id"][] = []) {
   const words = getWordsBySceneId(sceneId);
   const progress = getSceneProgress(sceneId);
@@ -342,7 +418,39 @@ function createListeningWritingModeData(sceneId: Scene["id"], excludeWordIds: Wo
     listeningWritingIsRoundComplete: false,
     listeningWritingPendingNextQuestion: false,
     listeningWritingPendingNextQuestionIndex: -1,
-    listeningWritingContinueLabel: "Continue"
+    listeningWritingContinueLabel: "Continue",
+    listeningWritingPracticeMistakeType: "" as MistakeType | ""
+  };
+}
+
+function createMistakePracticeModeData(sceneId: Scene["id"], mistakeType: MistakeType) {
+  const words = getWordsBySceneId(sceneId);
+  const listeningWritingRound = createMistakePracticeQuizRound({
+    sceneId,
+    mode: "listeningWriting",
+    words,
+    mistakes: getMistakes(),
+    targetMistakeType: mistakeType
+  });
+
+  return {
+    listeningWritingRound,
+    listeningWritingState: createListeningWritingStartState(listeningWritingRound, words),
+    listeningWritingClickAttemptCount: 0,
+    ...LISTENING_WRITING_LISTEN_TASK,
+    listeningWritingFeedback: "",
+    listeningWritingFeedbackKind: "" as ListeningWritingFeedbackKind,
+    listeningWritingPhase: "locating" as const,
+    listeningWritingTargetWordId: "",
+    listeningWritingCanSelectObject: false,
+    listeningWritingSpellingInput: "",
+    listeningWritingSpellingAttemptCount: 0,
+    listeningWritingAnswerReveal: "",
+    listeningWritingIsRoundComplete: false,
+    listeningWritingPendingNextQuestion: false,
+    listeningWritingPendingNextQuestionIndex: -1,
+    listeningWritingContinueLabel: "Continue",
+    listeningWritingPracticeMistakeType: mistakeType
   };
 }
 
@@ -378,6 +486,55 @@ Page({
     );
   },
 
+  onShow() {
+    this.startPendingMistakePracticeIfNeeded();
+  },
+
+  startPendingMistakePracticeIfNeeded() {
+    const request = consumePendingMistakePracticeRequest();
+
+    if (!request) {
+      return;
+    }
+
+    const scene = getSceneById(request.sceneId);
+
+    if (!scene || scene.status !== "available") {
+      return;
+    }
+
+    if (request.mistakeType === "speaking") {
+      wx.showToast({
+        title: "Speaking practice coming soon",
+        icon: "none"
+      });
+      return;
+    }
+
+    const modeEntry = getSceneEntryAction("listeningWriting");
+    const selectedMode = createSceneViewModel(
+      scene,
+      getSceneProgress(scene.id),
+      getWordsBySceneId(scene.id)
+    ).modeEntries.find((entry) => entry.id === modeEntry.mode);
+
+    stopMemoryWordAudio();
+    stopListeningWritingAudio();
+    stopListeningWritingFeedbackAudio();
+
+    this.setData({
+      ...createSceneViewModel(scene, getSceneProgress(scene.id), getWordsBySceneId(scene.id)),
+      activeMode: "listeningWriting",
+      selectedModeTitle: selectedMode?.title ?? "",
+      selectedModeSubtitle: selectedMode?.subtitle ?? "",
+      showMemoryGuide: false,
+      showMemoryTranslationGuide: false,
+      selectedMemoryWordId: "",
+      selectedMemoryWordCard: null,
+      ...createMistakePracticeModeData(request.sceneId, request.mistakeType)
+    });
+  },
+
   onEntryTap(event: SceneEntryTapEvent) {
     const { entryId } = event.currentTarget.dataset;
     const sceneId = this.data.sceneId;
@@ -407,7 +564,8 @@ Page({
             listeningWritingIsRoundComplete: false,
             listeningWritingPendingNextQuestion: false,
             listeningWritingPendingNextQuestionIndex: -1,
-            listeningWritingContinueLabel: "Continue"
+            listeningWritingContinueLabel: "Continue",
+            listeningWritingPracticeMistakeType: "" as MistakeType | ""
           };
 
     stopMemoryWordAudio();
@@ -454,7 +612,8 @@ Page({
       listeningWritingIsRoundComplete: false,
       listeningWritingPendingNextQuestion: false,
       listeningWritingPendingNextQuestionIndex: -1,
-      listeningWritingContinueLabel: "Continue"
+      listeningWritingContinueLabel: "Continue",
+      listeningWritingPracticeMistakeType: ""
     });
   },
 
@@ -662,6 +821,12 @@ Page({
     if (wordId === targetWordId) {
       recordMistakeCorrectAnswer(targetWordId, "click");
       playListeningWritingFeedbackSound("correct");
+
+      if (this.data.listeningWritingPracticeMistakeType === "click") {
+        this.prepareListeningWritingNextStep("Correct object.", "success");
+        return;
+      }
+
       this.setData({
         listeningWritingClickAttemptCount: 0,
         ...LISTENING_WRITING_SPELL_TASK,
@@ -694,6 +859,12 @@ Page({
     }
 
     playListeningWritingFeedbackSound("wrong");
+
+    if (this.data.listeningWritingPracticeMistakeType === "click") {
+      this.prepareListeningWritingNextStep("", "error");
+      return;
+    }
+
     this.setData({
       listeningWritingClickAttemptCount: nextAttemptCount,
       ...LISTENING_WRITING_SPELL_TASK,
@@ -735,6 +906,11 @@ Page({
     });
   },
 
+  returnToMistakesAfterPractice() {
+    this.onBackToSceneHome();
+    wx.navigateTo({ url: "/pages/mistakes/mistakes" });
+  },
+
   onContinueListeningWritingQuestion() {
     const round = this.data.listeningWritingRound as QuizRound | null;
     const sceneId = this.data.sceneId;
@@ -746,6 +922,11 @@ Page({
     const nextQuestionIndex = this.data.listeningWritingPendingNextQuestionIndex;
 
     if (nextQuestionIndex >= round.questions.length) {
+      if (this.data.listeningWritingPracticeMistakeType) {
+        this.returnToMistakesAfterPractice();
+        return;
+      }
+
       this.setData({
         ...LISTENING_WRITING_COMPLETE_TASK,
         listeningWritingFeedback: "",
@@ -759,7 +940,8 @@ Page({
         listeningWritingIsRoundComplete: true,
         listeningWritingPendingNextQuestion: false,
         listeningWritingPendingNextQuestionIndex: -1,
-        listeningWritingContinueLabel: "Continue"
+        listeningWritingContinueLabel: "Continue",
+        listeningWritingPracticeMistakeType: this.data.listeningWritingPracticeMistakeType
       });
       return;
     }
@@ -787,7 +969,8 @@ Page({
       listeningWritingIsRoundComplete: false,
       listeningWritingPendingNextQuestion: false,
       listeningWritingPendingNextQuestionIndex: -1,
-      listeningWritingContinueLabel: "Continue"
+      listeningWritingContinueLabel: "Continue",
+      listeningWritingPracticeMistakeType: this.data.listeningWritingPracticeMistakeType
     });
 
     if (nextState.currentQuestion?.audioUrl) {

@@ -2,6 +2,14 @@
   <view class="mistakes-header">
     <text class="mistakes-title">{{title}}</text>
     <text class="mistakes-subtitle">{{subtitle}}</text>
+    <view
+      wx:if="{{!isEmpty}}"
+      class="mistakes-practice-button"
+      role="button"
+      bindtap="onPracticeMistakes"
+    >
+      Practice
+    </view>
   </view>
 
   <view wx:if="{{isEmpty}}" class="mistakes-empty">
@@ -33,26 +41,27 @@
         >
           <view class="mistake-type-row">
             <text class="mistake-type-label">{{typeItem.label}}</text>
-            <text class="mistake-type-count">{{typeItem.mistakeCount}}x</text>
+            <view class="mistake-type-trailing">
+              <text class="mistake-type-count">{{typeItem.mistakeCount}}x</text>
+            </view>
           </view>
           <view class="mistake-progress-row">
             <view class="mistake-progress-track">
               <view class="mistake-progress-fill" style="width: {{typeItem.progressLabel}}"></view>
             </view>
-            <text class="mistake-progress-label">{{typeItem.progressLabel}}</text>
           </view>
-          <text class="mistake-type-time">Last {{typeItem.lastMistakeAt}}</text>
         </view>
       </view>
 
       <view class="mistake-actions">
-        <button
+        <view
           class="mistake-remove-button"
+          role="button"
           data-word-id="{{item.wordId}}"
           catchtap="onRemoveMistake"
         >
           Remove
-        </button>
+        </view>
       </view>
     </view>
   </view>
