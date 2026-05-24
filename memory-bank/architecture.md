@@ -1614,3 +1614,23 @@ Listen + Spell 的错误反馈音效继续使用本地 WAV 资源，不引入新
 | `miniprogram/pages/mistakes/mistakes.ts` | 过滤没有任何错误类型的错题记录，避免运行时展示已掌握空卡片。 | 阶段 7 / Step 7.3 自动移出边界修正 |
 | `miniprogram/pages/mistakes/mistakesViewModel.ts` | 让测试用错题展示模型同样跳过空弱项记录。 | 阶段 7 / Step 7.3 自动移出边界修正 |
 | `tests/mistakesPage.test.ts` | 增加空 `typeStats` 被视为已移出并显示空状态的回归测试。 | 阶段 7 / Step 7.3 自动移出边界修正 |
+## 48. 阶段 7 / Step 7.3 答对后错题掌握进度更新
+
+Listen + Spell 现在会在真实答题成功路径中调用错题服务的掌握进度更新能力。此前 `recordMistakeCorrectAnswer()` 只在 service 测试中验证，本次将其接入运行时页面：点对物品对应 `click` 弱项，拼写答对对应 `spelling` 弱项。该接入不新增错题数据结构，也不新增错题夹 Practice 入口。
+
+当前职责：
+- `miniprogram/pages/scene/scene.ts` 在 `onListeningWritingHotspotTap` 的点对目标物品分支调用 `recordMistakeCorrectAnswer(targetWordId, "click")`。
+- `miniprogram/pages/scene/scene.ts` 在 `onSubmitListeningWritingSpelling` 的拼写答对分支调用 `recordMistakeCorrectAnswer(targetWord.id, "spelling")`。
+- `miniprogram/services/mistakeService.ts` 继续承担掌握进度规则：答对 1 次为 50%，连续答对 2 次后移除该错误类型，所有错误类型完成后移除整词。
+- `tests/listeningWritingStart.test.ts` 约束 Listen + Spell 答对路径必须接入 `recordMistakeCorrectAnswer()`，防止后续只记录错误而不推进错题消除。
+
+运行时注意事项：
+- 当前用户需要在 Listen + Spell 普通练习中重新遇到错题词并答对，才能推进 `click` / `spelling` 错题掌握进度。
+- 错题夹内直接进入专项练习的入口尚未实现，仍属于 Step 7.4。
+- `speaking` 错题类型的掌握进度更新需等待 Listen + Speak 真实练习流程完成后再接入。
+
+文件变更记录补充：
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `miniprogram/pages/scene/scene.ts` | 在 Listen + Spell 点对物品和拼写答对路径中调用 `recordMistakeCorrectAnswer`，推进错题掌握进度。 | 阶段 7 / Step 7.3 |
+| `tests/listeningWritingStart.test.ts` | 增加 Listen + Spell 答对后更新错题掌握进度的回归测试。 | 阶段 7 / Step 7.3 |

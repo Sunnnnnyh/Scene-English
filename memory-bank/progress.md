@@ -948,3 +948,20 @@
   - `mistakeService.recordMistakeCorrectAnswer()` 目前仍只在服务层测试中验证，尚未接入真实练习流程。
   - 下一步需要把“答对后更新错题掌握进度 / 连续答对后消除弱项”的调用接入实际练习，确保用户可以真实通过练习消除错题记录。
   - Step 7.4 错题专项练习入口尚未实现。
+### 2026-05-24 - 阶段 7 / Step 7.3 接入答对后错题掌握进度更新
+
+- 完成内容：
+  - 在 Listen + Spell 真实练习流程中接入 `mistakeService.recordMistakeCorrectAnswer()`。
+  - 用户听音后点对目标物品时，会更新该词 `click` 错题类型的连续答对次数和掌握进度。
+  - 用户拼写答对目标单词时，会更新该词 `spelling` 错题类型的连续答对次数和掌握进度。
+  - 继续复用既有错题服务规则：同一错误类型答对 1 次进度为 50%，连续答对 2 次后移除该错误类型；所有错误类型移除后该词从错题夹移除。
+  - 补充 `tests/listeningWritingStart.test.ts` 回归测试，约束 Listen + Spell 的点对和拼写答对路径会调用错题掌握进度更新服务。
+- 验证结果：
+  - 用户已在微信开发者工具中验证当前流程通过。
+  - 已验证 `npm run typecheck` 通过。
+  - 已验证 `npm run lint` 通过。
+  - 已验证 `npm run format:check` 通过。
+  - 已验证 `npm test` 通过，显示 31 个测试文件、152 个测试用例通过。
+- 遗留问题：
+  - 当前错题消除需要回到 Listen + Spell 普通练习中重新遇到该词并答对；错题夹内的 `Practice` 专项入口仍属于 Step 7.4，尚未实现。
+  - 当前只接入 Listen + Spell 的 `click` 和 `spelling` 掌握进度更新；`speaking` 类型需要在 Listen + Speak 流程实现后接入。

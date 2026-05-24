@@ -1,6 +1,6 @@
 import { addFavorite, isFavorite, removeFavorite } from "../../services/favoriteService";
 import { getSceneProgress, recordLearnedWord } from "../../services/progressService";
-import { recordMistake } from "../../services/mistakeService";
+import { recordMistake, recordMistakeCorrectAnswer } from "../../services/mistakeService";
 import { getSceneById } from "../../services/sceneService";
 import { getWordById, getWordsBySceneId } from "../../services/wordService";
 import { isNormalizedSpellingMatch } from "../../utils/normalize";
@@ -660,6 +660,7 @@ Page({
     }
 
     if (wordId === targetWordId) {
+      recordMistakeCorrectAnswer(targetWordId, "click");
       playListeningWritingFeedbackSound("correct");
       this.setData({
         listeningWritingClickAttemptCount: 0,
@@ -815,6 +816,7 @@ Page({
     }
 
     if (isNormalizedSpellingMatch(this.data.listeningWritingSpellingInput, targetWord.en)) {
+      recordMistakeCorrectAnswer(targetWord.id, "spelling");
       playListeningWritingFeedbackSound("correct");
       this.prepareListeningWritingNextStep("Correct spelling.", "success");
       return;

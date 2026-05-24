@@ -78,6 +78,12 @@ describe("Listen + Spell start state inside the Learn tab", () => {
     expect(scenePageScript).toContain("listeningWritingTargetWordId");
   });
 
+  it("updates mistake mastery when the user answers an existing weak item correctly", () => {
+    expect(scenePageScript).toContain("recordMistakeCorrectAnswer");
+    expect(scenePageScript).toContain('recordMistakeCorrectAnswer(targetWordId, "click")');
+    expect(scenePageScript).toContain('recordMistakeCorrectAnswer(targetWord.id, "spelling")');
+  });
+
   it("only enables object selection after the target audio has finished playing", () => {
     expect(scenePageScript).toContain("listeningWritingCanSelectObject");
     expect(scenePageScript).toContain("audioContext.onEnded");
