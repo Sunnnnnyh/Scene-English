@@ -24,6 +24,7 @@ import {
   createSceneViewModel,
   getSceneEntryAction,
   type SceneListeningSpeakingQuestion,
+  type SceneListeningSpeakingRecordingStatus,
   type SceneListeningSpeakingState,
   type SceneListeningWritingQuestion,
   type SceneListeningWritingState,
@@ -94,9 +95,18 @@ type MemoryTranslationTapEvent = WechatMiniprogram.BaseEvent & {
 const DEFAULT_LISTENING_WRITING_QUESTION_COUNT = 5;
 const LISTENING_WRITING_CORRECT_SOUND_URL = "/assets/audio/feedback-correct.wav";
 const LISTENING_WRITING_WRONG_SOUND_URL = "/assets/audio/feedback-wrong.wav";
+const MIN_LISTENING_SPEAKING_RECORDING_MS = 900;
 
 type ListeningWritingFeedbackKind = "" | "success" | "error" | "info";
 type ListeningSpeakingFeedbackKind = "" | "success" | "error" | "info";
+type ListeningSpeakingRecordingStopResult = {
+  tempFilePath?: string;
+  duration?: number;
+};
+type ListeningSpeakingRecorderOwner = {
+  handleListeningSpeakingRecordingStop(result: ListeningSpeakingRecordingStopResult): void;
+  handleListeningSpeakingRecordingError(): void;
+};
 
 type ListeningWritingTaskData = {
   listeningWritingStepLabel: string;
@@ -109,6 +119,18 @@ type ListeningSpeakingTaskData = {
   listeningSpeakingTaskTitle: string;
   listeningSpeakingInstruction: string;
 };
+
+function createListeningSpeakingRecordingData(
+  status: SceneListeningSpeakingRecordingStatus = "idle",
+  feedback = ""
+) {
+  return {
+    listeningSpeakingRecordingStatus: status,
+    listeningSpeakingRecordingPath: "",
+    listeningSpeakingRecordingDurationMs: 0,
+    listeningSpeakingRecordingFeedback: feedback
+  };
+}
 
 const LISTENING_WRITING_LISTEN_TASK: ListeningWritingTaskData = {
   listeningWritingStepLabel: "Listen",
@@ -162,6 +184,56 @@ let memoryWordAudioContext: WechatMiniprogram.InnerAudioContext | undefined;
 let listeningWritingAudioContext: WechatMiniprogram.InnerAudioContext | undefined;
 let listeningWritingFeedbackAudioContext: WechatMiniprogram.InnerAudioContext | undefined;
 let listeningSpeakingAudioContext: WechatMiniprogram.InnerAudioContext | undefined;
+let listeningSpeakingRecorderManager: WechatMiniprogram.RecorderManager | undefined;
+let listeningSpeakingRecorderOwner: ListeningSpeakingRecorderOwner | null = null;
+let isListeningSpeakingRecorderBound = false;
+let listeningSpeakingRecordingStartedAt = 0;
+let shouldCancelListeningSpeakingRecording = false;
+
+function getListeningSpeakingRecorderManager() {
+  if (!listeningSpeakingRecorderManager) {
+    listeningSpeakingRecorderManager = wx.getRecorderManager();
+  }
+
+  return listeningSpeakingRecorderManager;
+}
+
+function bindListeningSpeakingRecorder(owner: ListeningSpeakingRecorderOwner) {
+  const recorderManager = getListeningSpeakingRecorderManager();
+  listeningSpeakingRecorderOwner = owner;
+
+  if (isListeningSpeakingRecorderBound) {
+    return recorderManager;
+  }
+
+  recorderManager.onStop((result) => {
+    listeningSpeakingRecorderOwner?.handleListeningSpeakingRecordingStop(
+      result as ListeningSpeakingRecordingStopResult
+    );
+  });
+  recorderManager.onError(() => {
+    listeningSpeakingRecorderOwner?.handleListeningSpeakingRecordingError();
+  });
+  isListeningSpeakingRecorderBound = true;
+
+  return recorderManager;
+}
+
+function stopListeningSpeakingRecording({ isCancel = false }: { isCancel?: boolean } = {}) {
+  const recorderManager = listeningSpeakingRecorderManager;
+
+  if (!recorderManager) {
+    return;
+  }
+
+  shouldCancelListeningSpeakingRecording = isCancel;
+
+  try {
+    recorderManager.stop();
+  } catch {
+    shouldCancelListeningSpeakingRecording = false;
+  }
+}
 
 function stopMemoryWordAudio() {
   if (!memoryWordAudioContext) {
@@ -526,7 +598,8 @@ function createEmptyListeningSpeakingModeData() {
     listeningSpeakingFeedbackKind: "" as ListeningSpeakingFeedbackKind,
     listeningSpeakingPhase: "locating" as const,
     listeningSpeakingTargetWordId: "",
-    listeningSpeakingCanSelectObject: false
+    listeningSpeakingCanSelectObject: false,
+    ...createListeningSpeakingRecordingData()
   };
 }
 
@@ -550,7 +623,8 @@ function createListeningSpeakingModeData(sceneId: Scene["id"], excludeWordIds: W
     listeningSpeakingFeedbackKind: "" as ListeningSpeakingFeedbackKind,
     listeningSpeakingPhase: "locating" as const,
     listeningSpeakingTargetWordId: "",
-    listeningSpeakingCanSelectObject: false
+    listeningSpeakingCanSelectObject: false,
+    ...createListeningSpeakingRecordingData()
   };
 }
 
@@ -653,6 +727,7 @@ Page({
     stopListeningWritingAudio();
     stopListeningWritingFeedbackAudio();
     stopListeningSpeakingAudio();
+    stopListeningSpeakingRecording({ isCancel: true });
 
     this.setData({
       ...createSceneViewModel(scene, getSceneProgress(scene.id), getWordsBySceneId(scene.id)),
@@ -709,6 +784,7 @@ Page({
     stopListeningWritingAudio();
     stopListeningWritingFeedbackAudio();
     stopListeningSpeakingAudio();
+    stopListeningSpeakingRecording({ isCancel: true });
 
     this.setData({
       activeMode: action.mode,
@@ -728,6 +804,7 @@ Page({
     stopListeningWritingAudio();
     stopListeningWritingFeedbackAudio();
     stopListeningSpeakingAudio();
+    stopListeningSpeakingRecording({ isCancel: true });
 
     this.setData({
       activeMode: "",
@@ -1275,7 +1352,8 @@ Page({
         listeningSpeakingFeedbackKind: "",
         listeningSpeakingPhase: "recordReady",
         listeningSpeakingTargetWordId: targetWordId,
-        listeningSpeakingCanSelectObject: false
+        listeningSpeakingCanSelectObject: false,
+        ...createListeningSpeakingRecordingData()
       });
       return;
     }
@@ -1291,7 +1369,8 @@ Page({
         listeningSpeakingFeedback: "Try again.",
         listeningSpeakingFeedbackKind: "error",
         listeningSpeakingPhase: "locating",
-        listeningSpeakingTargetWordId: ""
+        listeningSpeakingTargetWordId: "",
+        ...createListeningSpeakingRecordingData()
       });
       return;
     }
@@ -1304,7 +1383,125 @@ Page({
       listeningSpeakingFeedbackKind: "error",
       listeningSpeakingPhase: "recordReady",
       listeningSpeakingTargetWordId: targetWordId,
-      listeningSpeakingCanSelectObject: false
+      listeningSpeakingCanSelectObject: false,
+      ...createListeningSpeakingRecordingData()
+    });
+  },
+
+  onStartListeningSpeakingRecording() {
+    if (this.data.listeningSpeakingPhase !== "recordReady") {
+      return;
+    }
+
+    bindListeningSpeakingRecorder(this as unknown as ListeningSpeakingRecorderOwner);
+
+    wx.authorize({
+      scope: "scope.record",
+      success: () => {
+        this.startListeningSpeakingRecording();
+      },
+      fail: () => {
+        this.handleListeningSpeakingPermissionDenied();
+      }
+    });
+  },
+
+  startListeningSpeakingRecording() {
+    if (this.data.listeningSpeakingPhase !== "recordReady") {
+      return;
+    }
+
+    const recorderManager = bindListeningSpeakingRecorder(
+      this as unknown as ListeningSpeakingRecorderOwner
+    );
+    shouldCancelListeningSpeakingRecording = false;
+    listeningSpeakingRecordingStartedAt = Date.now();
+
+    this.setData({
+      listeningSpeakingRecordingStatus: "recording",
+      listeningSpeakingRecordingPath: "",
+      listeningSpeakingRecordingDurationMs: 0,
+      listeningSpeakingRecordingFeedback: "Recording..."
+    });
+
+    try {
+      recorderManager.start({
+        duration: 60000,
+        sampleRate: 16000,
+        numberOfChannels: 1,
+        encodeBitRate: 48000,
+        format: "mp3"
+      });
+    } catch {
+      this.handleListeningSpeakingRecordingError();
+    }
+  },
+
+  onStopListeningSpeakingRecording() {
+    if (this.data.listeningSpeakingRecordingStatus !== "recording") {
+      return;
+    }
+
+    stopListeningSpeakingRecording();
+  },
+
+  onCancelListeningSpeakingRecording() {
+    if (this.data.listeningSpeakingRecordingStatus !== "recording") {
+      return;
+    }
+
+    stopListeningSpeakingRecording({ isCancel: true });
+  },
+
+  handleListeningSpeakingRecordingStop(result: ListeningSpeakingRecordingStopResult) {
+    const durationMs = Math.round(
+      result.duration ?? Date.now() - listeningSpeakingRecordingStartedAt
+    );
+
+    if (shouldCancelListeningSpeakingRecording) {
+      shouldCancelListeningSpeakingRecording = false;
+      this.setData({
+        ...createListeningSpeakingRecordingData("idle", "Recording cancelled.")
+      });
+      return;
+    }
+
+    if (durationMs < MIN_LISTENING_SPEAKING_RECORDING_MS) {
+      this.setData({
+        listeningSpeakingRecordingStatus: "tooShort",
+        listeningSpeakingRecordingPath: "",
+        listeningSpeakingRecordingDurationMs: durationMs,
+        listeningSpeakingRecordingFeedback: "Recording was too short. Please try again."
+      });
+      return;
+    }
+
+    this.setData({
+      listeningSpeakingRecordingStatus: "recorded",
+      listeningSpeakingRecordingPath: result.tempFilePath ?? "",
+      listeningSpeakingRecordingDurationMs: durationMs,
+      listeningSpeakingRecordingFeedback: "Recording saved."
+    });
+  },
+
+  handleListeningSpeakingRecordingError() {
+    this.setData({
+      ...createListeningSpeakingRecordingData("idle", "Recording failed. Please try again.")
+    });
+  },
+
+  handleListeningSpeakingPermissionDenied() {
+    this.setData({
+      ...createListeningSpeakingRecordingData(
+        "permissionDenied",
+        "Microphone permission is needed to practice speaking."
+      )
+    });
+    wx.showModal({
+      title: "Microphone needed",
+      content: "Microphone permission is needed to practice speaking.",
+      showCancel: false,
+      confirmText: "OK"
     });
   },
 
@@ -1320,9 +1517,11 @@ Page({
     stopListeningWritingAudio();
     stopListeningWritingFeedbackAudio();
     stopListeningSpeakingAudio();
+    stopListeningSpeakingRecording({ isCancel: true });
   },
 
   onUnload() {
+    stopListeningSpeakingRecording({ isCancel: true });
     releaseMemoryWordAudio();
     releaseListeningWritingAudio();
     releaseListeningWritingFeedbackAudio();

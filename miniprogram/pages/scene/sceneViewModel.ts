@@ -63,6 +63,13 @@ export type SceneListeningSpeakingState = {
   currentQuestion: SceneListeningSpeakingQuestion | null;
 };
 
+export type SceneListeningSpeakingRecordingStatus =
+  | "idle"
+  | "recording"
+  | "recorded"
+  | "tooShort"
+  | "permissionDenied";
+
 export type SceneViewModel = {
   sceneId: Scene["id"];
   title: string;
@@ -110,6 +117,10 @@ export type SceneViewModel = {
   listeningSpeakingPhase: "locating" | "recordReady";
   listeningSpeakingTargetWordId: string;
   listeningSpeakingCanSelectObject: boolean;
+  listeningSpeakingRecordingStatus: SceneListeningSpeakingRecordingStatus;
+  listeningSpeakingRecordingPath: string;
+  listeningSpeakingRecordingDurationMs: number;
+  listeningSpeakingRecordingFeedback: string;
 };
 
 export type SceneEntryAction = {
@@ -275,7 +286,11 @@ export function createSceneViewModel(
     listeningSpeakingFeedbackKind: "",
     listeningSpeakingPhase: "locating",
     listeningSpeakingTargetWordId: "",
-    listeningSpeakingCanSelectObject: false
+    listeningSpeakingCanSelectObject: false,
+    listeningSpeakingRecordingStatus: "idle",
+    listeningSpeakingRecordingPath: "",
+    listeningSpeakingRecordingDurationMs: 0,
+    listeningSpeakingRecordingFeedback: ""
   };
 }
 

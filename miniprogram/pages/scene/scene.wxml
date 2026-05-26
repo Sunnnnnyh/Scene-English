@@ -279,7 +279,56 @@
 
         <view wx:if="{{listeningSpeakingPhase === 'recordReady'}}" class="listening-speaking-record-ready">
           <text class="listening-speaking-record-title">Ready to speak</text>
-          <text class="listening-speaking-record-text">Recording controls come next.</text>
+          <text class="listening-speaking-record-text">Say the word you heard.</text>
+          <text
+            wx:if="{{listeningSpeakingRecordingFeedback}}"
+            class="listening-speaking-record-feedback"
+          >
+            {{listeningSpeakingRecordingFeedback}}
+          </text>
+          <view
+            class="listening-speaking-record-actions {{listeningSpeakingRecordingStatus === 'recorded' ? 'listening-speaking-record-actions--saved' : ''}}"
+          >
+            <view
+              wx:if="{{listeningSpeakingRecordingStatus === 'recorded'}}"
+              class="listening-speaking-record-saved"
+            >
+              <text class="listening-speaking-record-saved-label">Saved</text>
+            </view>
+            <button
+              wx:if="{{listeningSpeakingRecordingStatus !== 'recording' && listeningSpeakingRecordingStatus !== 'recorded'}}"
+              class="listening-speaking-record-button"
+              bindtap="onStartListeningSpeakingRecording"
+            >
+              <block
+                wx:if="{{listeningSpeakingRecordingStatus === 'tooShort' || listeningSpeakingRecordingStatus === 'permissionDenied'}}"
+              >
+                Try Again
+              </block>
+              <block wx:else>Start Recording</block>
+            </button>
+            <button
+              wx:if="{{listeningSpeakingRecordingStatus === 'recorded'}}"
+              class="listening-speaking-record-button listening-speaking-record-button--secondary listening-speaking-record-button--again"
+              bindtap="onStartListeningSpeakingRecording"
+            >
+              Record Again
+            </button>
+            <button
+              wx:if="{{listeningSpeakingRecordingStatus === 'recording'}}"
+              class="listening-speaking-record-button listening-speaking-record-button--stop"
+              bindtap="onStopListeningSpeakingRecording"
+            >
+              Stop
+            </button>
+            <button
+              wx:if="{{listeningSpeakingRecordingStatus === 'recording'}}"
+              class="listening-speaking-record-button listening-speaking-record-button--secondary"
+              bindtap="onCancelListeningSpeakingRecording"
+            >
+              Cancel
+            </button>
+          </view>
         </view>
       </view>
     </block>

@@ -1005,3 +1005,23 @@
 - Remaining:
   - Step 8.2 still needs to implement the actual recording interaction.
   - Listen + Speak does not yet advance through the full round after the record-ready state.
+
+### 2026-05-26 - Phase 8 / Step 8.2 Listen + Speak recording interaction
+
+- Completed:
+  - Added Listen + Speak recording state to the Scene page view model.
+  - Added WeChat `RecorderManager` wiring for starting, stopping, and cancelling recordings after the correct object is selected.
+  - Added microphone permission handling with a clear retryable prompt when permission is denied.
+  - Added short-recording validation; recordings shorter than the minimum threshold show retry feedback and do not save a file path.
+  - Normal saved recordings now show a clear `Saved` state and a secondary `Record Again` action instead of leaving the primary button as `Start Recording`.
+  - Kept mock ASR recognition, speaking mistake recording, and round advancement out of this step.
+- Verification:
+  - User validated the recording UI behavior and final saved/re-record layout in WeChat DevTools.
+  - `npm run typecheck` passed.
+  - `npm run lint` passed.
+  - `npm run format:check` passed.
+  - `npm test` passed: 34 test files, 169 tests.
+  - `git diff --check` passed with only Windows CRLF warnings.
+- Remaining:
+  - Step 8.3 still needs to pass the saved recording to mock ASR and display recognition feedback.
+  - Listen + Speak still does not advance through the full round after a saved recording.

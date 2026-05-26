@@ -1705,3 +1705,34 @@ File change record:
 | `miniprogram/pages/scene/sceneViewModel.ts` | Adds Listen + Speak question and page state models. | Phase 8 / Step 8.1 |
 | `tests/listeningSpeakingStart.test.ts` | Covers the Listen + Speak start-state page behavior. | Phase 8 / Step 8.1 |
 | `tests/sceneViewModel.test.ts` | Adds coverage for Listen + Speak start-state model creation. | Phase 8 / Step 8.1 |
+
+## 51. Phase 8 / Step 8.2 Listen + Speak recording interaction
+
+Listen + Speak now supports the recording interaction after the user finds the correct object. This step stops at capturing and saving a local recording result; it does not call mock ASR, record speaking mistakes, or advance to the next question.
+
+Current responsibilities:
+- `miniprogram/pages/scene/sceneViewModel.ts` tracks `SceneListeningSpeakingRecordingStatus`, the saved recording path, duration, and recording feedback text.
+- `miniprogram/pages/scene/scene.ts` owns a shared WeChat `RecorderManager`, binds stop/error callbacks to the active Scene page, and exposes start, stop, cancel, permission-denied, short-recording, saved, and error handling paths.
+- `miniprogram/pages/scene/scene.ts` cancels any active Listen + Speak recording when leaving the inline mode, hiding the page, unloading the page, or starting a different practice context.
+- `miniprogram/pages/scene/scene.wxml` renders recording controls inside the `recordReady` state. Saved recordings show a green `Saved` status and a secondary `Record Again` action in a two-column row.
+- `miniprogram/pages/scene/scene.wxss` styles the recording panel, retry feedback, saved state, and recording action row with explicit equal-width saved/re-record controls.
+
+Runtime notes:
+- `Start Recording` asks for `scope.record` permission before starting the recorder.
+- `Stop` saves the recording only when the duration meets the minimum recording threshold.
+- Short recordings show `Recording was too short. Please try again.` and keep the user on the same record-ready step.
+- `Cancel` stops recording and clears the recording file path without advancing.
+- Permission denial shows `Microphone permission is needed to practice speaking.` and keeps the user able to retry.
+- Saved recordings currently only show `Saved`; Step 8.3 will handle recognition feedback and continuation.
+
+Test coverage:
+- `tests/listeningSpeakingRecording.test.ts` covers recording view-model fields, WXML controls, `RecorderManager` usage without recognition calls, microphone denial, short-recording feedback, and recording UI styles.
+
+File change record:
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `miniprogram/pages/scene/scene.ts` | Adds Listen + Speak recording manager wiring, permission handling, stop/cancel behavior, short-recording validation, saved recording state, and cleanup. | Phase 8 / Step 8.2 |
+| `miniprogram/pages/scene/scene.wxml` | Renders Listen + Speak recording controls, saved status, retry text, and re-record action. | Phase 8 / Step 8.2 |
+| `miniprogram/pages/scene/scene.wxss` | Styles the recording panel, saved state, and equal-width saved/re-record row. | Phase 8 / Step 8.2 |
+| `miniprogram/pages/scene/sceneViewModel.ts` | Adds recording status, file path, duration, and feedback fields to the Scene view model. | Phase 8 / Step 8.2 |
+| `tests/listeningSpeakingRecording.test.ts` | Covers the Listen + Speak recording interaction and guards against calling recognition before Step 8.3. | Phase 8 / Step 8.2 |
