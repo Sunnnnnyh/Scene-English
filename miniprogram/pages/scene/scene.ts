@@ -16,18 +16,30 @@ import {
   shouldShowMemoryTranslationGuide
 } from "../../services/onboardingService";
 import {
+  createEmptyListeningSpeakingState,
   createEmptyListeningWritingState,
+  createListeningSpeakingStartState,
   createListeningWritingStartState,
   createMemoryWordCard,
   createSceneViewModel,
   getSceneEntryAction,
+  type SceneListeningSpeakingQuestion,
+  type SceneListeningSpeakingState,
   type SceneListeningWritingQuestion,
   type SceneListeningWritingState,
   type SceneMemoryWordCard,
   type SceneEntryId,
   type SceneViewModel
 } from "./sceneViewModel";
-import type { Mistake, MistakeType, QuizQuestion, QuizRound, Scene, Word } from "../../types";
+import type {
+  Mistake,
+  MistakeType,
+  QuizQuestion,
+  QuizRound,
+  Scene,
+  StudyMode,
+  Word
+} from "../../types";
 
 type ScenePageOptions = {
   sceneId?: string;
@@ -57,6 +69,14 @@ type ListeningWritingHotspotTapEvent = WechatMiniprogram.BaseEvent & {
   };
 };
 
+type ListeningSpeakingHotspotTapEvent = WechatMiniprogram.BaseEvent & {
+  currentTarget: {
+    dataset: {
+      wordId?: string;
+    };
+  };
+};
+
 type ListeningWritingSpellingInputEvent = WechatMiniprogram.BaseEvent & {
   detail: {
     value?: string;
@@ -76,11 +96,18 @@ const LISTENING_WRITING_CORRECT_SOUND_URL = "/assets/audio/feedback-correct.wav"
 const LISTENING_WRITING_WRONG_SOUND_URL = "/assets/audio/feedback-wrong.wav";
 
 type ListeningWritingFeedbackKind = "" | "success" | "error" | "info";
+type ListeningSpeakingFeedbackKind = "" | "success" | "error" | "info";
 
 type ListeningWritingTaskData = {
   listeningWritingStepLabel: string;
   listeningWritingTaskTitle: string;
   listeningWritingInstruction: string;
+};
+
+type ListeningSpeakingTaskData = {
+  listeningSpeakingStepLabel: string;
+  listeningSpeakingTaskTitle: string;
+  listeningSpeakingInstruction: string;
 };
 
 const LISTENING_WRITING_LISTEN_TASK: ListeningWritingTaskData = {
@@ -113,9 +140,28 @@ const LISTENING_WRITING_COMPLETE_TASK: ListeningWritingTaskData = {
   listeningWritingInstruction: "You finished this Listen + Spell round."
 };
 
+const LISTENING_SPEAKING_LISTEN_TASK: ListeningSpeakingTaskData = {
+  listeningSpeakingStepLabel: "Listen",
+  listeningSpeakingTaskTitle: "Listen",
+  listeningSpeakingInstruction: "Play audio, then find it."
+};
+
+const LISTENING_SPEAKING_FIND_TASK: ListeningSpeakingTaskData = {
+  listeningSpeakingStepLabel: "Find",
+  listeningSpeakingTaskTitle: "Find the object",
+  listeningSpeakingInstruction: "Tap the matching object."
+};
+
+const LISTENING_SPEAKING_RECORD_TASK: ListeningSpeakingTaskData = {
+  listeningSpeakingStepLabel: "Speak",
+  listeningSpeakingTaskTitle: "Speak",
+  listeningSpeakingInstruction: "Get ready to say the word."
+};
+
 let memoryWordAudioContext: WechatMiniprogram.InnerAudioContext | undefined;
 let listeningWritingAudioContext: WechatMiniprogram.InnerAudioContext | undefined;
 let listeningWritingFeedbackAudioContext: WechatMiniprogram.InnerAudioContext | undefined;
+let listeningSpeakingAudioContext: WechatMiniprogram.InnerAudioContext | undefined;
 
 function stopMemoryWordAudio() {
   if (!memoryWordAudioContext) {
@@ -251,6 +297,53 @@ function playListeningWritingAudio(
   }
 }
 
+function stopListeningSpeakingAudio() {
+  if (!listeningSpeakingAudioContext) {
+    return;
+  }
+
+  try {
+    listeningSpeakingAudioContext.stop();
+  } catch {
+    // Best-effort cleanup; playback errors are surfaced from play callbacks.
+  }
+}
+
+function releaseListeningSpeakingAudio() {
+  if (!listeningSpeakingAudioContext) {
+    return;
+  }
+
+  stopListeningSpeakingAudio();
+
+  try {
+    listeningSpeakingAudioContext.destroy();
+  } catch {
+    // Best-effort cleanup when the page unloads or a new prompt starts.
+  }
+
+  listeningSpeakingAudioContext = undefined;
+}
+
+function playListeningSpeakingAudio(
+  src: SceneListeningSpeakingQuestion["audioUrl"],
+  onError: () => void,
+  onEnded: () => void
+) {
+  releaseListeningSpeakingAudio();
+
+  try {
+    const audioContext = wx.createInnerAudioContext();
+    listeningSpeakingAudioContext = audioContext;
+    audioContext.src = src;
+    audioContext.onError(onError);
+    audioContext.onEnded(onEnded);
+    audioContext.play();
+  } catch {
+    onError();
+  }
+}
+
 function refreshSceneProgress(sceneId: Scene["id"]) {
   const scene = getSceneById(sceneId);
 
@@ -286,7 +379,7 @@ function createPracticeQuizRound({
   excludeWordIds = []
 }: {
   sceneId: Scene["id"];
-  mode: "listeningWriting";
+  mode: Exclude<StudyMode, "memory">;
   words: Word[];
   learnedWordIds: Word["id"][];
   excludeWordIds?: Word["id"][];
@@ -423,6 +516,44 @@ function createListeningWritingModeData(sceneId: Scene["id"], excludeWordIds: Wo
   };
 }
 
+function createEmptyListeningSpeakingModeData() {
+  return {
+    listeningSpeakingRound: null,
+    listeningSpeakingState: createEmptyListeningSpeakingState(),
+    listeningSpeakingClickAttemptCount: 0,
+    ...LISTENING_SPEAKING_LISTEN_TASK,
+    listeningSpeakingFeedback: "",
+    listeningSpeakingFeedbackKind: "" as ListeningSpeakingFeedbackKind,
+    listeningSpeakingPhase: "locating" as const,
+    listeningSpeakingTargetWordId: "",
+    listeningSpeakingCanSelectObject: false
+  };
+}
+
+function createListeningSpeakingModeData(sceneId: Scene["id"], excludeWordIds: Word["id"][] = []) {
+  const words = getWordsBySceneId(sceneId);
+  const progress = getSceneProgress(sceneId);
+  const listeningSpeakingRound = createPracticeQuizRound({
+    sceneId,
+    mode: "listeningSpeaking",
+    words,
+    learnedWordIds: progress.learnedWordIds,
+    excludeWordIds
+  });
+
+  return {
+    listeningSpeakingRound,
+    listeningSpeakingState: createListeningSpeakingStartState(listeningSpeakingRound, words),
+    listeningSpeakingClickAttemptCount: 0,
+    ...LISTENING_SPEAKING_LISTEN_TASK,
+    listeningSpeakingFeedback: "",
+    listeningSpeakingFeedbackKind: "" as ListeningSpeakingFeedbackKind,
+    listeningSpeakingPhase: "locating" as const,
+    listeningSpeakingTargetWordId: "",
+    listeningSpeakingCanSelectObject: false
+  };
+}
+
 function createMistakePracticeModeData(sceneId: Scene["id"], mistakeType: MistakeType) {
   const words = getWordsBySceneId(sceneId);
   const listeningWritingRound = createMistakePracticeQuizRound({
@@ -521,6 +652,7 @@ Page({
     stopMemoryWordAudio();
     stopListeningWritingAudio();
     stopListeningWritingFeedbackAudio();
+    stopListeningSpeakingAudio();
 
     this.setData({
       ...createSceneViewModel(scene, getSceneProgress(scene.id), getWordsBySceneId(scene.id)),
@@ -531,7 +663,8 @@ Page({
       showMemoryTranslationGuide: false,
       selectedMemoryWordId: "",
       selectedMemoryWordCard: null,
-      ...createMistakePracticeModeData(request.sceneId, request.mistakeType)
+      ...createMistakePracticeModeData(request.sceneId, request.mistakeType),
+      ...createEmptyListeningSpeakingModeData()
     });
   },
 
@@ -567,10 +700,15 @@ Page({
             listeningWritingContinueLabel: "Continue",
             listeningWritingPracticeMistakeType: "" as MistakeType | ""
           };
+    const listeningSpeakingData =
+      action.mode === "listeningSpeaking"
+        ? createListeningSpeakingModeData(sceneId)
+        : createEmptyListeningSpeakingModeData();
 
     stopMemoryWordAudio();
     stopListeningWritingAudio();
     stopListeningWritingFeedbackAudio();
+    stopListeningSpeakingAudio();
 
     this.setData({
       activeMode: action.mode,
@@ -580,7 +718,8 @@ Page({
       showMemoryTranslationGuide: false,
       selectedMemoryWordId: "",
       selectedMemoryWordCard: null,
-      ...listeningWritingData
+      ...listeningWritingData,
+      ...listeningSpeakingData
     });
   },
 
@@ -588,6 +727,7 @@ Page({
     stopMemoryWordAudio();
     stopListeningWritingAudio();
     stopListeningWritingFeedbackAudio();
+    stopListeningSpeakingAudio();
 
     this.setData({
       activeMode: "",
@@ -613,7 +753,8 @@ Page({
       listeningWritingPendingNextQuestion: false,
       listeningWritingPendingNextQuestionIndex: -1,
       listeningWritingContinueLabel: "Continue",
-      listeningWritingPracticeMistakeType: ""
+      listeningWritingPracticeMistakeType: "",
+      ...createEmptyListeningSpeakingModeData()
     });
   },
 
@@ -1058,16 +1199,134 @@ Page({
     });
   },
 
+  onPlayListeningSpeakingAudio() {
+    this.playListeningSpeakingAudioForCurrentQuestion();
+  },
+
+  handleListeningSpeakingAudioEnded() {
+    if (this.data.listeningSpeakingPhase === "recordReady") {
+      return;
+    }
+
+    this.setData({
+      listeningSpeakingCanSelectObject: true,
+      ...LISTENING_SPEAKING_FIND_TASK
+    });
+  },
+
+  playListeningSpeakingAudioForCurrentQuestion() {
+    const listeningSpeakingState = this.data.listeningSpeakingState as SceneListeningSpeakingState;
+    const audioUrl = listeningSpeakingState.currentQuestion?.audioUrl;
+
+    if (!audioUrl) {
+      return;
+    }
+
+    if (this.data.listeningSpeakingPhase !== "recordReady") {
+      this.setData({
+        listeningSpeakingCanSelectObject: false,
+        ...LISTENING_SPEAKING_LISTEN_TASK
+      });
+    }
+
+    playListeningSpeakingAudio(
+      audioUrl,
+      () => {
+        wx.showToast({
+          title: "闊抽鏆傛椂鏃犳硶鎾斁",
+          icon: "none"
+        });
+      },
+      () => {
+        this.handleListeningSpeakingAudioEnded();
+      }
+    );
+  },
+
+  onListeningSpeakingHotspotTap(event: ListeningSpeakingHotspotTapEvent) {
+    if (this.data.listeningSpeakingPhase === "recordReady") {
+      return;
+    }
+
+    if (!this.data.listeningSpeakingCanSelectObject) {
+      wx.showToast({
+        title: "Listen to the word first",
+        icon: "none"
+      });
+      return;
+    }
+
+    const { wordId } = event.currentTarget.dataset;
+    const sceneId = this.data.sceneId;
+    const listeningSpeakingState = this.data.listeningSpeakingState as SceneListeningSpeakingState;
+    const targetWordId = listeningSpeakingState.currentQuestion?.wordId;
+
+    if (!wordId || !sceneId || !targetWordId) {
+      return;
+    }
+
+    if (wordId === targetWordId) {
+      recordMistakeCorrectAnswer(targetWordId, "click");
+      playListeningWritingFeedbackSound("correct");
+      this.setData({
+        listeningSpeakingClickAttemptCount: 0,
+        ...LISTENING_SPEAKING_RECORD_TASK,
+        listeningSpeakingFeedback: "",
+        listeningSpeakingFeedbackKind: "",
+        listeningSpeakingPhase: "recordReady",
+        listeningSpeakingTargetWordId: targetWordId,
+        listeningSpeakingCanSelectObject: false
+      });
+      return;
+    }
+
+    const nextAttemptCount = this.data.listeningSpeakingClickAttemptCount + 1;
+
+    if (nextAttemptCount === 1) {
+      recordMistake(targetWordId, sceneId, "click");
+      playListeningWritingFeedbackSound("wrong");
+      this.setData({
+        listeningSpeakingClickAttemptCount: nextAttemptCount,
+        ...LISTENING_SPEAKING_FIND_TASK,
+        listeningSpeakingFeedback: "Try again.",
+        listeningSpeakingFeedbackKind: "error",
+        listeningSpeakingPhase: "locating",
+        listeningSpeakingTargetWordId: ""
+      });
+      return;
+    }
+
+    playListeningWritingFeedbackSound("wrong");
+    this.setData({
+      listeningSpeakingClickAttemptCount: nextAttemptCount,
+      ...LISTENING_SPEAKING_RECORD_TASK,
+      listeningSpeakingFeedback: "",
+      listeningSpeakingFeedbackKind: "error",
+      listeningSpeakingPhase: "recordReady",
+      listeningSpeakingTargetWordId: targetWordId,
+      listeningSpeakingCanSelectObject: false
+    });
+  },
+
+  onListeningSpeakingBlankTap() {
+    wx.showToast({
+      title: "Tap an object in the picture",
+      icon: "none"
+    });
+  },
+
   onHide() {
     stopMemoryWordAudio();
     stopListeningWritingAudio();
     stopListeningWritingFeedbackAudio();
+    stopListeningSpeakingAudio();
   },
 
   onUnload() {
     releaseMemoryWordAudio();
     releaseListeningWritingAudio();
     releaseListeningWritingFeedbackAudio();
+    releaseListeningSpeakingAudio();
   },
 
   onMemoryBlankTap() {

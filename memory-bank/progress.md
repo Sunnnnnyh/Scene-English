@@ -984,3 +984,24 @@
 - Remaining:
   - `speaking` mistake practice remains out of scope until the Listen + Speak flow is implemented.
   - Further visual polish can continue in the later UI refinement phase.
+
+### 2026-05-26 - Phase 8 / Step 8.1 Listen + Speak start state
+
+- Completed:
+  - Added Listen + Speak inline start state in the Learn tab.
+  - Entering Listen + Speak now creates a 5-question round and shows the current question label, starting from `1 / 5`.
+  - Added target word audio playback for Listen + Speak, with object selection enabled only after the audio finishes.
+  - Reused the calibrated Classroom image and existing hotspot data for the Listen + Speak object-finding step.
+  - First wrong object tap records a `click` mistake and shows retry feedback.
+  - Correct object tap updates `click` mastery progress and enters the `Ready to speak` placeholder state.
+  - Kept recording controls, microphone permissions, short-recording handling, mock ASR, speaking mistakes, and completion flow out of this step.
+- Verification:
+  - User validated Step 8.1 in WeChat DevTools.
+  - `npm run typecheck` passed.
+  - `npm run lint` passed.
+  - `npm run format:check` passed.
+  - `npm test` passed: 33 test files, 164 tests.
+  - `git diff --check` passed with only Windows CRLF warnings.
+- Remaining:
+  - Step 8.2 still needs to implement the actual recording interaction.
+  - Listen + Speak does not yet advance through the full round after the record-ready state.

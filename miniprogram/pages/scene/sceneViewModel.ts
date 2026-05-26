@@ -50,6 +50,19 @@ export type SceneListeningWritingState = {
   currentQuestion: SceneListeningWritingQuestion | null;
 };
 
+export type SceneListeningSpeakingQuestion = {
+  questionId: QuizQuestion["id"];
+  wordId: Word["id"];
+  audioUrl: Word["audioUrl"];
+};
+
+export type SceneListeningSpeakingState = {
+  currentQuestionNumber: number;
+  totalQuestionCount: number;
+  questionLabel: string;
+  currentQuestion: SceneListeningSpeakingQuestion | null;
+};
+
 export type SceneViewModel = {
   sceneId: Scene["id"];
   title: string;
@@ -86,6 +99,17 @@ export type SceneViewModel = {
   listeningWritingPendingNextQuestionIndex: number;
   listeningWritingContinueLabel: string;
   listeningWritingPracticeMistakeType: MistakeType | "";
+  listeningSpeakingRound: QuizRound | null;
+  listeningSpeakingState: SceneListeningSpeakingState;
+  listeningSpeakingClickAttemptCount: number;
+  listeningSpeakingStepLabel: string;
+  listeningSpeakingTaskTitle: string;
+  listeningSpeakingInstruction: string;
+  listeningSpeakingFeedback: string;
+  listeningSpeakingFeedbackKind: "" | "success" | "error" | "info";
+  listeningSpeakingPhase: "locating" | "recordReady";
+  listeningSpeakingTargetWordId: string;
+  listeningSpeakingCanSelectObject: boolean;
 };
 
 export type SceneEntryAction = {
@@ -154,6 +178,43 @@ export function createListeningWritingStartState(
   };
 }
 
+export function createEmptyListeningSpeakingState(): SceneListeningSpeakingState {
+  return {
+    currentQuestionNumber: 0,
+    totalQuestionCount: 0,
+    questionLabel: "",
+    currentQuestion: null
+  };
+}
+
+export function createListeningSpeakingStartState(
+  round: QuizRound,
+  words: Word[]
+): SceneListeningSpeakingState {
+  const currentQuestion = round.questions[round.currentIndex];
+  const currentWord = currentQuestion
+    ? words.find((word) => word.id === currentQuestion.wordId)
+    : undefined;
+
+  if (!currentQuestion || !currentWord) {
+    return createEmptyListeningSpeakingState();
+  }
+
+  const currentQuestionNumber = round.currentIndex + 1;
+  const totalQuestionCount = round.questions.length;
+
+  return {
+    currentQuestionNumber,
+    totalQuestionCount,
+    questionLabel: `${currentQuestionNumber} / ${totalQuestionCount}`,
+    currentQuestion: {
+      questionId: currentQuestion.id,
+      wordId: currentQuestion.wordId,
+      audioUrl: currentWord.audioUrl
+    }
+  };
+}
+
 export function createSceneViewModel(
   scene: Scene,
   progress: UserProgress,
@@ -203,7 +264,18 @@ export function createSceneViewModel(
     listeningWritingPendingNextQuestion: false,
     listeningWritingPendingNextQuestionIndex: -1,
     listeningWritingContinueLabel: "Continue",
-    listeningWritingPracticeMistakeType: ""
+    listeningWritingPracticeMistakeType: "",
+    listeningSpeakingRound: null,
+    listeningSpeakingState: createEmptyListeningSpeakingState(),
+    listeningSpeakingClickAttemptCount: 0,
+    listeningSpeakingStepLabel: "Listen",
+    listeningSpeakingTaskTitle: "Listen",
+    listeningSpeakingInstruction: "Play audio, then find it.",
+    listeningSpeakingFeedback: "",
+    listeningSpeakingFeedbackKind: "",
+    listeningSpeakingPhase: "locating",
+    listeningSpeakingTargetWordId: "",
+    listeningSpeakingCanSelectObject: false
   };
 }
 

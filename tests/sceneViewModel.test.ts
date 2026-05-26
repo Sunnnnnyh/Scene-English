@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  createListeningSpeakingStartState,
   createListeningWritingStartState,
   createSceneViewModel,
   getSceneEntryAction
@@ -85,6 +86,28 @@ describe("scene page view model", () => {
     });
 
     const state = createListeningWritingStartState(round, classroomWords);
+
+    expect(state).toMatchObject({
+      currentQuestionNumber: 1,
+      totalQuestionCount: 5,
+      questionLabel: "1 / 5",
+      currentQuestion: {
+        wordId: classroomWords[0].id,
+        audioUrl: classroomWords[0].audioUrl
+      }
+    });
+  });
+
+  it("builds Listen + Speak start state from the first quiz question", () => {
+    const round = createPracticeQuizRound({
+      sceneId: "classroom",
+      mode: "listeningSpeaking",
+      words: classroomWords,
+      learnedWordIds: classroomWords.slice(0, 5).map((word) => word.id),
+      random: () => 0
+    });
+
+    const state = createListeningSpeakingStartState(round, classroomWords);
 
     expect(state).toMatchObject({
       currentQuestionNumber: 1,

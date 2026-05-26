@@ -232,6 +232,58 @@
       </block>
     </block>
 
+    <block wx:elif="{{activeMode === 'listeningSpeaking'}}">
+      <view
+        class="scene-preview mode-page-preview listening-speaking-scene-preview"
+        data-target-word-id="{{listeningSpeakingState.currentQuestion.wordId}}"
+        bindtap="onListeningSpeakingBlankTap"
+      >
+        <image class="scene-image" src="{{sceneImage}}" mode="aspectFill" />
+        <block wx:for="{{memoryHotspots}}" wx:key="wordId">
+          <view
+            class="listening-speaking-hotspot {{listeningSpeakingTargetWordId === item.wordId ? 'listening-speaking-hotspot--target listening-writing-hotspot--flash' : ''}}"
+            style="{{item.style}}"
+            data-word-id="{{item.wordId}}"
+            catchtap="onListeningSpeakingHotspotTap"
+          ></view>
+        </block>
+      </view>
+
+      <view class="mode-page-panel listening-speaking-start">
+        <view class="listening-speaking-progress">
+          <text class="listening-speaking-progress-label">Question</text>
+          <text class="listening-speaking-progress-count">{{listeningSpeakingState.questionLabel}}</text>
+        </view>
+
+        <view wx:if="{{listeningSpeakingPhase !== 'recordReady'}}" class="listening-speaking-cue">
+          <text class="listening-speaking-cue-title">{{listeningSpeakingTaskTitle}}</text>
+          <text wx:if="{{listeningSpeakingInstruction}}" class="listening-speaking-cue-text">
+            {{listeningSpeakingInstruction}}
+          </text>
+        </view>
+
+        <view
+          wx:if="{{listeningSpeakingFeedback}}"
+          class="listening-speaking-feedback-card {{listeningSpeakingFeedbackKind === 'success' ? 'listening-speaking-feedback-card--success' : ''}} {{listeningSpeakingFeedbackKind === 'error' ? 'listening-speaking-feedback-card--error' : ''}}"
+        >
+          <text class="listening-speaking-feedback">{{listeningSpeakingFeedback}}</text>
+        </view>
+
+        <button
+          wx:if="{{listeningSpeakingPhase !== 'recordReady'}}"
+          class="listening-speaking-play"
+          bindtap="onPlayListeningSpeakingAudio"
+        >
+          Play Word Audio
+        </button>
+
+        <view wx:if="{{listeningSpeakingPhase === 'recordReady'}}" class="listening-speaking-record-ready">
+          <text class="listening-speaking-record-title">Ready to speak</text>
+          <text class="listening-speaking-record-text">Recording controls come next.</text>
+        </view>
+      </view>
+    </block>
+
     <block wx:else>
       <view class="scene-preview mode-page-preview">
         <image class="scene-image" src="{{sceneImage}}" mode="aspectFill" />

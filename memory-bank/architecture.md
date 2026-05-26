@@ -1672,3 +1672,36 @@ File change record:
 | `tests/mistakesPage.test.ts` | Covers the Mistakes page practice picker and simplified UI constraints. | Phase 7 / Step 7.4 |
 | `tests/listeningWritingStart.test.ts` | Covers pending request consumption and post-practice return behavior. | Phase 7 / Step 7.4 |
 | `tests/sceneInlineMode.test.ts` | Keeps scene entry behavior covered with the new mistake-practice navigation path. | Phase 7 / Step 7.4 |
+
+## 50. Phase 8 / Step 8.1 Listen + Speak start state
+
+Listen + Speak now has an inline start flow inside the Learn tab. This step only covers the pre-recording flow: create the question queue, play the target word audio, let the user find the matching object, and enter a record-ready state after the correct object is found.
+
+Current responsibilities:
+- `miniprogram/pages/scene/sceneViewModel.ts` defines `SceneListeningSpeakingState`, `SceneListeningSpeakingQuestion`, `createEmptyListeningSpeakingState()`, and `createListeningSpeakingStartState()`. These mirror the Listen + Spell start-state shape but only expose the question id, word id, audio url, and progress label needed by the UI.
+- `miniprogram/pages/scene/scene.ts` creates normal Listen + Speak rounds with the shared inline quiz queue helper using `mode: "listeningSpeaking"`.
+- `miniprogram/pages/scene/scene.ts` owns a separate Listen + Speak audio context so playback can be stopped or released without disturbing Memory or Listen + Spell audio state.
+- `miniprogram/pages/scene/scene.ts` enables object selection only after the target audio ends, records the first wrong object tap as a `click` mistake, updates `click` mastery when the correct object is selected, and switches to `listeningSpeakingPhase: "recordReady"`.
+- `miniprogram/pages/scene/scene.wxml` renders the Listen + Speak progress row, playback button, Classroom hotspot layer, object feedback, and `Ready to speak` placeholder.
+- `miniprogram/pages/scene/scene.wxss` adds stable Listen + Speak panel, hotspot, feedback, playback, and record-ready styles.
+
+Runtime notes:
+- The target English word is not shown during the object-finding step.
+- Tapping an object before the target audio finishes shows `Listen to the word first` and does not record a mistake.
+- Tapping blank image space shows `Tap an object in the picture` and does not record a mistake.
+- `Ready to speak` is intentionally only a placeholder in this step; Step 8.2 will add recording controls and microphone flow.
+- Speaking mistake practice remains unavailable until the full Listen + Speak loop exists.
+
+Test coverage:
+- `tests/listeningSpeakingStart.test.ts` covers Learn-tab entry, view-model state, WXML bindings, audio-ended selection gating, click mistake recording, record-ready transition, and stable styles.
+- `tests/sceneViewModel.test.ts` covers `createListeningSpeakingStartState()` with a deterministic 5-question round.
+
+File change record:
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `miniprogram/pages/scene/scene.ts` | Adds Listen + Speak round creation, audio playback, object-selection gating, click mistake recording, and record-ready transition. | Phase 8 / Step 8.1 |
+| `miniprogram/pages/scene/scene.wxml` | Renders the Listen + Speak inline practice start panel and hotspot layer. | Phase 8 / Step 8.1 |
+| `miniprogram/pages/scene/scene.wxss` | Adds stable styles for the Listen + Speak start panel, hotspots, feedback, play button, and record-ready state. | Phase 8 / Step 8.1 |
+| `miniprogram/pages/scene/sceneViewModel.ts` | Adds Listen + Speak question and page state models. | Phase 8 / Step 8.1 |
+| `tests/listeningSpeakingStart.test.ts` | Covers the Listen + Speak start-state page behavior. | Phase 8 / Step 8.1 |
+| `tests/sceneViewModel.test.ts` | Adds coverage for Listen + Speak start-state model creation. | Phase 8 / Step 8.1 |
