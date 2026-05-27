@@ -117,7 +117,7 @@ describe("scene page Memory word card", () => {
     expect(sceneScript).toContain("stopMemoryWordAudio");
     expect(sceneScript).toContain("onPlayMemoryWordAudio");
     expect(sceneScript).toContain("selectedMemoryWordCard.audioUrl");
-    expect(sceneScript).toContain("音频暂时无法播放");
+    expect(sceneScript).toContain("feedbackCopy.audioUnavailable");
     expect(sceneScript).toContain("onUnload");
     expect(sceneScript).toContain("recordLearnedWord");
     expect(sceneScript).toContain("refreshSceneProgress");

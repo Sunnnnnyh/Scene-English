@@ -3,6 +3,7 @@ import { savePendingMistakePracticeRequest } from "../../services/mistakePractic
 import { getSceneById } from "../../services/sceneService";
 import { getWordById } from "../../services/wordService";
 import type { MasteryProgress, Mistake, MistakeType, Scene, Word } from "../../types";
+import { feedbackCopy } from "../../utils/feedbackCopy";
 
 type MistakeTypeItem = {
   type: MistakeType;
@@ -163,7 +164,7 @@ Page({
 
         if (!hasPracticeMistakes(mistakeType)) {
           wx.showToast({
-            title: `No ${mistakeTypeLabels[mistakeType]} mistakes`,
+            title: feedbackCopy.noMistakesForType(mistakeTypeLabels[mistakeType]),
             icon: "none"
           });
           return;

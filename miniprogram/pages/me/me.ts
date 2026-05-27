@@ -2,6 +2,7 @@ import { getFavorites } from "../../services/favoriteService";
 import { getMistakes } from "../../services/mistakeService";
 import { getSceneProgress } from "../../services/progressService";
 import type { Favorite, Mistake, UserProgress } from "../../types";
+import { feedbackCopy } from "../../utils/feedbackCopy";
 
 function createPageData(progress: UserProgress, favorites: Favorite[], mistakes: Mistake[]) {
   return {
@@ -23,7 +24,7 @@ function createPageData(progress: UserProgress, favorites: Favorite[], mistakes:
     ],
     asrStatus: {
       label: "口语识别",
-      value: "Mock ASR enabled"
+      value: feedbackCopy.speechStatusReady
     }
   };
 }

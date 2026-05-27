@@ -1105,3 +1105,22 @@
   - `git diff --check` passed with only Windows CRLF warnings.
 - Remaining:
   - Step 9.3 still needs to unify user-facing feedback copy.
+
+### 2026-05-27 - Phase 9 / Step 9.3 User-facing feedback copy
+
+- Completed:
+  - Added `miniprogram/utils/feedbackCopy.ts` as a shared source for core user-facing feedback text.
+  - Replaced scattered Scene, Home, Favorites, Mistakes, and Me feedback strings with shared copy where they affect user feedback.
+  - Removed the visible `Mock ASR enabled` status from Me and replaced it with `Speech practice ready.`
+  - Refined image failure, audio failure, recording, microphone permission, recognition failure, retry, and coming-soon wording so users do not see mock or technical implementation language.
+  - Added regression coverage to ensure key user-facing pages use shared feedback copy and do not expose mock or technical wording.
+- Verification:
+  - User validated Step 9.3 copy behavior in WeChat DevTools.
+  - TypeScript miniprogram config passed.
+  - TypeScript test config passed.
+  - ESLint passed.
+  - Prettier check passed.
+  - Vitest passed: 40 test files, 200 tests.
+  - `git diff --check` passed with only Windows CRLF warnings.
+- Remaining:
+  - Step 9.4 still needs mobile visual adaptation.

@@ -2,6 +2,7 @@ import { getFavorites, removeFavorite } from "../../services/favoriteService";
 import { getSceneById } from "../../services/sceneService";
 import { getWordById } from "../../services/wordService";
 import type { Favorite, Scene, Word } from "../../types";
+import { feedbackCopy } from "../../utils/feedbackCopy";
 
 type FavoriteListItem = {
   wordId: Word["id"];
@@ -152,7 +153,7 @@ Page({
 
     playFavoriteAudio(audioUrl, () => {
       wx.showToast({
-        title: "音频暂时无法播放",
+        title: feedbackCopy.favoriteAudioUnavailable,
         icon: "none"
       });
     });

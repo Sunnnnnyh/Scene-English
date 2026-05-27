@@ -62,7 +62,7 @@ describe("me page view model", () => {
       ],
       asrStatus: {
         label: "口语识别",
-        value: "Mock ASR enabled"
+        value: "Speech practice ready."
       }
     });
   });

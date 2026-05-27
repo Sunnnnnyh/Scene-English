@@ -1,3 +1,4 @@
+import { feedbackCopy } from "../../utils/feedbackCopy";
 import type { Favorite, Mistake, UserProgress } from "../../types";
 
 export type MeStat = {
@@ -39,7 +40,7 @@ export function createMeViewModel(
     ],
     asrStatus: {
       label: "口语识别",
-      value: "Mock ASR enabled"
+      value: feedbackCopy.speechStatusReady
     }
   };
 }

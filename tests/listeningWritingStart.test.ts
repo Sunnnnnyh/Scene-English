@@ -64,7 +64,7 @@ describe("Listen + Spell start state inside the Learn tab", () => {
     expect(scenePageScript).toContain("playListeningWritingAudio");
     expect(scenePageScript).toContain("onPlayListeningWritingAudio");
     expect(scenePageScript).toContain("wx.createInnerAudioContext()");
-    expect(scenePageScript).toContain("音频暂时无法播放");
+    expect(scenePageScript).toContain("feedbackCopy.audioUnavailable");
   });
 
   it("judges Listen + Spell object taps and records first click mistakes", () => {
@@ -236,7 +236,7 @@ describe("Listen + Spell start state inside the Learn tab", () => {
   it("keeps click mistake practice focused on object selection only", () => {
     expect(scenePageScript).toContain('this.data.listeningWritingPracticeMistakeType === "click"');
     expect(scenePageScript).toContain(
-      'this.prepareListeningWritingNextStep("Correct object.", "success")'
+      'this.prepareListeningWritingNextStep(feedbackCopy.correctObject, "success")'
     );
   });
 

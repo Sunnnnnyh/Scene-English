@@ -37,10 +37,10 @@ describe("Listen + Speak recognition feedback", () => {
     expect(scenePageScript).toContain('recognitionStatus: "passed"');
     expect(scenePageScript).toContain('"notRecognized"');
     expect(scenePageScript).toContain('"failed"');
-    expect(scenePageScript).toContain("Checking your pronunciation");
-    expect(scenePageScript).toContain("Great pronunciation.");
-    expect(scenePageScript).toContain("I could not hear the word clearly. Please try again.");
-    expect(scenePageScript).toContain("I could not check that recording. Please try again.");
+    expect(scenePageScript).toContain("feedbackCopy.checkingPronunciation");
+    expect(scenePageScript).toContain("feedbackCopy.greatPronunciation");
+    expect(scenePageScript).toContain("feedbackCopy.recognitionNotClear");
+    expect(scenePageScript).toContain("feedbackCopy.recognitionFailed");
   });
 
   it("renders recognition feedback without exposing the mock implementation", () => {

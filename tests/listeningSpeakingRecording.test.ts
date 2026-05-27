@@ -50,8 +50,8 @@ describe("Listen + Speak recording interaction", () => {
     expect(scenePageScript).toContain('scope: "scope.record"');
     expect(scenePageScript).toContain("handleListeningSpeakingPermissionDenied");
     expect(scenePageScript).toContain("MIN_LISTENING_SPEAKING_RECORDING_MS");
-    expect(scenePageScript).toContain("Recording was too short");
-    expect(scenePageScript).toContain("Microphone permission is needed");
+    expect(scenePageScript).toContain("feedbackCopy.recordingTooShort");
+    expect(scenePageScript).toContain("feedbackCopy.microphonePermission");
   });
 
   it("styles recording actions and feedback inside the Listen + Speak panel", () => {

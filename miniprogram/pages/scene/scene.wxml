@@ -18,8 +18,8 @@
         binderror="onSceneImageError"
       />
       <view wx:else class="scene-image-fallback">
-        <text class="scene-image-fallback__title">Scene image could not load.</text>
-        <button class="scene-image-fallback__retry" catchtap="onRetrySceneImage">Retry</button>
+        <text class="scene-image-fallback__title">Image unavailable.</text>
+        <button class="scene-image-fallback__retry" catchtap="onRetrySceneImage">Try again</button>
       </view>
     </view>
 
@@ -80,8 +80,8 @@
           binderror="onSceneImageError"
         />
         <view wx:else class="scene-image-fallback">
-          <text class="scene-image-fallback__title">Scene image could not load.</text>
-          <button class="scene-image-fallback__retry" catchtap="onRetrySceneImage">Retry</button>
+          <text class="scene-image-fallback__title">Image unavailable.</text>
+          <button class="scene-image-fallback__retry" catchtap="onRetrySceneImage">Try again</button>
         </view>
         <block wx:for="{{memoryHotspots}}" wx:key="wordId">
           <view
@@ -178,8 +178,8 @@
             binderror="onSceneImageError"
           />
           <view wx:else class="scene-image-fallback">
-            <text class="scene-image-fallback__title">Scene image could not load.</text>
-            <button class="scene-image-fallback__retry" catchtap="onRetrySceneImage">Retry</button>
+            <text class="scene-image-fallback__title">Image unavailable.</text>
+            <button class="scene-image-fallback__retry" catchtap="onRetrySceneImage">Try again</button>
           </view>
           <block wx:for="{{memoryHotspots}}" wx:key="wordId">
             <view
@@ -310,8 +310,8 @@
             binderror="onSceneImageError"
           />
           <view wx:else class="scene-image-fallback">
-            <text class="scene-image-fallback__title">Scene image could not load.</text>
-            <button class="scene-image-fallback__retry" catchtap="onRetrySceneImage">Retry</button>
+            <text class="scene-image-fallback__title">Image unavailable.</text>
+            <button class="scene-image-fallback__retry" catchtap="onRetrySceneImage">Try again</button>
           </view>
           <block wx:for="{{memoryHotspots}}" wx:key="wordId">
             <view
@@ -444,8 +444,8 @@
           binderror="onSceneImageError"
         />
         <view wx:else class="scene-image-fallback">
-          <text class="scene-image-fallback__title">Scene image could not load.</text>
-          <button class="scene-image-fallback__retry" catchtap="onRetrySceneImage">Retry</button>
+          <text class="scene-image-fallback__title">Image unavailable.</text>
+          <button class="scene-image-fallback__retry" catchtap="onRetrySceneImage">Try again</button>
         </view>
       </view>
 

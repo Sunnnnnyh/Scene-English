@@ -129,7 +129,7 @@ describe("favorites page", () => {
     expect(favoritesScript).toContain("playFavoriteAudio");
     expect(favoritesScript).toContain("stopFavoriteAudio");
     expect(favoritesScript).toContain("createInnerAudioContext");
-    expect(favoritesScript).toContain("音频暂时无法播放");
+    expect(favoritesScript).toContain("feedbackCopy.favoriteAudioUnavailable");
     expect(favoritesScript).toContain("selectedFavoriteWordIds");
     expect(favoritesScript).not.toContain("../../services/audioService");
   });

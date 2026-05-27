@@ -1866,3 +1866,37 @@ File change record:
 |---|---|---|
 | `miniprogram/pages/scene/scene.ts` | Adds shared practice reset helpers and clears interrupted Listen + Spell / Listen + Speak rounds on page hide. | Phase 9 / Step 9.2 |
 | `tests/practiceExitPersistence.test.ts` | Covers mid-practice exit cleanup for Listen + Spell and Listen + Speak without extra mistake writes. | Phase 9 / Step 9.2 |
+
+## 56. Phase 9 / Step 9.3 User-facing feedback copy
+
+The app now has a lightweight shared feedback-copy module for the common prompts that appear across learning, review, recording, and resource-failure flows. This keeps the MVP wording consistent and prevents internal implementation details such as mock recognition from appearing in normal user-facing UI.
+
+Current responsibilities:
+- `miniprogram/utils/feedbackCopy.ts` exports `feedbackCopy`, the shared copy object for core feedback strings and a small helper for mistake-type empty practice prompts.
+- `miniprogram/pages/scene/scene.ts` uses `feedbackCopy` for audio unavailable, coming-soon/unavailable practice, listen-first, object/spelling feedback, recording, microphone permission, and speech recognition feedback.
+- `miniprogram/pages/scene/scene.wxml` uses the updated image fallback wording (`Image unavailable.` / `Try again`) for every scene image fallback.
+- `miniprogram/pages/index/indexViewModel.ts`, `miniprogram/pages/favorites/favorites.ts`, `miniprogram/pages/mistakes/mistakes.ts`, `miniprogram/pages/me/me.ts`, and `miniprogram/pages/me/meViewModel.ts` use shared copy for user-facing status or feedback text.
+
+Runtime notes:
+- Me no longer displays `Mock ASR enabled`; it shows `Speech practice ready.`
+- Speech recognition failure and recording failure text is phrased as retryable product feedback, not a technical error.
+- Scene image failure uses shorter fallback wording and the retry action now reads `Try again`.
+- Mock recognition remains an implementation detail inside `speechService`; normal user-facing copy should not mention mock/ASR internals.
+
+Test coverage:
+- `tests/feedbackCopy.test.ts` covers the shared copy module, page imports, and absence of mock/technical wording in the main user-facing sources.
+- Existing Scene, Favorites, Me, resource failure, recording, and recognition tests were updated to expect the shared copy wiring.
+
+File change record:
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `miniprogram/utils/feedbackCopy.ts` | Centralizes core user-facing feedback text for resource, practice, recording, recognition, status, and review prompts. | Phase 9 / Step 9.3 |
+| `miniprogram/pages/scene/scene.ts` | Uses shared copy for practice feedback, recording feedback, permission copy, recognition feedback, and audio/coming-soon prompts. | Phase 9 / Step 9.3 |
+| `miniprogram/pages/scene/scene.wxml` | Updates scene image failure fallback wording and retry action copy. | Phase 9 / Step 9.3 |
+| `miniprogram/pages/index/indexViewModel.ts` | Uses shared coming-soon copy for unavailable scenes. | Phase 9 / Step 9.3 |
+| `miniprogram/pages/favorites/favorites.ts` | Uses shared audio-unavailable copy for favorite word playback failures. | Phase 9 / Step 9.3 |
+| `miniprogram/pages/mistakes/mistakes.ts` | Uses shared no-mistakes-for-type copy in the practice picker. | Phase 9 / Step 9.3 |
+| `miniprogram/pages/me/me.ts` | Uses shared speech status copy instead of exposing mock ASR wording. | Phase 9 / Step 9.3 |
+| `miniprogram/pages/me/meViewModel.ts` | Uses shared speech status copy for the Me page view model. | Phase 9 / Step 9.3 |
+| `tests/feedbackCopy.test.ts` | Covers shared feedback copy and guards against mock/technical wording in main user-facing sources. | Phase 9 / Step 9.3 |
+| Existing feedback-related tests | Updated to assert shared copy references and revised user-facing wording. | Phase 9 / Step 9.3 |

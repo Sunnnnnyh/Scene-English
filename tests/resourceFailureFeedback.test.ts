@@ -35,9 +35,9 @@ describe("resource failure feedback", () => {
     expect(sceneImageErrorBindingCount).toBe(sceneImageCount);
     expect(sceneImageLoadBindingCount).toBe(sceneImageCount);
     expect(sceneMarkup).toContain("scene-image-fallback");
-    expect(sceneMarkup).toContain("Scene image could not load.");
+    expect(sceneMarkup).toContain("Image unavailable.");
     expect(sceneMarkup).toContain('catchtap="onRetrySceneImage"');
-    expect(sceneMarkup).toContain("Retry");
+    expect(sceneMarkup).toContain("Try again");
     expect(sceneStyles).toContain(".scene-image-fallback");
     expect(sceneStyles).toContain(".scene-image-fallback__retry");
   });

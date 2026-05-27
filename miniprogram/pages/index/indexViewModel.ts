@@ -1,3 +1,4 @@
+import { feedbackCopy } from "../../utils/feedbackCopy";
 import type { Scene } from "../../types";
 
 export type IndexSceneCard = {
@@ -37,7 +38,7 @@ function createSceneCard(scene: Scene): IndexSceneCard {
     coverImage: scene.coverImage,
     wordCountLabel: isAvailable ? `${scene.wordCount} words` : "More scenes later",
     actionLabel: isAvailable ? "Start learning" : "Locked",
-    statusLabel: isAvailable ? "Available now" : "Coming soon"
+    statusLabel: isAvailable ? "Available now" : feedbackCopy.comingSoon
   };
 }
 
@@ -62,6 +63,6 @@ export function getIndexSceneAction(sceneId: Scene["id"], scenes: Scene[]): Inde
 
   return {
     type: "toast",
-    message: "Coming soon"
+    message: feedbackCopy.comingSoon
   };
 }

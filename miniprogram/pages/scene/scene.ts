@@ -9,6 +9,7 @@ import { consumePendingMistakePracticeRequest } from "../../services/mistakePrac
 import { getSceneById } from "../../services/sceneService";
 import { speechService } from "../../services/speechService";
 import { getWordById, getWordsBySceneId } from "../../services/wordService";
+import { feedbackCopy } from "../../utils/feedbackCopy";
 import { isNormalizedSpellingMatch } from "../../utils/normalize";
 import {
   completeMemoryGuide,
@@ -97,7 +98,7 @@ type MemoryTranslationTapEvent = WechatMiniprogram.BaseEvent & {
 const DEFAULT_LISTENING_WRITING_QUESTION_COUNT = 5;
 const LISTENING_WRITING_CORRECT_SOUND_URL = "/assets/audio/feedback-correct.wav";
 const LISTENING_WRITING_WRONG_SOUND_URL = "/assets/audio/feedback-wrong.wav";
-const AUDIO_PLAYBACK_ERROR_MESSAGE = "音频暂时无法播放";
+const AUDIO_PLAYBACK_ERROR_MESSAGE = feedbackCopy.audioUnavailable;
 const MIN_LISTENING_SPEAKING_RECORDING_MS = 900;
 
 type ListeningWritingFeedbackKind = "" | "success" | "error" | "info";
@@ -804,7 +805,7 @@ Page({
 
     if (!scene || scene.status !== "available") {
       wx.showToast({
-        title: "Coming soon",
+        title: feedbackCopy.comingSoon,
         icon: "none"
       });
       return;
@@ -856,7 +857,7 @@ Page({
 
     if (request.mistakeType === "speaking") {
       wx.showToast({
-        title: "Speaking practice coming soon",
+        title: feedbackCopy.speakingMistakePracticeUnavailable,
         icon: "none"
       });
       return;
@@ -1115,7 +1116,7 @@ Page({
 
     if (!this.data.listeningWritingCanSelectObject) {
       wx.showToast({
-        title: "Listen to the word first",
+        title: feedbackCopy.listenFirst,
         icon: "none"
       });
       return;
@@ -1135,7 +1136,7 @@ Page({
       playListeningWritingFeedbackSound("correct");
 
       if (this.data.listeningWritingPracticeMistakeType === "click") {
-        this.prepareListeningWritingNextStep("Correct object.", "success");
+        this.prepareListeningWritingNextStep(feedbackCopy.correctObject, "success");
         return;
       }
 
@@ -1161,7 +1162,7 @@ Page({
       this.setData({
         listeningWritingClickAttemptCount: nextAttemptCount,
         ...LISTENING_WRITING_FIND_TASK,
-        listeningWritingFeedback: "Try again.",
+        listeningWritingFeedback: feedbackCopy.tryAgain,
         listeningWritingFeedbackKind: "error",
         listeningWritingPhase: "locating",
         listeningWritingTargetWordId: "",
@@ -1313,7 +1314,7 @@ Page({
     if (isNormalizedSpellingMatch(this.data.listeningWritingSpellingInput, targetWord.en)) {
       recordMistakeCorrectAnswer(targetWord.id, "spelling");
       playListeningWritingFeedbackSound("correct");
-      this.prepareListeningWritingNextStep("Correct spelling.", "success");
+      this.prepareListeningWritingNextStep(feedbackCopy.correctSpelling, "success");
       return;
     }
 
@@ -1323,7 +1324,7 @@ Page({
       recordMistake(targetWord.id, sceneId, "spelling");
       playListeningWritingFeedbackSound("wrong");
       this.setData({
-        listeningWritingFeedback: "Try once more.",
+        listeningWritingFeedback: feedbackCopy.tryOnceMore,
         listeningWritingFeedbackKind: "error",
         listeningWritingSpellingAttemptCount: nextAttemptCount,
         listeningWritingAnswerReveal: ""
@@ -1365,7 +1366,7 @@ Page({
 
   onListeningWritingBlankTap() {
     wx.showToast({
-      title: "Tap an object in the picture",
+      title: feedbackCopy.tapObject,
       icon: "none"
     });
   },
@@ -1412,7 +1413,7 @@ Page({
 
     if (!this.data.listeningSpeakingCanSelectObject) {
       wx.showToast({
-        title: "Listen to the word first",
+        title: feedbackCopy.listenFirst,
         icon: "none"
       });
       return;
@@ -1458,7 +1459,7 @@ Page({
       this.setData({
         listeningSpeakingClickAttemptCount: nextAttemptCount,
         ...LISTENING_SPEAKING_FIND_TASK,
-        listeningSpeakingFeedback: "Try again.",
+        listeningSpeakingFeedback: feedbackCopy.tryAgain,
         listeningSpeakingFeedbackKind: "error",
         listeningSpeakingPhase: "locating",
         listeningSpeakingTargetWordId: "",
@@ -1526,7 +1527,7 @@ Page({
       listeningSpeakingRecordingStatus: "recording",
       listeningSpeakingRecordingPath: "",
       listeningSpeakingRecordingDurationMs: 0,
-      listeningSpeakingRecordingFeedback: "Recording...",
+      listeningSpeakingRecordingFeedback: feedbackCopy.recording,
       ...createListeningSpeakingRecognitionData(),
       listeningSpeakingAnswerReveal: "",
       listeningSpeakingPendingNextQuestion: false,
@@ -1571,7 +1572,7 @@ Page({
     if (shouldCancelListeningSpeakingRecording) {
       shouldCancelListeningSpeakingRecording = false;
       this.setData({
-        ...createListeningSpeakingRecordingData("idle", "Recording cancelled."),
+        ...createListeningSpeakingRecordingData("idle", feedbackCopy.recordingCancelled),
         ...createListeningSpeakingRecognitionData()
       });
       return;
@@ -1582,7 +1583,7 @@ Page({
         listeningSpeakingRecordingStatus: "tooShort",
         listeningSpeakingRecordingPath: "",
         listeningSpeakingRecordingDurationMs: durationMs,
-        listeningSpeakingRecordingFeedback: "Recording was too short. Please try again.",
+        listeningSpeakingRecordingFeedback: feedbackCopy.recordingTooShort,
         ...createListeningSpeakingRecognitionData(),
         listeningSpeakingAnswerReveal: "",
         listeningSpeakingPendingNextQuestion: false,
@@ -1598,10 +1599,10 @@ Page({
       listeningSpeakingRecordingStatus: "recorded",
       listeningSpeakingRecordingPath: recordingPath,
       listeningSpeakingRecordingDurationMs: durationMs,
-      listeningSpeakingRecordingFeedback: "Recording saved.",
+      listeningSpeakingRecordingFeedback: feedbackCopy.recordingSaved,
       listeningSpeakingRecognitionStatus: "recognizing",
       listeningSpeakingRecognitionTranscript: "",
-      listeningSpeakingRecognitionFeedback: "Checking your pronunciation..."
+      listeningSpeakingRecognitionFeedback: feedbackCopy.checkingPronunciation
     });
 
     void this.recognizeListeningSpeakingRecording(recordingPath);
@@ -1616,7 +1617,7 @@ Page({
       this.setData({
         listeningSpeakingRecognitionStatus: "failed",
         listeningSpeakingRecognitionTranscript: "",
-        listeningSpeakingRecognitionFeedback: "I could not check that recording. Please try again."
+        listeningSpeakingRecognitionFeedback: feedbackCopy.recognitionFailed
       });
       return;
     }
@@ -1624,7 +1625,7 @@ Page({
     this.setData({
       listeningSpeakingRecognitionStatus: "recognizing",
       listeningSpeakingRecognitionTranscript: "",
-      listeningSpeakingRecognitionFeedback: "Checking your pronunciation..."
+      listeningSpeakingRecognitionFeedback: feedbackCopy.checkingPronunciation
     });
 
     try {
@@ -1643,7 +1644,7 @@ Page({
         this.prepareListeningSpeakingNextStep({
           recognitionStatus: "passed",
           transcript: result.transcript,
-          feedback: "Great pronunciation.",
+          feedback: feedbackCopy.greatPronunciation,
           answerReveal: ""
         });
         return;
@@ -1653,7 +1654,7 @@ Page({
         targetWord,
         "notRecognized",
         result.transcript,
-        "I could not hear the word clearly. Please try again."
+        feedbackCopy.recognitionNotClear
       );
     } catch {
       if (requestId !== listeningSpeakingRecognitionRequestId) {
@@ -1664,8 +1665,7 @@ Page({
         this.setData({
           listeningSpeakingRecognitionStatus: "failed",
           listeningSpeakingRecognitionTranscript: "",
-          listeningSpeakingRecognitionFeedback:
-            "I could not check that recording. Please try again."
+          listeningSpeakingRecognitionFeedback: feedbackCopy.recognitionFailed
         });
         return;
       }
@@ -1674,7 +1674,7 @@ Page({
         targetWord,
         "failed",
         "",
-        "I could not check that recording. Please try again."
+        feedbackCopy.recognitionFailed
       );
     }
   },
@@ -1849,7 +1849,7 @@ Page({
 
   handleListeningSpeakingRecordingError() {
     this.setData({
-      ...createListeningSpeakingRecordingData("idle", "Recording failed. Please try again."),
+      ...createListeningSpeakingRecordingData("idle", feedbackCopy.recordingFailed),
       ...createListeningSpeakingRecognitionData()
     });
   },
@@ -1858,13 +1858,13 @@ Page({
     this.setData({
       ...createListeningSpeakingRecordingData(
         "permissionDenied",
-        "Microphone permission is needed to practice speaking."
+        feedbackCopy.microphonePermission
       ),
       ...createListeningSpeakingRecognitionData()
     });
     wx.showModal({
-      title: "Microphone needed",
-      content: "Microphone permission is needed to practice speaking.",
+      title: feedbackCopy.microphoneNeededTitle,
+      content: feedbackCopy.microphonePermission,
       showCancel: false,
       confirmText: "OK"
     });
@@ -1872,7 +1872,7 @@ Page({
 
   onListeningSpeakingBlankTap() {
     wx.showToast({
-      title: "Tap an object in the picture",
+      title: feedbackCopy.tapObject,
       icon: "none"
     });
   },
