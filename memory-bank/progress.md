@@ -1067,3 +1067,22 @@
 - Remaining:
   - Speaking-specific mistake practice from the Mistakes page can be considered in a later step now that the Listen + Speak round exists.
   - Mock recognition remains a demo simulation; real ASR is still out of MVP scope.
+
+### 2026-05-27 - Phase 9 / Step 9.1 Resource failure feedback
+
+- Completed:
+  - Added Scene page state for scene image load failures.
+  - Bound every Classroom scene image instance to load/error handlers.
+  - Scene image failures now render a fallback panel with `Scene image could not load.` and a compact `Retry` action instead of leaving a blank image area.
+  - `Retry` resets the image failure state and uses `catchtap` so it does not trigger the practice blank-area tap handlers.
+  - Unified Memory, Listen + Spell, and Listen + Speak word-audio playback failures through one lightweight toast helper.
+  - Normal page navigation, hotspots, and practice controls remain available when resource errors occur.
+- Verification:
+  - User validated Step 9.1 in WeChat DevTools.
+  - `npm run typecheck` passed.
+  - `npm run lint` passed.
+  - `npm run format:check` passed.
+  - `npm test` passed: 38 test files, 195 tests.
+  - `git diff --check` passed with only Windows CRLF warnings.
+- Remaining:
+  - Step 9.2 still needs to cover mid-practice exit/save behavior.

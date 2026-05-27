@@ -97,6 +97,7 @@ type MemoryTranslationTapEvent = WechatMiniprogram.BaseEvent & {
 const DEFAULT_LISTENING_WRITING_QUESTION_COUNT = 5;
 const LISTENING_WRITING_CORRECT_SOUND_URL = "/assets/audio/feedback-correct.wav";
 const LISTENING_WRITING_WRONG_SOUND_URL = "/assets/audio/feedback-wrong.wav";
+const AUDIO_PLAYBACK_ERROR_MESSAGE = "音频暂时无法播放";
 const MIN_LISTENING_SPEAKING_RECORDING_MS = 900;
 
 type ListeningWritingFeedbackKind = "" | "success" | "error" | "info";
@@ -150,6 +151,13 @@ function createListeningSpeakingRecognitionData(
     listeningSpeakingRecognitionTranscript: transcript,
     listeningSpeakingRecognitionFeedback: feedback
   };
+}
+
+function showAudioPlaybackErrorToast() {
+  wx.showToast({
+    title: AUDIO_PLAYBACK_ERROR_MESSAGE,
+    icon: "none"
+  });
 }
 
 const LISTENING_WRITING_LISTEN_TASK: ListeningWritingTaskData = {
@@ -771,6 +779,28 @@ Page({
     );
   },
 
+  onSceneImageLoad() {
+    if (this.data.sceneImageLoadStatus === "idle") {
+      return;
+    }
+
+    this.setData({
+      sceneImageLoadStatus: "idle"
+    });
+  },
+
+  onSceneImageError() {
+    this.setData({
+      sceneImageLoadStatus: "failed"
+    });
+  },
+
+  onRetrySceneImage() {
+    this.setData({
+      sceneImageLoadStatus: "idle"
+    });
+  },
+
   onShow() {
     this.startPendingMistakePracticeIfNeeded();
   },
@@ -953,12 +983,7 @@ Page({
       showMemoryTranslationGuide: shouldShowMemoryTranslationGuide(),
       ...refreshSceneProgress(selectedWord.sceneId)
     });
-    playMemoryWordAudio(selectedWord.audioUrl, () => {
-      wx.showToast({
-        title: "音频暂时无法播放",
-        icon: "none"
-      });
-    });
+    playMemoryWordAudio(selectedWord.audioUrl, showAudioPlaybackErrorToast);
     this.completeMemoryGuideIfNeeded();
   },
 
@@ -1030,12 +1055,7 @@ Page({
       return;
     }
 
-    playMemoryWordAudio(selectedMemoryWordCard.audioUrl, () => {
-      wx.showToast({
-        title: "音频暂时无法播放",
-        icon: "none"
-      });
-    });
+    playMemoryWordAudio(selectedMemoryWordCard.audioUrl, showAudioPlaybackErrorToast);
   },
 
   onPlayListeningWritingAudio() {
@@ -1077,18 +1097,9 @@ Page({
       });
     }
 
-    playListeningWritingAudio(
-      audioUrl,
-      () => {
-        wx.showToast({
-          title: "音频暂时无法播放",
-          icon: "none"
-        });
-      },
-      () => {
-        this.handleListeningWritingAudioEnded();
-      }
-    );
+    playListeningWritingAudio(audioUrl, showAudioPlaybackErrorToast, () => {
+      this.handleListeningWritingAudioEnded();
+    });
   },
 
   onListeningWritingHotspotTap(event: ListeningWritingHotspotTapEvent) {
@@ -1386,18 +1397,9 @@ Page({
       });
     }
 
-    playListeningSpeakingAudio(
-      audioUrl,
-      () => {
-        wx.showToast({
-          title: "闊抽鏆傛椂鏃犳硶鎾斁",
-          icon: "none"
-        });
-      },
-      () => {
-        this.handleListeningSpeakingAudioEnded();
-      }
-    );
+    playListeningSpeakingAudio(audioUrl, showAudioPlaybackErrorToast, () => {
+      this.handleListeningSpeakingAudioEnded();
+    });
   },
 
   onListeningSpeakingHotspotTap(event: ListeningSpeakingHotspotTapEvent) {

@@ -9,7 +9,18 @@
     </view>
 
     <view class="scene-preview">
-      <image class="scene-image" src="{{sceneImage}}" mode="aspectFill" />
+      <image
+        wx:if="{{sceneImageLoadStatus !== 'failed'}}"
+        class="scene-image"
+        src="{{sceneImage}}"
+        mode="aspectFill"
+        bindload="onSceneImageLoad"
+        binderror="onSceneImageError"
+      />
+      <view wx:else class="scene-image-fallback">
+        <text class="scene-image-fallback__title">Scene image could not load.</text>
+        <button class="scene-image-fallback__retry" catchtap="onRetrySceneImage">Retry</button>
+      </view>
     </view>
 
     <view class="progress-section">
@@ -60,7 +71,18 @@
 
     <block wx:if="{{activeMode === 'memory'}}">
       <view class="scene-preview mode-page-preview memory-scene-preview" bindtap="onMemoryBlankTap">
-        <image class="scene-image" src="{{sceneImage}}" mode="aspectFill" />
+        <image
+          wx:if="{{sceneImageLoadStatus !== 'failed'}}"
+          class="scene-image"
+          src="{{sceneImage}}"
+          mode="aspectFill"
+          bindload="onSceneImageLoad"
+          binderror="onSceneImageError"
+        />
+        <view wx:else class="scene-image-fallback">
+          <text class="scene-image-fallback__title">Scene image could not load.</text>
+          <button class="scene-image-fallback__retry" catchtap="onRetrySceneImage">Retry</button>
+        </view>
         <block wx:for="{{memoryHotspots}}" wx:key="wordId">
           <view
             class="memory-hotspot {{showMemoryGuide && item.wordId === memoryGuideWordId ? 'memory-hotspot--guided' : ''}}"
@@ -147,7 +169,18 @@
           data-target-word-id="{{listeningWritingState.currentQuestion.wordId}}"
           bindtap="onListeningWritingBlankTap"
         >
-          <image class="scene-image" src="{{sceneImage}}" mode="aspectFill" />
+          <image
+            wx:if="{{sceneImageLoadStatus !== 'failed'}}"
+            class="scene-image"
+            src="{{sceneImage}}"
+            mode="aspectFill"
+            bindload="onSceneImageLoad"
+            binderror="onSceneImageError"
+          />
+          <view wx:else class="scene-image-fallback">
+            <text class="scene-image-fallback__title">Scene image could not load.</text>
+            <button class="scene-image-fallback__retry" catchtap="onRetrySceneImage">Retry</button>
+          </view>
           <block wx:for="{{memoryHotspots}}" wx:key="wordId">
             <view
               class="listening-writing-hotspot {{listeningWritingTargetWordId === item.wordId ? 'listening-writing-hotspot--target listening-writing-hotspot--flash' : ''}}"
@@ -268,7 +301,18 @@
           data-target-word-id="{{listeningSpeakingState.currentQuestion.wordId}}"
           bindtap="onListeningSpeakingBlankTap"
         >
-          <image class="scene-image" src="{{sceneImage}}" mode="aspectFill" />
+          <image
+            wx:if="{{sceneImageLoadStatus !== 'failed'}}"
+            class="scene-image"
+            src="{{sceneImage}}"
+            mode="aspectFill"
+            bindload="onSceneImageLoad"
+            binderror="onSceneImageError"
+          />
+          <view wx:else class="scene-image-fallback">
+            <text class="scene-image-fallback__title">Scene image could not load.</text>
+            <button class="scene-image-fallback__retry" catchtap="onRetrySceneImage">Retry</button>
+          </view>
           <block wx:for="{{memoryHotspots}}" wx:key="wordId">
             <view
               class="listening-speaking-hotspot {{listeningSpeakingTargetWordId === item.wordId ? 'listening-speaking-hotspot--target listening-writing-hotspot--flash' : ''}}"
@@ -391,7 +435,18 @@
 
     <block wx:else>
       <view class="scene-preview mode-page-preview">
-        <image class="scene-image" src="{{sceneImage}}" mode="aspectFill" />
+        <image
+          wx:if="{{sceneImageLoadStatus !== 'failed'}}"
+          class="scene-image"
+          src="{{sceneImage}}"
+          mode="aspectFill"
+          bindload="onSceneImageLoad"
+          binderror="onSceneImageError"
+        />
+        <view wx:else class="scene-image-fallback">
+          <text class="scene-image-fallback__title">Scene image could not load.</text>
+          <button class="scene-image-fallback__retry" catchtap="onRetrySceneImage">Retry</button>
+        </view>
       </view>
 
       <view class="mode-page-panel">

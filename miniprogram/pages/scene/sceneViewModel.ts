@@ -37,6 +37,8 @@ export type SceneMemoryWordCard = {
   showExpressionCn: boolean;
 };
 
+export type SceneImageLoadStatus = "idle" | "failed";
+
 export type SceneListeningWritingQuestion = {
   questionId: QuizQuestion["id"];
   wordId: Word["id"];
@@ -83,6 +85,7 @@ export type SceneViewModel = {
   sceneNameCn: Scene["nameCn"];
   sceneNameEn: Scene["nameEn"];
   sceneImage: Scene["sceneImage"];
+  sceneImageLoadStatus: SceneImageLoadStatus;
   progressLabel: string;
   progressPercent: number;
   modeEntries: SceneModeEntry[];
@@ -265,6 +268,7 @@ export function createSceneViewModel(
     sceneNameCn: scene.nameCn,
     sceneNameEn: scene.nameEn,
     sceneImage: scene.sceneImage,
+    sceneImageLoadStatus: "idle",
     progressLabel: `Learned ${learnedCount} / ${scene.wordCount}`,
     progressPercent,
     modeEntries,

@@ -1811,3 +1811,32 @@ File change record:
 | `tests/listeningSpeakingCompletion.test.ts` | Covers Step 8.4 completion and speaking-mistake requirements. | Phase 8 / Step 8.4 |
 | `tests/listeningSpeakingRecognitionRuntime.test.ts` | Adds runtime-style coverage for passed, retry, reveal, and completion stat behavior. | Phase 8 / Step 8.4 |
 | `tests/listeningSpeakingRecognition.test.ts` | Keeps recognition feedback expectations aligned with the new continuation flow. | Phase 8 / Step 8.4 |
+
+## 54. Phase 9 / Step 9.1 Resource failure feedback
+
+The Scene page now handles critical resource failures without leaving the user on a blank or confusing surface. The implementation covers the shared Classroom scene image and all word-audio playback paths used by Memory, Listen + Spell, and Listen + Speak.
+
+Current responsibilities:
+- `miniprogram/pages/scene/sceneViewModel.ts` tracks `SceneImageLoadStatus` and initializes `sceneImageLoadStatus` to `idle` for every Scene page view model.
+- `miniprogram/pages/scene/scene.ts` owns `onSceneImageLoad()`, `onSceneImageError()`, and `onRetrySceneImage()` for image load state transitions.
+- `miniprogram/pages/scene/scene.ts` centralizes word-audio playback failures through `showAudioPlaybackErrorToast()` and `AUDIO_PLAYBACK_ERROR_MESSAGE`, so Memory, Listen + Spell, and Listen + Speak show the same lightweight prompt when playback fails.
+- `miniprogram/pages/scene/scene.wxml` binds every scene image to `bindload` and `binderror`, and renders a retry fallback when `sceneImageLoadStatus === "failed"`.
+- `miniprogram/pages/scene/scene.wxss` styles the image failure fallback as an overlay that preserves the preview dimensions and keeps the page layout stable.
+
+Runtime notes:
+- A failed scene image shows `Scene image could not load.` and a `Retry` button instead of a blank image region.
+- Retry resets the image failure state so the image component can render again; if the path is still invalid, the error handler returns the user to the fallback.
+- The retry button uses `catchtap` to avoid also triggering Memory, Listen + Spell, or Listen + Speak blank-area handlers.
+- Word-audio playback failures show `音频暂时无法播放` through a toast and do not block the current learning flow.
+
+Test coverage:
+- `tests/resourceFailureFeedback.test.ts` covers scene image failure state, WXML load/error bindings, retry fallback markup/styles, and unified audio failure prompt wiring.
+
+File change record:
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `miniprogram/pages/scene/scene.ts` | Adds scene image load/error/retry handlers and centralizes word-audio playback failure toast handling. | Phase 9 / Step 9.1 |
+| `miniprogram/pages/scene/scene.wxml` | Adds scene image load/error bindings and retry fallback markup for every scene preview. | Phase 9 / Step 9.1 |
+| `miniprogram/pages/scene/scene.wxss` | Styles the image failure fallback overlay and retry action. | Phase 9 / Step 9.1 |
+| `miniprogram/pages/scene/sceneViewModel.ts` | Adds scene image load status to the Scene page view model. | Phase 9 / Step 9.1 |
+| `tests/resourceFailureFeedback.test.ts` | Covers resource failure feedback requirements for image and audio paths. | Phase 9 / Step 9.1 |
