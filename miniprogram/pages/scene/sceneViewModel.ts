@@ -70,6 +70,13 @@ export type SceneListeningSpeakingRecordingStatus =
   | "tooShort"
   | "permissionDenied";
 
+export type SceneListeningSpeakingRecognitionStatus =
+  | "idle"
+  | "recognizing"
+  | "passed"
+  | "notRecognized"
+  | "failed";
+
 export type SceneViewModel = {
   sceneId: Scene["id"];
   title: string;
@@ -121,6 +128,9 @@ export type SceneViewModel = {
   listeningSpeakingRecordingPath: string;
   listeningSpeakingRecordingDurationMs: number;
   listeningSpeakingRecordingFeedback: string;
+  listeningSpeakingRecognitionStatus: SceneListeningSpeakingRecognitionStatus;
+  listeningSpeakingRecognitionTranscript: string;
+  listeningSpeakingRecognitionFeedback: string;
 };
 
 export type SceneEntryAction = {
@@ -290,7 +300,10 @@ export function createSceneViewModel(
     listeningSpeakingRecordingStatus: "idle",
     listeningSpeakingRecordingPath: "",
     listeningSpeakingRecordingDurationMs: 0,
-    listeningSpeakingRecordingFeedback: ""
+    listeningSpeakingRecordingFeedback: "",
+    listeningSpeakingRecognitionStatus: "idle",
+    listeningSpeakingRecognitionTranscript: "",
+    listeningSpeakingRecognitionFeedback: ""
   };
 }
 

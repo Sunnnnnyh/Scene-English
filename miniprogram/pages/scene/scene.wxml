@@ -281,12 +281,26 @@
           <text class="listening-speaking-record-title">Ready to speak</text>
           <text class="listening-speaking-record-text">Say the word you heard.</text>
           <text
-            wx:if="{{listeningSpeakingRecordingFeedback}}"
+            wx:if="{{listeningSpeakingRecordingFeedback && !listeningSpeakingRecognitionFeedback}}"
             class="listening-speaking-record-feedback"
           >
             {{listeningSpeakingRecordingFeedback}}
           </text>
           <view
+            wx:if="{{listeningSpeakingRecognitionFeedback}}"
+            class="listening-speaking-recognition-card {{listeningSpeakingRecognitionStatus === 'passed' ? 'listening-speaking-recognition-card--success' : ''}} {{listeningSpeakingRecognitionStatus === 'notRecognized' || listeningSpeakingRecognitionStatus === 'failed' ? 'listening-speaking-recognition-card--error' : ''}}"
+          >
+            <view class="listening-speaking-recognition-label">
+              <block wx:if="{{listeningSpeakingRecognitionStatus === 'recognizing'}}">Checking...</block>
+              <block wx:elif="{{listeningSpeakingRecognitionStatus === 'passed'}}">Passed</block>
+              <block wx:else>Try again</block>
+            </view>
+            <view class="listening-speaking-recognition-text">
+              {{listeningSpeakingRecognitionFeedback}}
+            </view>
+          </view>
+          <view
+            wx:if="{{listeningSpeakingRecognitionStatus !== 'passed' && listeningSpeakingRecognitionStatus !== 'recognizing'}}"
             class="listening-speaking-record-actions {{listeningSpeakingRecordingStatus === 'recorded' ? 'listening-speaking-record-actions--saved' : ''}}"
           >
             <view
@@ -308,7 +322,7 @@
               <block wx:else>Start Recording</block>
             </button>
             <button
-              wx:if="{{listeningSpeakingRecordingStatus === 'recorded'}}"
+              wx:if="{{listeningSpeakingRecordingStatus === 'recorded' && listeningSpeakingRecognitionStatus !== 'passed'}}"
               class="listening-speaking-record-button listening-speaking-record-button--secondary listening-speaking-record-button--again"
               bindtap="onStartListeningSpeakingRecording"
             >

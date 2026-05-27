@@ -1,7 +1,7 @@
 import type { SpeechResult, Word } from "../types";
 import { isNormalizedSpellingMatch } from "../utils/normalize";
 
-export type MockSpeechScenario = "success" | "failure" | "empty";
+export type MockSpeechScenario = "auto" | "success" | "failure" | "empty";
 
 export type SpeechRecognitionOptions = {
   scenario?: MockSpeechScenario;
@@ -10,6 +10,7 @@ export type SpeechRecognitionOptions = {
 
 export type SpeechServiceOptions = {
   defaultScenario?: MockSpeechScenario;
+  random?: () => number;
 };
 
 export type SpeechService = {
@@ -21,6 +22,22 @@ export type SpeechService = {
 };
 
 const DEFAULT_FAILURE_TRANSCRIPT = "unrecognized speech";
+const AUTO_SUCCESS_THRESHOLD = 0.72;
+const AUTO_FAILURE_THRESHOLD = 0.94;
+
+const resolveAutoScenario = (random: () => number): Exclude<MockSpeechScenario, "auto"> => {
+  const roll = random();
+
+  if (roll < AUTO_SUCCESS_THRESHOLD) {
+    return "success";
+  }
+
+  if (roll < AUTO_FAILURE_THRESHOLD) {
+    return "failure";
+  }
+
+  return "empty";
+};
 
 const createTranscript = (
   targetWord: Word["en"],
@@ -43,15 +60,17 @@ const createTranscript = (
 };
 
 export function createSpeechService(options: SpeechServiceOptions = {}): SpeechService {
-  const defaultScenario = options.defaultScenario ?? "success";
+  const defaultScenario = options.defaultScenario ?? "auto";
+  const random = options.random ?? Math.random;
 
   return {
     async recognizeWord(audioFilePath, targetWord, recognitionOptions = {}) {
       void audioFilePath;
+      const scenario = recognitionOptions.scenario ?? defaultScenario;
 
       const transcript = createTranscript(
         targetWord,
-        recognitionOptions.scenario ?? defaultScenario,
+        scenario === "auto" ? resolveAutoScenario(random) : scenario,
         recognitionOptions.transcript
       );
 

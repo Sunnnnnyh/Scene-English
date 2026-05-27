@@ -731,6 +731,51 @@
   overflow-wrap: anywhere;
 }
 
+.listening-speaking-recognition-card {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 22rpx;
+  box-sizing: border-box;
+  min-height: 112rpx;
+  padding: 22rpx 24rpx;
+  border: 3rpx solid #8fc7ee;
+  border-radius: 20rpx;
+  background: #f7fbff;
+  box-shadow: 0 8rpx 18rpx rgba(63, 103, 134, 0.1);
+}
+
+.listening-speaking-recognition-card--success {
+  border: 3rpx solid #a6dfb2;
+  background: #ebf8ee;
+}
+
+.listening-speaking-recognition-card--error {
+  border-color: #f1aa90;
+  background: #fff1e7;
+}
+
+.listening-speaking-recognition-label {
+  display: block;
+  flex-shrink: 0;
+  color: #19324d;
+  font-size: 32rpx;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.listening-speaking-recognition-text {
+  display: block;
+  min-width: 0;
+  color: #45647f;
+  font-size: 32rpx;
+  font-weight: 800;
+  line-height: 1;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
 .listening-speaking-record-saved {
   flex: 1 1 0;
   display: flex;

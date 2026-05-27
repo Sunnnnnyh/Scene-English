@@ -1025,3 +1025,24 @@
 - Remaining:
   - Step 8.3 still needs to pass the saved recording to mock ASR and display recognition feedback.
   - Listen + Speak still does not advance through the full round after a saved recording.
+
+### 2026-05-27 - Phase 8 / Step 8.3 Listen + Speak mock recognition
+
+- Completed:
+  - Connected saved Listen + Speak recordings to `speechService.recognizeWord(...)`.
+  - Added recognition state fields for `idle`, `recognizing`, `passed`, `notRecognized`, and `failed`.
+  - Shows checking, passed, or retry feedback without exposing mock/ASR internals to the user.
+  - Sets saved-recording and recognizing feedback in the same state update so the UI cannot stall on `Saved`.
+  - Updated the mock speech service default from unconditional success to an automatic demo scenario with success, failure, and empty-result paths while preserving deterministic overrides for tests.
+  - Refined the recognition feedback UI: hidden redundant `Recording saved.` and saved/re-record controls after result feedback, made the feedback card more prominent, and aligned the one-row status/feedback layout.
+  - Kept speaking mistake recording, second-failure behavior, and round advancement out of this step.
+- Verification:
+  - User validated the final recognition feedback behavior and UI in WeChat DevTools.
+  - `npm run typecheck` passed.
+  - `npm run lint` passed.
+  - `npm run format:check` passed.
+  - `npm test` passed: 36 test files, 183 tests.
+  - `git diff --check` passed with only Windows CRLF warnings.
+- Remaining:
+  - Step 8.4 still needs to record speaking mistakes, handle first/second failure behavior, advance questions, and complete the Listen + Speak round.
+  - Mock recognition remains a demo simulation; real ASR is out of MVP scope.

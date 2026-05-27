@@ -69,6 +69,42 @@ describe("speechService", () => {
     });
   });
 
+  it("uses an automatic demo scenario by default instead of always passing", async () => {
+    const service = createSpeechService({ random: () => 0.9 });
+
+    const result = await service.recognizeWord("/tmp/socket.mp3", "socket");
+
+    expect(result).toEqual({
+      transcript: "unrecognized speech",
+      passed: false,
+      provider: "mock"
+    });
+  });
+
+  it("can simulate an empty automatic recognition result", async () => {
+    const service = createSpeechService({ random: () => 0.98 });
+
+    const result = await service.recognizeWord("/tmp/socket.mp3", "socket");
+
+    expect(result).toEqual({
+      transcript: "",
+      passed: false,
+      provider: "mock"
+    });
+  });
+
+  it("can simulate an automatic recognition success", async () => {
+    const service = createSpeechService({ random: () => 0.2 });
+
+    const result = await service.recognizeWord("/tmp/socket.mp3", "socket");
+
+    expect(result).toEqual({
+      transcript: "socket",
+      passed: true,
+      provider: "mock"
+    });
+  });
+
   it("exports a default mock speech service instance", async () => {
     const result = await speechService.recognizeWord("/tmp/podium.mp3", "podium", {
       scenario: "success"

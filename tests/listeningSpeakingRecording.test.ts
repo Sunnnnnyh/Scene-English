@@ -36,15 +36,13 @@ describe("Listen + Speak recording interaction", () => {
     expect(sceneMarkup).toContain("{{listeningSpeakingRecordingFeedback}}");
   });
 
-  it("uses WeChat RecorderManager for the recording step without invoking recognition", () => {
+  it("uses WeChat RecorderManager for the recording step", () => {
     expect(scenePageScript).toContain("wx.getRecorderManager()");
     expect(scenePageScript).toContain("onStartListeningSpeakingRecording");
     expect(scenePageScript).toContain("onStopListeningSpeakingRecording");
     expect(scenePageScript).toContain("onCancelListeningSpeakingRecording");
     expect(scenePageScript).toContain("recorderManager.start");
     expect(scenePageScript).toContain("recorderManager.stop");
-    expect(scenePageScript).not.toContain("speechService");
-    expect(scenePageScript).not.toContain("recognizeWord");
   });
 
   it("handles microphone denial and too-short recordings with retryable feedback", () => {

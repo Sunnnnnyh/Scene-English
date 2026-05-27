@@ -1736,3 +1736,42 @@ File change record:
 | `miniprogram/pages/scene/scene.wxss` | Styles the recording panel, saved state, and equal-width saved/re-record row. | Phase 8 / Step 8.2 |
 | `miniprogram/pages/scene/sceneViewModel.ts` | Adds recording status, file path, duration, and feedback fields to the Scene view model. | Phase 8 / Step 8.2 |
 | `tests/listeningSpeakingRecording.test.ts` | Covers the Listen + Speak recording interaction and guards against calling recognition before Step 8.3. | Phase 8 / Step 8.2 |
+
+## 52. Phase 8 / Step 8.3 Listen + Speak mock recognition
+
+Listen + Speak now sends a valid saved recording to the mock speech service and displays recognition feedback in the record-ready panel. This step only covers recognition feedback; it does not yet record `speaking` mistakes, handle second-failure reveal behavior, or advance through the round.
+
+Current responsibilities:
+- `miniprogram/pages/scene/sceneViewModel.ts` tracks `SceneListeningSpeakingRecognitionStatus` with `idle`, `recognizing`, `passed`, `notRecognized`, and `failed`, plus the transcript and user-facing feedback text.
+- `miniprogram/pages/scene/scene.ts` creates recognition data from `SpeechRecognitionResult`, resets recognition state when recording is restarted or cancelled, and calls `speechService.recognizeWord(recordingPath, targetWord.en)` after a valid saved recording.
+- `miniprogram/pages/scene/scene.ts` uses a request id guard so stale recognition results cannot overwrite the current UI if the user records again before an older recognition promise resolves.
+- `miniprogram/pages/scene/scene.wxml` renders the recognition feedback card, hides redundant `Recording saved.` copy once recognition feedback exists, and hides the saved/re-record action row while checking or after a passed result.
+- `miniprogram/pages/scene/scene.wxss` styles the recognition card as a prominent one-row status/feedback surface with aligned left and right labels.
+- `miniprogram/services/speechService.ts` now defaults to an `auto` mock scenario. It still supports explicit `success`, `failure`, and `empty` scenarios for deterministic tests and local demos.
+
+Runtime notes:
+- A valid recording immediately enters `recognizing` with a checking message so the user does not get stuck at a saved-only state.
+- Passed recognition shows `Passed` and `Great pronunciation.` as the primary feedback.
+- Low-confidence or empty recognition shows retry feedback without mentioning mock ASR.
+- Recognition service failures show retryable error feedback.
+- User-facing UI does not expose the word `mock`.
+- Step 8.4 remains responsible for recording `speaking` mistakes, first/second failure behavior, continuation, and round completion.
+
+Test coverage:
+- `tests/listeningSpeakingRecording.test.ts` covers the remaining recording-only states after recognition was introduced.
+- `tests/listeningSpeakingRecognition.test.ts` covers recognition state fields, service calls, feedback mapping, WXML copy, primary feedback rendering, hidden saved/actions after feedback, one-row alignment styles, and the Step 8.4 boundary.
+- `tests/listeningSpeakingRecognitionRuntime.test.ts` runs the Scene page with mocked `Page`, `wx`, and services to verify that a valid recording calls speech recognition, sets saved plus recognizing state together, and renders passed feedback.
+- `tests/speechService.test.ts` covers the auto mock scenario, injected deterministic random values, and explicit success/failure/empty scenarios.
+
+File change record:
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `miniprogram/pages/scene/scene.ts` | Calls mock recognition after valid Listen + Speak recordings, maps recognition outcomes to feedback state, and guards stale async results. | Phase 8 / Step 8.3 |
+| `miniprogram/pages/scene/scene.wxml` | Renders recognition feedback and removes redundant saved/action UI once feedback is available. | Phase 8 / Step 8.3 |
+| `miniprogram/pages/scene/scene.wxss` | Styles the recognition feedback card and one-row aligned status/feedback layout. | Phase 8 / Step 8.3 |
+| `miniprogram/pages/scene/sceneViewModel.ts` | Adds Listen + Speak recognition status, transcript, and feedback fields. | Phase 8 / Step 8.3 |
+| `miniprogram/services/speechService.ts` | Adds auto mock recognition behavior with deterministic override support. | Phase 8 / Step 8.3 |
+| `tests/listeningSpeakingRecording.test.ts` | Updates recording coverage after recognition is now part of the saved-recording path. | Phase 8 / Step 8.3 |
+| `tests/listeningSpeakingRecognition.test.ts` | Adds static coverage for recognition behavior, copy, UI visibility, alignment, and Step 8.4 boundaries. | Phase 8 / Step 8.3 |
+| `tests/listeningSpeakingRecognitionRuntime.test.ts` | Adds runtime-style Scene page coverage for saved recording to recognition feedback. | Phase 8 / Step 8.3 |
+| `tests/speechService.test.ts` | Covers auto mock recognition and deterministic scenario behavior. | Phase 8 / Step 8.3 |

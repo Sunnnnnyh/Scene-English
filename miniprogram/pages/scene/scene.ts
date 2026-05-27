@@ -7,6 +7,7 @@ import {
 } from "../../services/mistakeService";
 import { consumePendingMistakePracticeRequest } from "../../services/mistakePracticeService";
 import { getSceneById } from "../../services/sceneService";
+import { speechService } from "../../services/speechService";
 import { getWordById, getWordsBySceneId } from "../../services/wordService";
 import { isNormalizedSpellingMatch } from "../../utils/normalize";
 import {
@@ -23,6 +24,7 @@ import {
   createMemoryWordCard,
   createSceneViewModel,
   getSceneEntryAction,
+  type SceneListeningSpeakingRecognitionStatus,
   type SceneListeningSpeakingQuestion,
   type SceneListeningSpeakingRecordingStatus,
   type SceneListeningSpeakingState,
@@ -132,6 +134,18 @@ function createListeningSpeakingRecordingData(
   };
 }
 
+function createListeningSpeakingRecognitionData(
+  status: SceneListeningSpeakingRecognitionStatus = "idle",
+  feedback = "",
+  transcript = ""
+) {
+  return {
+    listeningSpeakingRecognitionStatus: status,
+    listeningSpeakingRecognitionTranscript: transcript,
+    listeningSpeakingRecognitionFeedback: feedback
+  };
+}
+
 const LISTENING_WRITING_LISTEN_TASK: ListeningWritingTaskData = {
   listeningWritingStepLabel: "Listen",
   listeningWritingTaskTitle: "Listen",
@@ -189,6 +203,7 @@ let listeningSpeakingRecorderOwner: ListeningSpeakingRecorderOwner | null = null
 let isListeningSpeakingRecorderBound = false;
 let listeningSpeakingRecordingStartedAt = 0;
 let shouldCancelListeningSpeakingRecording = false;
+let listeningSpeakingRecognitionRequestId = 0;
 
 function getListeningSpeakingRecorderManager() {
   if (!listeningSpeakingRecorderManager) {
@@ -599,7 +614,8 @@ function createEmptyListeningSpeakingModeData() {
     listeningSpeakingPhase: "locating" as const,
     listeningSpeakingTargetWordId: "",
     listeningSpeakingCanSelectObject: false,
-    ...createListeningSpeakingRecordingData()
+    ...createListeningSpeakingRecordingData(),
+    ...createListeningSpeakingRecognitionData()
   };
 }
 
@@ -624,7 +640,8 @@ function createListeningSpeakingModeData(sceneId: Scene["id"], excludeWordIds: W
     listeningSpeakingPhase: "locating" as const,
     listeningSpeakingTargetWordId: "",
     listeningSpeakingCanSelectObject: false,
-    ...createListeningSpeakingRecordingData()
+    ...createListeningSpeakingRecordingData(),
+    ...createListeningSpeakingRecognitionData()
   };
 }
 
@@ -1353,7 +1370,8 @@ Page({
         listeningSpeakingPhase: "recordReady",
         listeningSpeakingTargetWordId: targetWordId,
         listeningSpeakingCanSelectObject: false,
-        ...createListeningSpeakingRecordingData()
+        ...createListeningSpeakingRecordingData(),
+        ...createListeningSpeakingRecognitionData()
       });
       return;
     }
@@ -1370,7 +1388,8 @@ Page({
         listeningSpeakingFeedbackKind: "error",
         listeningSpeakingPhase: "locating",
         listeningSpeakingTargetWordId: "",
-        ...createListeningSpeakingRecordingData()
+        ...createListeningSpeakingRecordingData(),
+        ...createListeningSpeakingRecognitionData()
       });
       return;
     }
@@ -1384,7 +1403,8 @@ Page({
       listeningSpeakingPhase: "recordReady",
       listeningSpeakingTargetWordId: targetWordId,
       listeningSpeakingCanSelectObject: false,
-      ...createListeningSpeakingRecordingData()
+      ...createListeningSpeakingRecordingData(),
+      ...createListeningSpeakingRecognitionData()
     });
   },
 
@@ -1416,12 +1436,14 @@ Page({
     );
     shouldCancelListeningSpeakingRecording = false;
     listeningSpeakingRecordingStartedAt = Date.now();
+    listeningSpeakingRecognitionRequestId += 1;
 
     this.setData({
       listeningSpeakingRecordingStatus: "recording",
       listeningSpeakingRecordingPath: "",
       listeningSpeakingRecordingDurationMs: 0,
-      listeningSpeakingRecordingFeedback: "Recording..."
+      listeningSpeakingRecordingFeedback: "Recording...",
+      ...createListeningSpeakingRecognitionData()
     });
 
     try {
@@ -1461,7 +1483,8 @@ Page({
     if (shouldCancelListeningSpeakingRecording) {
       shouldCancelListeningSpeakingRecording = false;
       this.setData({
-        ...createListeningSpeakingRecordingData("idle", "Recording cancelled.")
+        ...createListeningSpeakingRecordingData("idle", "Recording cancelled."),
+        ...createListeningSpeakingRecognitionData()
       });
       return;
     }
@@ -1471,22 +1494,85 @@ Page({
         listeningSpeakingRecordingStatus: "tooShort",
         listeningSpeakingRecordingPath: "",
         listeningSpeakingRecordingDurationMs: durationMs,
-        listeningSpeakingRecordingFeedback: "Recording was too short. Please try again."
+        listeningSpeakingRecordingFeedback: "Recording was too short. Please try again.",
+        ...createListeningSpeakingRecognitionData()
+      });
+      return;
+    }
+
+    const recordingPath = result.tempFilePath ?? "";
+
+    this.setData({
+      listeningSpeakingRecordingStatus: "recorded",
+      listeningSpeakingRecordingPath: recordingPath,
+      listeningSpeakingRecordingDurationMs: durationMs,
+      listeningSpeakingRecordingFeedback: "Recording saved.",
+      listeningSpeakingRecognitionStatus: "recognizing",
+      listeningSpeakingRecognitionTranscript: "",
+      listeningSpeakingRecognitionFeedback: "Checking your pronunciation..."
+    });
+
+    void this.recognizeListeningSpeakingRecording(recordingPath);
+  },
+
+  async recognizeListeningSpeakingRecording(audioFilePath: string) {
+    const targetWordId = this.data.listeningSpeakingTargetWordId;
+    const targetWord = targetWordId ? getWordById(targetWordId) : undefined;
+    const requestId = ++listeningSpeakingRecognitionRequestId;
+
+    if (!audioFilePath || !targetWord) {
+      this.setData({
+        listeningSpeakingRecognitionStatus: "failed",
+        listeningSpeakingRecognitionTranscript: "",
+        listeningSpeakingRecognitionFeedback: "I could not check that recording. Please try again."
       });
       return;
     }
 
     this.setData({
-      listeningSpeakingRecordingStatus: "recorded",
-      listeningSpeakingRecordingPath: result.tempFilePath ?? "",
-      listeningSpeakingRecordingDurationMs: durationMs,
-      listeningSpeakingRecordingFeedback: "Recording saved."
+      listeningSpeakingRecognitionStatus: "recognizing",
+      listeningSpeakingRecognitionTranscript: "",
+      listeningSpeakingRecognitionFeedback: "Checking your pronunciation..."
     });
+
+    try {
+      const result = await speechService.recognizeWord(audioFilePath, targetWord.en);
+
+      if (requestId !== listeningSpeakingRecognitionRequestId) {
+        return;
+      }
+
+      if (result.passed) {
+        this.setData({
+          listeningSpeakingRecognitionStatus: "passed",
+          listeningSpeakingRecognitionTranscript: result.transcript,
+          listeningSpeakingRecognitionFeedback: "Great pronunciation."
+        });
+        return;
+      }
+
+      this.setData({
+        listeningSpeakingRecognitionStatus: "notRecognized",
+        listeningSpeakingRecognitionTranscript: result.transcript,
+        listeningSpeakingRecognitionFeedback: "I could not hear the word clearly. Please try again."
+      });
+    } catch {
+      if (requestId !== listeningSpeakingRecognitionRequestId) {
+        return;
+      }
+
+      this.setData({
+        listeningSpeakingRecognitionStatus: "failed",
+        listeningSpeakingRecognitionTranscript: "",
+        listeningSpeakingRecognitionFeedback: "I could not check that recording. Please try again."
+      });
+    }
   },
 
   handleListeningSpeakingRecordingError() {
     this.setData({
-      ...createListeningSpeakingRecordingData("idle", "Recording failed. Please try again.")
+      ...createListeningSpeakingRecordingData("idle", "Recording failed. Please try again."),
+      ...createListeningSpeakingRecognitionData()
     });
   },
 
@@ -1495,7 +1581,8 @@ Page({
       ...createListeningSpeakingRecordingData(
         "permissionDenied",
         "Microphone permission is needed to practice speaking."
-      )
+      ),
+      ...createListeningSpeakingRecognitionData()
     });
     wx.showModal({
       title: "Microphone needed",
