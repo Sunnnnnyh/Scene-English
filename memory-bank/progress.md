@@ -1086,3 +1086,22 @@
   - `git diff --check` passed with only Windows CRLF warnings.
 - Remaining:
   - Step 9.2 still needs to cover mid-practice exit/save behavior.
+
+### 2026-05-27 - Phase 9 / Step 9.2 Mid-practice exit persistence
+
+- Completed:
+  - Added a shared Scene page reset helper for returning practice modes to the normal Classroom entry state.
+  - Listen + Spell and Listen + Speak now clear interrupted in-memory rounds when the Scene page is hidden.
+  - Re-entering a practice mode starts from a fresh round instead of restoring a half-finished question queue.
+  - Existing mistake and mastery records are still preserved through the immediate service writes that happen during answer handling; the exit cleanup does not write extra mistake changes.
+  - Added runtime-style coverage for interrupted Listen + Spell and Listen + Speak exits.
+- Verification:
+  - User validated Step 9.2 in WeChat DevTools.
+  - TypeScript miniprogram config passed.
+  - TypeScript test config passed.
+  - ESLint passed.
+  - Prettier check passed.
+  - Vitest passed: 39 test files, 197 tests.
+  - `git diff --check` passed with only Windows CRLF warnings.
+- Remaining:
+  - Step 9.3 still needs to unify user-facing feedback copy.

@@ -652,6 +652,28 @@ function createListeningWritingModeData(sceneId: Scene["id"], excludeWordIds: Wo
   };
 }
 
+function createEmptyListeningWritingModeData() {
+  return {
+    listeningWritingRound: null,
+    listeningWritingState: createEmptyListeningWritingState(),
+    listeningWritingClickAttemptCount: 0,
+    ...LISTENING_WRITING_LISTEN_TASK,
+    listeningWritingFeedback: "",
+    listeningWritingFeedbackKind: "" as ListeningWritingFeedbackKind,
+    listeningWritingPhase: "locating" as const,
+    listeningWritingTargetWordId: "",
+    listeningWritingCanSelectObject: false,
+    listeningWritingSpellingInput: "",
+    listeningWritingSpellingAttemptCount: 0,
+    listeningWritingAnswerReveal: "",
+    listeningWritingIsRoundComplete: false,
+    listeningWritingPendingNextQuestion: false,
+    listeningWritingPendingNextQuestionIndex: -1,
+    listeningWritingContinueLabel: "Continue",
+    listeningWritingPracticeMistakeType: "" as MistakeType | ""
+  };
+}
+
 function createEmptyListeningSpeakingModeData() {
   return {
     listeningSpeakingRound: null,
@@ -676,6 +698,20 @@ function createEmptyListeningSpeakingModeData() {
       mistakeCount: 0,
       newMistakeCount: 0
     })
+  };
+}
+
+function createSceneHomeModeResetData() {
+  return {
+    activeMode: "" as const,
+    selectedModeTitle: "",
+    selectedModeSubtitle: "",
+    showMemoryGuide: false,
+    showMemoryTranslationGuide: false,
+    selectedMemoryWordId: "",
+    selectedMemoryWordCard: null,
+    ...createEmptyListeningWritingModeData(),
+    ...createEmptyListeningSpeakingModeData()
   };
 }
 
@@ -866,25 +902,7 @@ Page({
     const listeningWritingData =
       action.mode === "listeningWriting"
         ? createListeningWritingModeData(sceneId)
-        : {
-            listeningWritingRound: null,
-            listeningWritingState: createEmptyListeningWritingState(),
-            listeningWritingClickAttemptCount: 0,
-            ...LISTENING_WRITING_LISTEN_TASK,
-            listeningWritingFeedback: "",
-            listeningWritingFeedbackKind: "" as ListeningWritingFeedbackKind,
-            listeningWritingPhase: "locating" as const,
-            listeningWritingTargetWordId: "",
-            listeningWritingCanSelectObject: false,
-            listeningWritingSpellingInput: "",
-            listeningWritingSpellingAttemptCount: 0,
-            listeningWritingAnswerReveal: "",
-            listeningWritingIsRoundComplete: false,
-            listeningWritingPendingNextQuestion: false,
-            listeningWritingPendingNextQuestionIndex: -1,
-            listeningWritingContinueLabel: "Continue",
-            listeningWritingPracticeMistakeType: "" as MistakeType | ""
-          };
+        : createEmptyListeningWritingModeData();
     const listeningSpeakingData =
       action.mode === "listeningSpeaking"
         ? createListeningSpeakingModeData(sceneId)
@@ -916,33 +934,18 @@ Page({
     stopListeningSpeakingAudio();
     stopListeningSpeakingRecording({ isCancel: true });
 
-    this.setData({
-      activeMode: "",
-      selectedModeTitle: "",
-      selectedModeSubtitle: "",
-      showMemoryGuide: false,
-      showMemoryTranslationGuide: false,
-      selectedMemoryWordId: "",
-      selectedMemoryWordCard: null,
-      listeningWritingRound: null,
-      listeningWritingState: createEmptyListeningWritingState(),
-      listeningWritingClickAttemptCount: 0,
-      ...LISTENING_WRITING_LISTEN_TASK,
-      listeningWritingFeedback: "",
-      listeningWritingFeedbackKind: "",
-      listeningWritingPhase: "locating",
-      listeningWritingTargetWordId: "",
-      listeningWritingCanSelectObject: false,
-      listeningWritingSpellingInput: "",
-      listeningWritingSpellingAttemptCount: 0,
-      listeningWritingAnswerReveal: "",
-      listeningWritingIsRoundComplete: false,
-      listeningWritingPendingNextQuestion: false,
-      listeningWritingPendingNextQuestionIndex: -1,
-      listeningWritingContinueLabel: "Continue",
-      listeningWritingPracticeMistakeType: "",
-      ...createEmptyListeningSpeakingModeData()
-    });
+    this.setData(createSceneHomeModeResetData());
+  },
+
+  resetInterruptedPracticeState() {
+    if (
+      this.data.activeMode !== "listeningWriting" &&
+      this.data.activeMode !== "listeningSpeaking"
+    ) {
+      return;
+    }
+
+    this.setData(createSceneHomeModeResetData());
   },
 
   completeMemoryGuideIfNeeded() {
@@ -1880,6 +1883,7 @@ Page({
     stopListeningWritingFeedbackAudio();
     stopListeningSpeakingAudio();
     stopListeningSpeakingRecording({ isCancel: true });
+    this.resetInterruptedPracticeState();
   },
 
   onUnload() {

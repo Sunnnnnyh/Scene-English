@@ -1840,3 +1840,29 @@ File change record:
 | `miniprogram/pages/scene/scene.wxss` | Styles the image failure fallback overlay and retry action. | Phase 9 / Step 9.1 |
 | `miniprogram/pages/scene/sceneViewModel.ts` | Adds scene image load status to the Scene page view model. | Phase 9 / Step 9.1 |
 | `tests/resourceFailureFeedback.test.ts` | Covers resource failure feedback requirements for image and audio paths. | Phase 9 / Step 9.1 |
+
+## 55. Phase 9 / Step 9.2 Mid-practice exit persistence
+
+The Scene page now treats a page hide during Listen + Spell or Listen + Speak as an interrupted practice session. Completed answer work remains persisted because mistake and mastery services are called at the moment the user answers; the page no longer keeps a half-finished round in memory after the user leaves and returns.
+
+Current responsibilities:
+- `miniprogram/pages/scene/scene.ts` owns `createEmptyListeningWritingModeData()` for resetting the Listen + Spell state consistently.
+- `miniprogram/pages/scene/scene.ts` owns `createSceneHomeModeResetData()` for returning the Scene page to the normal Classroom entry state.
+- `miniprogram/pages/scene/scene.ts` owns `resetInterruptedPracticeState()`, which only resets interrupted `listeningWriting` and `listeningSpeaking` modes.
+- `miniprogram/pages/scene/scene.ts` calls `resetInterruptedPracticeState()` from `onHide()` after stopping audio and cancelling any active recording.
+
+Runtime notes:
+- Leaving the page during Listen + Spell clears `listeningWritingRound`, the current question state, spelling state, pending continuation state, and mistake-practice mode state.
+- Leaving the page during Listen + Speak clears `listeningSpeakingRound`, the current question state, recording state, recognition state, attempt count, answer reveal, pending continuation state, and completion counters.
+- Memory mode is not treated as an interrupted quiz by this helper.
+- Because the interrupted round is cleared, the next mode entry tap creates a fresh round through the existing practice-round creation path.
+
+Test coverage:
+- `tests/practiceExitPersistence.test.ts` imports the Scene page with mocked `Page`, `wx`, and services, then verifies that `onHide()` drops interrupted Listen + Spell and Listen + Speak queues.
+- The same test confirms that exit cleanup does not call `recordMistake(...)` or `recordMistakeCorrectAnswer(...)`; persistence still belongs to the normal answer handlers.
+
+File change record:
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `miniprogram/pages/scene/scene.ts` | Adds shared practice reset helpers and clears interrupted Listen + Spell / Listen + Speak rounds on page hide. | Phase 9 / Step 9.2 |
+| `tests/practiceExitPersistence.test.ts` | Covers mid-practice exit cleanup for Listen + Spell and Listen + Speak without extra mistake writes. | Phase 9 / Step 9.2 |
