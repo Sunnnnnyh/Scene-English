@@ -2,7 +2,6 @@
   <view class="hero">
     <text class="eyebrow">Scene-based vocabulary</text>
     <text class="title">{{title}}</text>
-    <text class="subtitle">{{subtitle}}</text>
   </view>
 
   <view class="section">

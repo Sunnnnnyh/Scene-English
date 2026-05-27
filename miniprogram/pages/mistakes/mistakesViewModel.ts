@@ -32,9 +32,7 @@ export type MistakeListItem = {
 
 export type MistakesViewModel = {
   title: string;
-  subtitle: string;
   emptyTitle: string;
-  emptyDescription: string;
   isEmpty: boolean;
   mistakeItems: MistakeListItem[];
 };
@@ -97,9 +95,7 @@ export function createMistakesViewModel(mistakes: Mistake[]): MistakesViewModel 
 
   return {
     title: "Mistakes",
-    subtitle: "Review weak words by mistake type.",
     emptyTitle: "No mistakes yet",
-    emptyDescription: "Mistakes from practice will appear here after a wrong answer.",
     isEmpty: mistakeItems.length === 0,
     mistakeItems
   };

@@ -12,13 +12,6 @@
   font-weight: 800;
 }
 
-.placeholder-copy {
-  display: block;
-  margin-top: 20rpx;
-  color: #45647f;
-  font-size: 28rpx;
-}
-
 .back-button {
   margin: 40rpx 0 0;
   min-height: 88rpx;

@@ -1,7 +1,7 @@
 .favorites-page {
   box-sizing: border-box;
   min-height: 100vh;
-  padding: 64rpx 40rpx 112rpx;
+  padding: 56rpx 32rpx 112rpx;
   padding-bottom: calc(112rpx + env(safe-area-inset-bottom));
   background: #f7fbff;
 }
@@ -17,13 +17,6 @@
   color: #19324d;
   font-size: 40rpx;
   font-weight: 800;
-}
-
-.favorites-subtitle {
-  display: block;
-  color: #45647f;
-  font-size: 26rpx;
-  line-height: 1.5;
 }
 
 .favorites-list {
@@ -47,8 +40,9 @@
 
 .favorite-summary {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
+  flex-wrap: wrap;
   gap: 24rpx;
 }
 
@@ -76,6 +70,7 @@
   flex-shrink: 0;
   box-sizing: border-box;
   min-width: 144rpx;
+  max-width: 100%;
   padding: 10rpx 16rpx;
   border: 2rpx solid #19324d;
   border-radius: 999rpx;
@@ -129,6 +124,7 @@
 
 .favorite-actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 16rpx;
   margin-top: 22rpx;
 }
@@ -172,12 +168,4 @@
   color: #19324d;
   font-size: 30rpx;
   font-weight: 800;
-}
-
-.favorite-empty-description {
-  display: block;
-  margin-top: 12rpx;
-  color: #45647f;
-  font-size: 25rpx;
-  line-height: 1.5;
 }

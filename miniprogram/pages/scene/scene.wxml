@@ -39,7 +39,6 @@
         >
           <view class="mode-copy">
             <text class="mode-title">{{item.title}}</text>
-            <text class="mode-subtitle">{{item.subtitle}}</text>
           </view>
           <text class="mode-action">{{item.actionLabel}}</text>
         </view>
@@ -57,7 +56,6 @@
         <text class="scene-title">{{selectedModeTitle}}</text>
       </view>
     </view>
-    <text class="mode-page-subtitle">{{selectedModeSubtitle}}</text>
 
     <view wx:if="{{activeMode === 'memory'}}" class="memory-progress-section">
       <view class="memory-progress-header">
@@ -379,14 +377,8 @@
             </view>
             <view
               wx:if="{{listeningSpeakingRecognitionStatus !== 'passed' && listeningSpeakingRecognitionStatus !== 'recognizing' && !listeningSpeakingPendingNextQuestion}}"
-              class="listening-speaking-record-actions {{listeningSpeakingRecordingStatus === 'recorded' ? 'listening-speaking-record-actions--saved' : ''}}"
+              class="listening-speaking-record-actions"
             >
-              <view
-                wx:if="{{listeningSpeakingRecordingStatus === 'recorded'}}"
-                class="listening-speaking-record-saved"
-              >
-                <text class="listening-speaking-record-saved-label">Saved</text>
-              </view>
               <button
                 wx:if="{{listeningSpeakingRecordingStatus !== 'recording' && listeningSpeakingRecordingStatus !== 'recorded'}}"
                 class="listening-speaking-record-button"
@@ -449,9 +441,9 @@
         </view>
       </view>
 
-      <view class="mode-page-panel">
-        <text class="mode-page-note">当前先保持基础模式视图，后续步骤会继续接入具体练习交互。</text>
-      </view>
     </block>
   </block>
+  <view wx:if="{{sceneFeedbackToast}}" class="scene-feedback-toast">
+    <text class="scene-feedback-toast__text">{{sceneFeedbackToast}}</text>
+  </view>
 </view>

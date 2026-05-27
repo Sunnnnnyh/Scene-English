@@ -42,9 +42,7 @@ describe("favorites page", () => {
 
     expect(createFavoritesViewModel(favoriteRecords, ["projector", "podium"])).toEqual({
       title: "Favorites",
-      subtitle: "Review the words you marked for later.",
       emptyTitle: "No favorite words yet",
-      emptyDescription: "Go back to Memory mode and tap the star on a word card to save it.",
       isEmpty: false,
       favoriteItems: [
         {

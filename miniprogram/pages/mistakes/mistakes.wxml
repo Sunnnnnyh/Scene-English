@@ -1,7 +1,6 @@
 <view class="mistakes-page">
   <view class="mistakes-header">
     <text class="mistakes-title">{{title}}</text>
-    <text class="mistakes-subtitle">{{subtitle}}</text>
     <view
       wx:if="{{!isEmpty}}"
       class="mistakes-practice-button"
@@ -14,7 +13,6 @@
 
   <view wx:if="{{isEmpty}}" class="mistakes-empty">
     <text class="mistakes-empty-title">{{emptyTitle}}</text>
-    <text class="mistakes-empty-description">{{emptyDescription}}</text>
   </view>
 
   <view wx:else class="mistakes-list">

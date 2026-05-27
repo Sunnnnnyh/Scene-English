@@ -14,7 +14,6 @@ export type SceneEntryId = StudyMode;
 export type SceneModeEntry = {
   id: StudyMode;
   title: string;
-  subtitle: string;
   actionLabel: string;
   isRecommended: boolean;
 };
@@ -86,12 +85,12 @@ export type SceneViewModel = {
   sceneNameEn: Scene["nameEn"];
   sceneImage: Scene["sceneImage"];
   sceneImageLoadStatus: SceneImageLoadStatus;
+  sceneFeedbackToast: string;
   progressLabel: string;
   progressPercent: number;
   modeEntries: SceneModeEntry[];
   activeMode: "" | SceneEntryId;
   selectedModeTitle: string;
-  selectedModeSubtitle: string;
   memoryHotspots: SceneMemoryHotspot[];
   showMemoryGuide: boolean;
   showMemoryTranslationGuide: boolean;
@@ -154,21 +153,18 @@ const modeEntries: SceneModeEntry[] = [
   {
     id: "memory",
     title: "单词记忆",
-    subtitle: "先探索场景里的物品",
     actionLabel: "Recommended",
     isRecommended: true
   },
   {
     id: "listeningWriting",
     title: "听力 + 默写",
-    subtitle: "听发音，找物品，再拼写",
     actionLabel: "Practice",
     isRecommended: false
   },
   {
     id: "listeningSpeaking",
     title: "听力 + 口语",
-    subtitle: "听发音，找物品，再开口读",
     actionLabel: "Speak",
     isRecommended: false
   }
@@ -269,12 +265,12 @@ export function createSceneViewModel(
     sceneNameEn: scene.nameEn,
     sceneImage: scene.sceneImage,
     sceneImageLoadStatus: "idle",
+    sceneFeedbackToast: "",
     progressLabel: `Learned ${learnedCount} / ${scene.wordCount}`,
     progressPercent,
     modeEntries,
     activeMode: "",
     selectedModeTitle: "",
-    selectedModeSubtitle: "",
     memoryHotspots,
     showMemoryGuide: false,
     showMemoryTranslationGuide: false,

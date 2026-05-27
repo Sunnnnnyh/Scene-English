@@ -100,6 +100,7 @@ const LISTENING_WRITING_CORRECT_SOUND_URL = "/assets/audio/feedback-correct.wav"
 const LISTENING_WRITING_WRONG_SOUND_URL = "/assets/audio/feedback-wrong.wav";
 const AUDIO_PLAYBACK_ERROR_MESSAGE = feedbackCopy.audioUnavailable;
 const MIN_LISTENING_SPEAKING_RECORDING_MS = 900;
+let sceneFeedbackToastTimer: ReturnType<typeof setTimeout> | null = null;
 
 type ListeningWritingFeedbackKind = "" | "success" | "error" | "info";
 type ListeningSpeakingFeedbackKind = "" | "success" | "error" | "info";
@@ -159,6 +160,13 @@ function showAudioPlaybackErrorToast() {
     title: AUDIO_PLAYBACK_ERROR_MESSAGE,
     icon: "none"
   });
+}
+
+function clearSceneFeedbackToastTimer() {
+  if (sceneFeedbackToastTimer) {
+    clearTimeout(sceneFeedbackToastTimer);
+    sceneFeedbackToastTimer = null;
+  }
 }
 
 const LISTENING_WRITING_LISTEN_TASK: ListeningWritingTaskData = {
@@ -706,7 +714,6 @@ function createSceneHomeModeResetData() {
   return {
     activeMode: "" as const,
     selectedModeTitle: "",
-    selectedModeSubtitle: "",
     showMemoryGuide: false,
     showMemoryTranslationGuide: false,
     selectedMemoryWordId: "",
@@ -880,7 +887,6 @@ Page({
       ...createSceneViewModel(scene, getSceneProgress(scene.id), getWordsBySceneId(scene.id)),
       activeMode: "listeningWriting",
       selectedModeTitle: selectedMode?.title ?? "",
-      selectedModeSubtitle: selectedMode?.subtitle ?? "",
       showMemoryGuide: false,
       showMemoryTranslationGuide: false,
       selectedMemoryWordId: "",
@@ -918,7 +924,6 @@ Page({
     this.setData({
       activeMode: action.mode,
       selectedModeTitle: selectedMode?.title ?? "",
-      selectedModeSubtitle: selectedMode?.subtitle ?? "",
       showMemoryGuide: action.mode === "memory" ? shouldShowMemoryGuide() : false,
       showMemoryTranslationGuide: false,
       selectedMemoryWordId: "",
@@ -1365,10 +1370,7 @@ Page({
   },
 
   onListeningWritingBlankTap() {
-    wx.showToast({
-      title: feedbackCopy.tapObject,
-      icon: "none"
-    });
+    this.showSceneFeedbackToast(feedbackCopy.tapObject);
   },
 
   onPlayListeningSpeakingAudio() {
@@ -1871,13 +1873,11 @@ Page({
   },
 
   onListeningSpeakingBlankTap() {
-    wx.showToast({
-      title: feedbackCopy.tapObject,
-      icon: "none"
-    });
+    this.showSceneFeedbackToast(feedbackCopy.tapObject);
   },
 
   onHide() {
+    clearSceneFeedbackToastTimer();
     stopMemoryWordAudio();
     stopListeningWritingAudio();
     stopListeningWritingFeedbackAudio();
@@ -1887,6 +1887,7 @@ Page({
   },
 
   onUnload() {
+    clearSceneFeedbackToastTimer();
     stopListeningSpeakingRecording({ isCancel: true });
     releaseMemoryWordAudio();
     releaseListeningWritingAudio();
@@ -1899,5 +1900,18 @@ Page({
       title: "试着点击图中的物品",
       icon: "none"
     });
+  },
+
+  showSceneFeedbackToast(message: string) {
+    clearSceneFeedbackToastTimer();
+    this.setData({
+      sceneFeedbackToast: message
+    });
+    sceneFeedbackToastTimer = setTimeout(() => {
+      this.setData({
+        sceneFeedbackToast: ""
+      });
+      sceneFeedbackToastTimer = null;
+    }, 1600);
   }
 });

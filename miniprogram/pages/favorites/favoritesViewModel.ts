@@ -17,9 +17,7 @@ export type FavoriteListItem = {
 
 export type FavoritesViewModel = {
   title: string;
-  subtitle: string;
   emptyTitle: string;
-  emptyDescription: string;
   isEmpty: boolean;
   favoriteItems: FavoriteListItem[];
 };
@@ -54,9 +52,7 @@ export function createFavoritesViewModel(
 
   return {
     title: "Favorites",
-    subtitle: "Review the words you marked for later.",
     emptyTitle: "No favorite words yet",
-    emptyDescription: "Go back to Memory mode and tap the star on a word card to save it.",
     isEmpty: favoriteItems.length === 0,
     favoriteItems
   };

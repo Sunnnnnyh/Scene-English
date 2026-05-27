@@ -13,7 +13,6 @@ export type IndexSceneCard = {
 
 export type IndexViewModel = {
   title: string;
-  subtitle: string;
   availableScenes: IndexSceneCard[];
   comingSoonScenes: IndexSceneCard[];
 };
@@ -45,7 +44,6 @@ function createSceneCard(scene: Scene): IndexSceneCard {
 export function createIndexViewModel(scenes: Scene[]): IndexViewModel {
   return {
     title: "SceneEnglish",
-    subtitle: "按真实场景学习英语单词",
     availableScenes: scenes.filter((scene) => scene.status === "available").map(createSceneCard),
     comingSoonScenes: scenes.filter((scene) => scene.status === "comingSoon").map(createSceneCard)
   };

@@ -114,9 +114,7 @@ function createPageData() {
 
   return {
     title: "Mistakes",
-    subtitle: "Review weak words by mistake type.",
     emptyTitle: "No mistakes yet",
-    emptyDescription: "Mistakes from practice will appear here after a wrong answer.",
     isEmpty: mistakeItems.length === 0,
     mistakeItems
   };

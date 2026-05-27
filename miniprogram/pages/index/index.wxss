@@ -25,12 +25,6 @@
   letter-spacing: 0;
 }
 
-.subtitle {
-  color: #45647f;
-  font-size: 30rpx;
-  line-height: 1.5;
-}
-
 .section {
   margin-top: 42rpx;
 }
@@ -95,6 +89,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
   gap: 18rpx;
 }
 
@@ -114,6 +109,7 @@
 
 .scene-action {
   min-width: 190rpx;
+  min-height: 64rpx;
   box-sizing: border-box;
   padding: 16rpx 22rpx;
   border-radius: 999rpx;

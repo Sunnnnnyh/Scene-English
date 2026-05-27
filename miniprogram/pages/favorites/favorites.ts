@@ -111,9 +111,7 @@ function createPageData(selectedFavoriteWordIds: string[] = []) {
 
   return {
     title: "Favorites",
-    subtitle: "Review the words you marked for later.",
     emptyTitle: "No favorite words yet",
-    emptyDescription: "Go back to Memory mode and tap the star on a word card to save it.",
     selectedFavoriteWordIds,
     isEmpty: favoriteItems.length === 0,
     favoriteItems

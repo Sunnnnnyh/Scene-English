@@ -78,4 +78,8 @@ describe("unified user-facing feedback copy", () => {
     expect(userFacingSources).not.toContain("I could not hear the word clearly. Please try again.");
     expect(userFacingSources.toLowerCase()).not.toContain("mock");
   });
+
+  it("keeps object-tap feedback descriptive", () => {
+    expect(feedbackCopyScript).toContain('tapObject: "Tap an object in the picture."');
+  });
 });

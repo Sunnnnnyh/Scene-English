@@ -8,7 +8,6 @@ const recordMistakeCorrectAnswer = vi.fn();
 type PracticeExitData = Record<string, unknown> & {
   activeMode: string;
   selectedModeTitle?: string;
-  selectedModeSubtitle?: string;
   listeningWritingRound?: unknown;
   listeningWritingState?: {
     currentQuestion: unknown;
@@ -140,7 +139,6 @@ describe("mid-practice exit persistence", () => {
     const data: PracticeExitData = {
       activeMode: "listeningWriting",
       selectedModeTitle: "Listen + Spell",
-      selectedModeSubtitle: "Halfway",
       listeningWritingRound: {
         questions: [{ wordId: "projector" }, { wordId: "desk" }],
         currentIndex: 1
@@ -156,7 +154,6 @@ describe("mid-practice exit persistence", () => {
 
     expect(data.activeMode).toBe("");
     expect(data.selectedModeTitle).toBe("");
-    expect(data.selectedModeSubtitle).toBe("");
     expect(data.listeningWritingRound).toBeNull();
     expect(data.listeningWritingState?.currentQuestion).toBeNull();
     expect(data.listeningWritingPracticeMistakeType).toBe("");
@@ -168,7 +165,6 @@ describe("mid-practice exit persistence", () => {
     const data: PracticeExitData = {
       activeMode: "listeningSpeaking",
       selectedModeTitle: "Listen + Speak",
-      selectedModeSubtitle: "Halfway",
       listeningSpeakingRound: {
         questions: [{ wordId: "projector" }, { wordId: "desk" }],
         currentIndex: 1
@@ -185,7 +181,6 @@ describe("mid-practice exit persistence", () => {
 
     expect(data.activeMode).toBe("");
     expect(data.selectedModeTitle).toBe("");
-    expect(data.selectedModeSubtitle).toBe("");
     expect(data.listeningSpeakingRound).toBeNull();
     expect(data.listeningSpeakingState?.currentQuestion).toBeNull();
     expect(data.listeningSpeakingRecognitionAttemptCount).toBe(0);

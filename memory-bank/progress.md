@@ -1124,3 +1124,25 @@
   - `git diff --check` passed with only Windows CRLF warnings.
 - Remaining:
   - Step 9.4 still needs mobile visual adaptation.
+
+### 2026-05-27 - Phase 9 / Step 9.4 Mobile visual adaptation and copy cleanup
+
+- Completed:
+  - Tightened small-screen spacing on Home, Scene, Favorites, Mistakes, Review, and Me pages.
+  - Added safe-area bottom padding for tab pages so native navigation does not overlap content on narrow or notched devices.
+  - Replaced the native blank-scene tap toast with a custom responsive in-page hint so `Tap an object in the picture.` does not wrap awkwardly on small devices.
+  - Removed the redundant `Saved` state from the Listen + Speak failed-recognition UI.
+  - Kept the Me page three statistic cards side by side on small screens by shrinking card gaps, padding, and label sizes.
+  - Added local PNG tabBar icons for Home, Learn, Review, and Me so native tab labels do not drift into the icon slot on some devices.
+  - Removed developer-facing explanatory copy from user pages, including unnecessary `subtitle`, `description`, placeholder, and global-entry explanation text.
+  - Added regression tests for small-screen visual rules, tab icon file format, and removal of developer-facing user copy.
+- Verification:
+  - User validated the mobile visual changes and copy cleanup in WeChat DevTools.
+  - TypeScript miniprogram config passed.
+  - TypeScript test config passed.
+  - ESLint passed.
+  - Prettier check passed.
+  - Vitest passed: 42 test files, 209 tests.
+  - `git diff --check` passed with only Windows CRLF warnings.
+- Remaining:
+  - Me page can now move into a fuller profile and learning-dashboard polish step.

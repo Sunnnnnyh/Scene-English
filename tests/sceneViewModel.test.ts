@@ -40,7 +40,6 @@ describe("scene page view model", () => {
     expect(viewModel.modeEntries[0]).toMatchObject({
       id: "memory",
       title: "单词记忆",
-      subtitle: "先探索场景里的物品",
       actionLabel: "Recommended",
       isRecommended: true
     });

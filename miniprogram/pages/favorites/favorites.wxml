@@ -1,12 +1,10 @@
 <view class="favorites-page">
   <view class="favorites-header">
     <text class="favorites-title">{{title}}</text>
-    <text class="favorites-subtitle">{{subtitle}}</text>
   </view>
 
   <view wx:if="{{isEmpty}}" class="favorite-empty">
     <text class="favorite-empty-title">{{emptyTitle}}</text>
-    <text class="favorite-empty-description">{{emptyDescription}}</text>
   </view>
 
   <view wx:else class="favorites-list">

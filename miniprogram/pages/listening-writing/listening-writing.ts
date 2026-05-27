@@ -6,7 +6,6 @@ function createListeningWritingPageData(sceneId: string) {
   return {
     sceneId,
     title: "听力 + 默写",
-    description: "Listen + Spell 占位页面",
     backLabel: "返回 Classroom",
     backAction: {
       type: "switchTab",

@@ -24,19 +24,27 @@
     "borderStyle": "black",
     "list": [
       {
+        "iconPath": "assets/icons/tab-home.png",
         "pagePath": "pages/index/index",
+        "selectedIconPath": "assets/icons/tab-home-active.png",
         "text": "Home"
       },
       {
+        "iconPath": "assets/icons/tab-learn.png",
         "pagePath": "pages/scene/scene",
+        "selectedIconPath": "assets/icons/tab-learn-active.png",
         "text": "Learn"
       },
       {
+        "iconPath": "assets/icons/tab-review.png",
         "pagePath": "pages/review/review",
+        "selectedIconPath": "assets/icons/tab-review-active.png",
         "text": "Review"
       },
       {
+        "iconPath": "assets/icons/tab-me.png",
         "pagePath": "pages/me/me",
+        "selectedIconPath": "assets/icons/tab-me-active.png",
         "text": "Me"
       }
     ]

@@ -1900,3 +1900,42 @@ File change record:
 | `miniprogram/pages/me/meViewModel.ts` | Uses shared speech status copy for the Me page view model. | Phase 9 / Step 9.3 |
 | `tests/feedbackCopy.test.ts` | Covers shared feedback copy and guards against mock/technical wording in main user-facing sources. | Phase 9 / Step 9.3 |
 | Existing feedback-related tests | Updated to assert shared copy references and revised user-facing wording. | Phase 9 / Step 9.3 |
+
+## 57. Phase 9 / Step 9.4 Mobile visual adaptation and copy cleanup
+
+The current UI has been adapted for narrow phone screens and cleaned of developer-facing explanatory copy. This step stays within the MVP feature set and focuses on making the existing pages feel less like implementation scaffolding.
+
+Current responsibilities:
+- `miniprogram/app.json` configures native tabBar items with local PNG icons for Home, Learn, Review, and Me. PNG is required because WeChat tabBar icons do not accept SVG.
+- `miniprogram/assets/icons/tab-*.png` stores inactive and active tab icons for the four native tabBar items.
+- `miniprogram/pages/scene/scene.ts` owns the custom scene feedback toast timer and clears it on hide/unload.
+- `miniprogram/pages/scene/scene.wxml` renders the custom blank-scene tap hint and no longer renders the saved recording status in Listen + Speak retry states.
+- `miniprogram/pages/scene/scene.wxss` contains the small-screen Scene page adaptations, including safe-area bottom padding, responsive feedback toast, wrapping recognition card, smaller record actions, and compact completion layouts.
+- `miniprogram/pages/me/me.wxss` keeps the three stat cards side by side on small screens with reduced gaps, padding, and label sizes.
+- Home, Favorites, Mistakes, Review, Memory, and placeholder learning pages no longer render unnecessary subtitle, description, or placeholder explanation copy.
+
+Runtime notes:
+- Blank taps in scene practice show `Tap an object in the picture.` in a custom fixed hint above the tabBar, avoiding native toast wrapping on small devices.
+- Bottom navigation now uses icon + label layout, which avoids pure-text native tabBar vertical drift on affected devices.
+- Listen + Speak failure feedback shows retry guidance and `Record Again`; it no longer shows a meaningless `Saved` pill.
+- User-facing pages should avoid `subtitle` / `description` fields unless the text is necessary for completing an action.
+
+Test coverage:
+- `tests/mobileVisualAdaptation.test.ts` covers safe-area padding, card wrapping, compact Me stats, recognition wrapping, and the custom scene hint.
+- `tests/navigation.test.ts` covers tabBar registration, local PNG icon paths, and PNG file headers.
+- `tests/userFacingCopyCleanup.test.ts` guards against developer-facing copy such as subtitle/description placeholders and global-entry explanation text.
+- Existing page view-model tests were updated so removed subtitles and descriptions cannot silently return.
+
+File change record:
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `miniprogram/app.json` | Adds PNG iconPath and selectedIconPath values for the four native tabBar items. | Phase 9 / Step 9.4 |
+| `miniprogram/assets/icons/tab-*.png` | Stores local inactive/active tabBar icons for Home, Learn, Review, and Me. | Phase 9 / Step 9.4 |
+| `miniprogram/pages/scene/scene.ts` | Adds custom scene feedback toast state handling and removes native blank-tap toast usage. | Phase 9 / Step 9.4 |
+| `miniprogram/pages/scene/scene.wxml` | Renders the custom blank-scene hint and removes redundant Listen + Speak saved status UI. | Phase 9 / Step 9.4 |
+| `miniprogram/pages/scene/scene.wxss` | Adds small-screen Scene layout rules and responsive custom hint styling. | Phase 9 / Step 9.4 |
+| `miniprogram/pages/me/me.wxss` | Keeps Me stats in three compact columns on narrow screens. | Phase 9 / Step 9.4 |
+| `miniprogram/pages/index/`, `favorites/`, `mistakes/`, `review/`, `memory/`, `listening-writing/`, `listening-speaking/`, `shared/` | Removes nonessential user-facing subtitle, description, and placeholder explanation copy. | Phase 9 / Step 9.4 |
+| `tests/mobileVisualAdaptation.test.ts` | Covers the mobile visual adaptation requirements. | Phase 9 / Step 9.4 |
+| `tests/navigation.test.ts` | Covers native tabBar PNG icon requirements. | Phase 9 / Step 9.4 |
+| `tests/userFacingCopyCleanup.test.ts` | Guards against developer-facing explanatory copy returning to user pages. | Phase 9 / Step 9.4 |

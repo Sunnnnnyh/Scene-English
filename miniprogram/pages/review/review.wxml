@@ -1,7 +1,6 @@
 <view class="review-page">
   <view class="review-header">
     <text class="review-title">{{title}}</text>
-    <text class="review-subtitle">{{subtitle}}</text>
   </view>
 
   <view class="review-list">
@@ -14,7 +13,6 @@
     >
       <view class="review-entry-copy">
         <text class="review-entry-title">{{item.title}}</text>
-        <text class="review-entry-description">{{item.description}}</text>
       </view>
       <text class="review-entry-action">{{item.actionLabel}}</text>
     </view>

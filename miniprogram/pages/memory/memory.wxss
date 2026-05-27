@@ -20,14 +20,6 @@
   font-weight: 800;
 }
 
-.memory-subtitle {
-  display: block;
-  margin-top: 22rpx;
-  color: #45647f;
-  font-size: 28rpx;
-  line-height: 1.5;
-}
-
 .memory-scene-frame {
   width: 100%;
   aspect-ratio: 16 / 9;

@@ -28,12 +28,13 @@ describe("Listen + Speak recording interaction", () => {
     expect(sceneMarkup).toContain('bindtap="onStopListeningSpeakingRecording"');
     expect(sceneMarkup).toContain('bindtap="onCancelListeningSpeakingRecording"');
     expect(sceneMarkup).toContain("Start Recording");
-    expect(sceneMarkup).toContain("Saved");
     expect(sceneMarkup).toContain("Record Again");
     expect(sceneMarkup).toContain("Try Again");
     expect(sceneMarkup).toContain("Stop");
     expect(sceneMarkup).toContain("Cancel");
     expect(sceneMarkup).toContain("{{listeningSpeakingRecordingFeedback}}");
+    expect(sceneMarkup).not.toContain("listening-speaking-record-saved");
+    expect(sceneMarkup).not.toContain(">Saved<");
   });
 
   it("uses WeChat RecorderManager for the recording step", () => {
@@ -56,12 +57,11 @@ describe("Listen + Speak recording interaction", () => {
 
   it("styles recording actions and feedback inside the Listen + Speak panel", () => {
     expect(sceneStyles).toContain(".listening-speaking-record-actions");
-    expect(sceneStyles).toContain(".listening-speaking-record-actions--saved");
-    expect(sceneStyles).toContain(".listening-speaking-record-saved");
     expect(sceneStyles).toContain(".listening-speaking-record-button");
     expect(sceneStyles).toContain(".listening-speaking-record-button--again");
     expect(sceneStyles).toContain(".listening-speaking-record-button--stop");
     expect(sceneStyles).toContain(".listening-speaking-record-button--secondary");
     expect(sceneStyles).toContain(".listening-speaking-record-feedback");
+    expect(sceneStyles).not.toContain(".listening-speaking-record-saved");
   });
 });

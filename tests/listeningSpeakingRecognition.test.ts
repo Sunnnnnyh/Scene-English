@@ -71,19 +71,21 @@ describe("Listen + Speak recognition feedback", () => {
     expect(sceneStyles).toContain("border: 3rpx solid #a6dfb2");
   });
 
-  it("lays out recognition status and feedback in one horizontal row", () => {
+  it("lays out recognition status and feedback without small-screen overflow", () => {
     expect(sceneMarkup).toContain('<view class="listening-speaking-recognition-label">');
     expect(sceneMarkup).toContain('<view class="listening-speaking-recognition-text">');
     expect(sceneStyles).toContain("flex-direction: row");
-    expect(sceneStyles).toContain("align-items: center");
+    expect(sceneStyles).toContain("align-items: flex-start");
     expect(sceneStyles).toContain("justify-content: space-between");
+    expect(sceneStyles).toContain("flex-wrap: wrap");
     expect(sceneStyles).toContain("text-align: right");
     expect(sceneStyles).toContain(".listening-speaking-recognition-label {\n  display: block;");
     expect(sceneStyles).toContain(".listening-speaking-recognition-text {\n  display: block;");
     expect(sceneStyles).toContain(
-      ".listening-speaking-recognition-text {\n  display: block;\n  min-width: 0;\n  color: #45647f;\n  font-size: 32rpx;"
+      ".listening-speaking-recognition-text {\n  display: block;\n  min-width: 0;\n  flex: 1 1 260rpx;\n  color: #45647f;\n  font-size: 32rpx;"
     );
     expect(sceneStyles).toContain("line-height: 1;");
+    expect(sceneStyles).toContain("overflow-wrap: anywhere;");
   });
 
   it("keeps recognition feedback separate from the Step 8.4 continuation controls", () => {

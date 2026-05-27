@@ -71,9 +71,7 @@ describe("mistakes page", () => {
 
     expect(createMistakesViewModel(mistakeRecords)).toEqual({
       title: "Mistakes",
-      subtitle: "Review weak words by mistake type.",
       emptyTitle: "No mistakes yet",
-      emptyDescription: "Mistakes from practice will appear here after a wrong answer.",
       isEmpty: false,
       mistakeItems: [
         {
