@@ -131,6 +131,15 @@ export type SceneViewModel = {
   listeningSpeakingRecognitionStatus: SceneListeningSpeakingRecognitionStatus;
   listeningSpeakingRecognitionTranscript: string;
   listeningSpeakingRecognitionFeedback: string;
+  listeningSpeakingRecognitionAttemptCount: number;
+  listeningSpeakingAnswerReveal: string;
+  listeningSpeakingIsRoundComplete: boolean;
+  listeningSpeakingPendingNextQuestion: boolean;
+  listeningSpeakingPendingNextQuestionIndex: number;
+  listeningSpeakingContinueLabel: string;
+  listeningSpeakingCorrectCount: number;
+  listeningSpeakingMistakeCount: number;
+  listeningSpeakingNewMistakeCount: number;
 };
 
 export type SceneEntryAction = {
@@ -303,7 +312,16 @@ export function createSceneViewModel(
     listeningSpeakingRecordingFeedback: "",
     listeningSpeakingRecognitionStatus: "idle",
     listeningSpeakingRecognitionTranscript: "",
-    listeningSpeakingRecognitionFeedback: ""
+    listeningSpeakingRecognitionFeedback: "",
+    listeningSpeakingRecognitionAttemptCount: 0,
+    listeningSpeakingAnswerReveal: "",
+    listeningSpeakingIsRoundComplete: false,
+    listeningSpeakingPendingNextQuestion: false,
+    listeningSpeakingPendingNextQuestionIndex: -1,
+    listeningSpeakingContinueLabel: "Continue",
+    listeningSpeakingCorrectCount: 0,
+    listeningSpeakingMistakeCount: 0,
+    listeningSpeakingNewMistakeCount: 0
   };
 }
 

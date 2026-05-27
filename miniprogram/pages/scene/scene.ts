@@ -122,6 +122,12 @@ type ListeningSpeakingTaskData = {
   listeningSpeakingInstruction: string;
 };
 
+type ListeningSpeakingCompletionStats = {
+  listeningSpeakingCorrectCount: number;
+  listeningSpeakingMistakeCount: number;
+  listeningSpeakingNewMistakeCount: number;
+};
+
 function createListeningSpeakingRecordingData(
   status: SceneListeningSpeakingRecordingStatus = "idle",
   feedback = ""
@@ -192,6 +198,18 @@ const LISTENING_SPEAKING_RECORD_TASK: ListeningSpeakingTaskData = {
   listeningSpeakingStepLabel: "Speak",
   listeningSpeakingTaskTitle: "Speak",
   listeningSpeakingInstruction: "Get ready to say the word."
+};
+
+const LISTENING_SPEAKING_REVIEW_TASK: ListeningSpeakingTaskData = {
+  listeningSpeakingStepLabel: "Review",
+  listeningSpeakingTaskTitle: "Review",
+  listeningSpeakingInstruction: ""
+};
+
+const LISTENING_SPEAKING_COMPLETE_TASK: ListeningSpeakingTaskData = {
+  listeningSpeakingStepLabel: "Complete",
+  listeningSpeakingTaskTitle: "Speaking round complete",
+  listeningSpeakingInstruction: "You finished this Listen + Speak round."
 };
 
 let memoryWordAudioContext: WechatMiniprogram.InnerAudioContext | undefined;
@@ -500,6 +518,29 @@ function createPracticeQuizRound({
   };
 }
 
+function createListeningSpeakingCompletionStats({
+  correctCount,
+  mistakeCount,
+  newMistakeCount
+}: {
+  correctCount: number;
+  mistakeCount: number;
+  newMistakeCount: number;
+}): ListeningSpeakingCompletionStats {
+  return {
+    listeningSpeakingCorrectCount: correctCount,
+    listeningSpeakingMistakeCount: mistakeCount,
+    listeningSpeakingNewMistakeCount: newMistakeCount
+  };
+}
+
+function hasSpeakingMistake(sceneId: Scene["id"], wordId: Word["id"]): boolean {
+  return getMistakes().some(
+    (mistake) =>
+      mistake.sceneId === sceneId && mistake.wordId === wordId && mistake.typeStats.speaking
+  );
+}
+
 type MistakePracticeCandidate = {
   word: Word;
   mistakeType: MistakeType;
@@ -615,7 +656,18 @@ function createEmptyListeningSpeakingModeData() {
     listeningSpeakingTargetWordId: "",
     listeningSpeakingCanSelectObject: false,
     ...createListeningSpeakingRecordingData(),
-    ...createListeningSpeakingRecognitionData()
+    ...createListeningSpeakingRecognitionData(),
+    listeningSpeakingRecognitionAttemptCount: 0,
+    listeningSpeakingAnswerReveal: "",
+    listeningSpeakingIsRoundComplete: false,
+    listeningSpeakingPendingNextQuestion: false,
+    listeningSpeakingPendingNextQuestionIndex: -1,
+    listeningSpeakingContinueLabel: "Continue",
+    ...createListeningSpeakingCompletionStats({
+      correctCount: 0,
+      mistakeCount: 0,
+      newMistakeCount: 0
+    })
   };
 }
 
@@ -641,7 +693,18 @@ function createListeningSpeakingModeData(sceneId: Scene["id"], excludeWordIds: W
     listeningSpeakingTargetWordId: "",
     listeningSpeakingCanSelectObject: false,
     ...createListeningSpeakingRecordingData(),
-    ...createListeningSpeakingRecognitionData()
+    ...createListeningSpeakingRecognitionData(),
+    listeningSpeakingRecognitionAttemptCount: 0,
+    listeningSpeakingAnswerReveal: "",
+    listeningSpeakingIsRoundComplete: false,
+    listeningSpeakingPendingNextQuestion: false,
+    listeningSpeakingPendingNextQuestionIndex: -1,
+    listeningSpeakingContinueLabel: "Continue",
+    ...createListeningSpeakingCompletionStats({
+      correctCount: 0,
+      mistakeCount: 0,
+      newMistakeCount: 0
+    })
   };
 }
 
@@ -1371,7 +1434,13 @@ Page({
         listeningSpeakingTargetWordId: targetWordId,
         listeningSpeakingCanSelectObject: false,
         ...createListeningSpeakingRecordingData(),
-        ...createListeningSpeakingRecognitionData()
+        ...createListeningSpeakingRecognitionData(),
+        listeningSpeakingRecognitionAttemptCount: 0,
+        listeningSpeakingAnswerReveal: "",
+        listeningSpeakingIsRoundComplete: false,
+        listeningSpeakingPendingNextQuestion: false,
+        listeningSpeakingPendingNextQuestionIndex: -1,
+        listeningSpeakingContinueLabel: "Continue"
       });
       return;
     }
@@ -1389,7 +1458,11 @@ Page({
         listeningSpeakingPhase: "locating",
         listeningSpeakingTargetWordId: "",
         ...createListeningSpeakingRecordingData(),
-        ...createListeningSpeakingRecognitionData()
+        ...createListeningSpeakingRecognitionData(),
+        listeningSpeakingAnswerReveal: "",
+        listeningSpeakingPendingNextQuestion: false,
+        listeningSpeakingPendingNextQuestionIndex: -1,
+        listeningSpeakingContinueLabel: "Continue"
       });
       return;
     }
@@ -1404,7 +1477,13 @@ Page({
       listeningSpeakingTargetWordId: targetWordId,
       listeningSpeakingCanSelectObject: false,
       ...createListeningSpeakingRecordingData(),
-      ...createListeningSpeakingRecognitionData()
+      ...createListeningSpeakingRecognitionData(),
+      listeningSpeakingRecognitionAttemptCount: 0,
+      listeningSpeakingAnswerReveal: "",
+      listeningSpeakingIsRoundComplete: false,
+      listeningSpeakingPendingNextQuestion: false,
+      listeningSpeakingPendingNextQuestionIndex: -1,
+      listeningSpeakingContinueLabel: "Continue"
     });
   },
 
@@ -1443,7 +1522,11 @@ Page({
       listeningSpeakingRecordingPath: "",
       listeningSpeakingRecordingDurationMs: 0,
       listeningSpeakingRecordingFeedback: "Recording...",
-      ...createListeningSpeakingRecognitionData()
+      ...createListeningSpeakingRecognitionData(),
+      listeningSpeakingAnswerReveal: "",
+      listeningSpeakingPendingNextQuestion: false,
+      listeningSpeakingPendingNextQuestionIndex: -1,
+      listeningSpeakingContinueLabel: "Continue"
     });
 
     try {
@@ -1495,7 +1578,11 @@ Page({
         listeningSpeakingRecordingPath: "",
         listeningSpeakingRecordingDurationMs: durationMs,
         listeningSpeakingRecordingFeedback: "Recording was too short. Please try again.",
-        ...createListeningSpeakingRecognitionData()
+        ...createListeningSpeakingRecognitionData(),
+        listeningSpeakingAnswerReveal: "",
+        listeningSpeakingPendingNextQuestion: false,
+        listeningSpeakingPendingNextQuestionIndex: -1,
+        listeningSpeakingContinueLabel: "Continue"
       });
       return;
     }
@@ -1543,30 +1630,216 @@ Page({
       }
 
       if (result.passed) {
+        recordMistakeCorrectAnswer(targetWord.id, "speaking");
+        playListeningWritingFeedbackSound("correct");
         this.setData({
-          listeningSpeakingRecognitionStatus: "passed",
-          listeningSpeakingRecognitionTranscript: result.transcript,
-          listeningSpeakingRecognitionFeedback: "Great pronunciation."
+          listeningSpeakingCorrectCount: this.data.listeningSpeakingCorrectCount + 1
+        });
+        this.prepareListeningSpeakingNextStep({
+          recognitionStatus: "passed",
+          transcript: result.transcript,
+          feedback: "Great pronunciation.",
+          answerReveal: ""
         });
         return;
       }
 
-      this.setData({
-        listeningSpeakingRecognitionStatus: "notRecognized",
-        listeningSpeakingRecognitionTranscript: result.transcript,
-        listeningSpeakingRecognitionFeedback: "I could not hear the word clearly. Please try again."
-      });
+      this.handleListeningSpeakingRecognitionFailure(
+        targetWord,
+        "notRecognized",
+        result.transcript,
+        "I could not hear the word clearly. Please try again."
+      );
     } catch {
       if (requestId !== listeningSpeakingRecognitionRequestId) {
         return;
       }
 
-      this.setData({
-        listeningSpeakingRecognitionStatus: "failed",
-        listeningSpeakingRecognitionTranscript: "",
-        listeningSpeakingRecognitionFeedback: "I could not check that recording. Please try again."
-      });
+      if (!targetWord) {
+        this.setData({
+          listeningSpeakingRecognitionStatus: "failed",
+          listeningSpeakingRecognitionTranscript: "",
+          listeningSpeakingRecognitionFeedback:
+            "I could not check that recording. Please try again."
+        });
+        return;
+      }
+
+      this.handleListeningSpeakingRecognitionFailure(
+        targetWord,
+        "failed",
+        "",
+        "I could not check that recording. Please try again."
+      );
     }
+  },
+
+  prepareListeningSpeakingNextStep({
+    recognitionStatus,
+    transcript,
+    feedback,
+    answerReveal
+  }: {
+    recognitionStatus: SceneListeningSpeakingRecognitionStatus;
+    transcript: string;
+    feedback: string;
+    answerReveal: string;
+  }) {
+    const round = this.data.listeningSpeakingRound as QuizRound | null;
+    const nextQuestionIndex = round ? round.currentIndex + 1 : 0;
+    const hasNextQuestion = round ? nextQuestionIndex < round.questions.length : false;
+
+    this.setData({
+      ...LISTENING_SPEAKING_REVIEW_TASK,
+      listeningSpeakingRecognitionStatus: recognitionStatus,
+      listeningSpeakingRecognitionTranscript: transcript,
+      listeningSpeakingRecognitionFeedback: feedback,
+      listeningSpeakingAnswerReveal: answerReveal,
+      listeningSpeakingPendingNextQuestion: true,
+      listeningSpeakingPendingNextQuestionIndex: nextQuestionIndex,
+      listeningSpeakingContinueLabel: hasNextQuestion ? "Continue" : "Finish"
+    });
+  },
+
+  handleListeningSpeakingRecognitionFailure(
+    targetWord: Word,
+    recognitionStatus: Extract<SceneListeningSpeakingRecognitionStatus, "notRecognized" | "failed">,
+    transcript: string,
+    feedback: string
+  ) {
+    const sceneId = this.data.sceneId;
+    const nextAttemptCount = this.data.listeningSpeakingRecognitionAttemptCount + 1;
+    const shouldCountMistakeForQuestion = this.data.listeningSpeakingRecognitionAttemptCount === 0;
+    const isNewSpeakingMistake =
+      shouldCountMistakeForQuestion && sceneId
+        ? !hasSpeakingMistake(sceneId, targetWord.id)
+        : false;
+
+    if (sceneId) {
+      recordMistake(targetWord.id, sceneId, "speaking");
+    }
+
+    playListeningWritingFeedbackSound("wrong");
+
+    if (nextAttemptCount >= 2) {
+      this.setData({
+        listeningSpeakingRecognitionAttemptCount: nextAttemptCount,
+        listeningSpeakingMistakeCount:
+          this.data.listeningSpeakingMistakeCount + (shouldCountMistakeForQuestion ? 1 : 0),
+        listeningSpeakingNewMistakeCount:
+          this.data.listeningSpeakingNewMistakeCount + (isNewSpeakingMistake ? 1 : 0)
+      });
+      this.prepareListeningSpeakingNextStep({
+        recognitionStatus,
+        transcript,
+        feedback,
+        answerReveal: targetWord.en
+      });
+      return;
+    }
+
+    this.setData({
+      listeningSpeakingRecognitionAttemptCount: nextAttemptCount,
+      listeningSpeakingRecognitionStatus: recognitionStatus,
+      listeningSpeakingRecognitionTranscript: transcript,
+      listeningSpeakingRecognitionFeedback: feedback,
+      listeningSpeakingAnswerReveal: "",
+      listeningSpeakingPendingNextQuestion: false,
+      listeningSpeakingPendingNextQuestionIndex: -1,
+      listeningSpeakingContinueLabel: "Continue",
+      listeningSpeakingMistakeCount:
+        this.data.listeningSpeakingMistakeCount + (shouldCountMistakeForQuestion ? 1 : 0),
+      listeningSpeakingNewMistakeCount:
+        this.data.listeningSpeakingNewMistakeCount + (isNewSpeakingMistake ? 1 : 0)
+    });
+  },
+
+  onContinueListeningSpeakingQuestion() {
+    const round = this.data.listeningSpeakingRound as QuizRound | null;
+    const sceneId = this.data.sceneId;
+
+    if (!round || !sceneId || !this.data.listeningSpeakingPendingNextQuestion) {
+      return;
+    }
+
+    const nextQuestionIndex = this.data.listeningSpeakingPendingNextQuestionIndex;
+
+    if (nextQuestionIndex >= round.questions.length) {
+      this.setData({
+        ...LISTENING_SPEAKING_COMPLETE_TASK,
+        listeningSpeakingFeedback: "",
+        listeningSpeakingFeedbackKind: "",
+        listeningSpeakingPhase: "locating",
+        listeningSpeakingTargetWordId: "",
+        listeningSpeakingCanSelectObject: false,
+        ...createListeningSpeakingRecordingData(),
+        ...createListeningSpeakingRecognitionData(),
+        listeningSpeakingRecognitionAttemptCount: 0,
+        listeningSpeakingAnswerReveal: "",
+        listeningSpeakingIsRoundComplete: true,
+        listeningSpeakingPendingNextQuestion: false,
+        listeningSpeakingPendingNextQuestionIndex: -1,
+        listeningSpeakingContinueLabel: "Continue",
+        ...createListeningSpeakingCompletionStats({
+          correctCount: this.data.listeningSpeakingCorrectCount,
+          mistakeCount: this.data.listeningSpeakingMistakeCount,
+          newMistakeCount: this.data.listeningSpeakingNewMistakeCount
+        })
+      });
+      return;
+    }
+
+    const words = getWordsBySceneId(sceneId);
+    const nextRound = {
+      ...round,
+      currentIndex: nextQuestionIndex
+    };
+    const nextState = createListeningSpeakingStartState(nextRound, words);
+
+    this.setData({
+      listeningSpeakingRound: nextRound,
+      listeningSpeakingState: nextState,
+      listeningSpeakingClickAttemptCount: 0,
+      ...LISTENING_SPEAKING_LISTEN_TASK,
+      listeningSpeakingFeedback: "",
+      listeningSpeakingFeedbackKind: "",
+      listeningSpeakingPhase: "locating",
+      listeningSpeakingTargetWordId: "",
+      listeningSpeakingCanSelectObject: false,
+      ...createListeningSpeakingRecordingData(),
+      ...createListeningSpeakingRecognitionData(),
+      listeningSpeakingRecognitionAttemptCount: 0,
+      listeningSpeakingAnswerReveal: "",
+      listeningSpeakingIsRoundComplete: false,
+      listeningSpeakingPendingNextQuestion: false,
+      listeningSpeakingPendingNextQuestionIndex: -1,
+      listeningSpeakingContinueLabel: "Continue"
+    });
+
+    if (nextState.currentQuestion?.audioUrl) {
+      this.playListeningSpeakingAudioForCurrentQuestion();
+    }
+  },
+
+  onRestartListeningSpeakingRound() {
+    const sceneId = this.data.sceneId;
+    const previousRound = this.data.listeningSpeakingRound as QuizRound | null;
+
+    if (!sceneId) {
+      return;
+    }
+
+    const previousWordIds = previousRound
+      ? previousRound.questions.map((question) => question.wordId)
+      : [];
+
+    stopListeningSpeakingAudio();
+    stopListeningSpeakingRecording({ isCancel: true });
+    this.setData(createListeningSpeakingModeData(sceneId, previousWordIds));
+  },
+
+  onEndListeningSpeakingPractice() {
+    this.onBackToSceneHome();
   },
 
   handleListeningSpeakingRecordingError() {

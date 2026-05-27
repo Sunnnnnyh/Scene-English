@@ -1775,3 +1775,39 @@ File change record:
 | `tests/listeningSpeakingRecognition.test.ts` | Adds static coverage for recognition behavior, copy, UI visibility, alignment, and Step 8.4 boundaries. | Phase 8 / Step 8.3 |
 | `tests/listeningSpeakingRecognitionRuntime.test.ts` | Adds runtime-style Scene page coverage for saved recording to recognition feedback. | Phase 8 / Step 8.3 |
 | `tests/speechService.test.ts` | Covers auto mock recognition and deterministic scenario behavior. | Phase 8 / Step 8.3 |
+
+## 53. Phase 8 / Step 8.4 Listen + Speak speaking mistakes and completion
+
+Listen + Speak now has the full MVP loop after mock recognition: speaking mistake recording, first-failure retry, second-failure answer reveal, user-controlled continuation, and a 5-question completion state. The flow continues to use the existing local mistake service and the existing mock speech service; no real ASR or new dependency was introduced.
+
+Current responsibilities:
+- `miniprogram/pages/scene/sceneViewModel.ts` tracks the Listen + Speak recognition attempt count, answer reveal text, pending continuation state, completion flag, and completion summary counts.
+- `miniprogram/pages/scene/scene.ts` records `speaking` mistakes through `recordMistake(...)` when recognition fails, updates `speaking` mastery through `recordMistakeCorrectAnswer(...)` when recognition passes, and counts per-round correct, mistake, and new mistake totals for the completion page.
+- `miniprogram/pages/scene/scene.ts` keeps the first failed recognition on the same question with a retry path, while the second failed recognition reveals the target word and waits for `Continue` or `Finish`.
+- `miniprogram/pages/scene/scene.ts` advances Listen + Speak questions only from `onContinueListeningSpeakingQuestion()`, so recognition feedback remains visible until the user chooses to move on.
+- `miniprogram/pages/scene/scene.wxml` renders the correct-pronunciation reveal card, the continuation button, and the Listen + Speak completion state with correct, mistake, and new-mistake stats.
+- `miniprogram/pages/scene/scene.wxss` styles the answer reveal, continuation button, and completion summary stats.
+
+Runtime notes:
+- A passed speaking answer shows `Passed` / `Great pronunciation.` and then `Continue` or `Finish`; the saved/re-record controls are hidden in that state.
+- The first failed speaking answer shows retry feedback and keeps `Record Again` available.
+- The second failed speaking answer reveals the correct spoken word and requires the user to continue manually.
+- `New 5-word set` starts a fresh Listen + Speak round, preferring words outside the just-finished round where possible.
+- `End practice` returns to the normal scene home state.
+- Speaking mistakes created in this flow use the existing `speaking` mistake type and are visible to the Mistakes page through its existing model.
+
+Test coverage:
+- `tests/listeningSpeakingCompletion.test.ts` covers Step 8.4 state fields, speaking mistake/mastery service calls, continuation controls, answer reveal, and completion UI requirements.
+- `tests/listeningSpeakingRecognitionRuntime.test.ts` covers runtime-style passed recognition, first failed recognition, second failed recognition, and completion stat preservation.
+- `tests/listeningSpeakingRecognition.test.ts` was updated so recognition feedback coverage remains aligned with the new continuation boundary.
+
+File change record:
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `miniprogram/pages/scene/scene.ts` | Adds Listen + Speak speaking mistake recording, speaking mastery updates, first/second failure behavior, question continuation, completion stats, and restart/end actions. | Phase 8 / Step 8.4 |
+| `miniprogram/pages/scene/scene.wxml` | Renders correct-pronunciation reveal, continuation, and Listen + Speak completion summary UI. | Phase 8 / Step 8.4 |
+| `miniprogram/pages/scene/scene.wxss` | Styles Listen + Speak answer reveal, continuation, and completion stats. | Phase 8 / Step 8.4 |
+| `miniprogram/pages/scene/sceneViewModel.ts` | Adds Listen + Speak attempt, reveal, continuation, completion, and summary-count state fields. | Phase 8 / Step 8.4 |
+| `tests/listeningSpeakingCompletion.test.ts` | Covers Step 8.4 completion and speaking-mistake requirements. | Phase 8 / Step 8.4 |
+| `tests/listeningSpeakingRecognitionRuntime.test.ts` | Adds runtime-style coverage for passed, retry, reveal, and completion stat behavior. | Phase 8 / Step 8.4 |
+| `tests/listeningSpeakingRecognition.test.ts` | Keeps recognition feedback expectations aligned with the new continuation flow. | Phase 8 / Step 8.4 |

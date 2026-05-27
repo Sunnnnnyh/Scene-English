@@ -3,18 +3,33 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const recognizeWord = vi.fn();
+const recordMistake = vi.fn();
+const recordMistakeCorrectAnswer = vi.fn();
 
 type ListeningSpeakingRuntimeData = {
+  sceneId?: string;
   listeningSpeakingTargetWordId: string;
+  listeningSpeakingRound?: unknown;
+  listeningSpeakingState?: unknown;
   listeningSpeakingRecordingStatus?: unknown;
+  listeningSpeakingRecognitionAttemptCount?: number;
   listeningSpeakingRecognitionStatus?: unknown;
   listeningSpeakingRecognitionFeedback?: unknown;
+  listeningSpeakingAnswerReveal?: unknown;
+  listeningSpeakingPendingNextQuestion?: unknown;
+  listeningSpeakingPendingNextQuestionIndex?: unknown;
+  listeningSpeakingContinueLabel?: unknown;
+  listeningSpeakingIsRoundComplete?: unknown;
+  listeningSpeakingCorrectCount?: number;
+  listeningSpeakingMistakeCount?: number;
+  listeningSpeakingNewMistakeCount?: number;
 };
 
 type ListeningSpeakingRuntimePage = {
   data: ListeningSpeakingRuntimeData;
   setData(update: Partial<ListeningSpeakingRuntimeData>): void;
   handleListeningSpeakingRecordingStop(result: { tempFilePath: string; duration: number }): void;
+  onContinueListeningSpeakingQuestion(): void;
 };
 
 type CapturedPageConfig = Partial<ListeningSpeakingRuntimePage> & Record<string, unknown>;
@@ -74,8 +89,8 @@ vi.mock("../miniprogram/services/progressService", () => ({
 
 vi.mock("../miniprogram/services/mistakeService", () => ({
   getMistakes: vi.fn(() => []),
-  recordMistake: vi.fn(),
-  recordMistakeCorrectAnswer: vi.fn()
+  recordMistake,
+  recordMistakeCorrectAnswer
 }));
 
 vi.mock("../miniprogram/services/mistakePracticeService", () => ({
@@ -104,6 +119,8 @@ describe("Listen + Speak recognition runtime flow", () => {
       passed: true,
       provider: "mock"
     });
+    recordMistake.mockReset();
+    recordMistakeCorrectAnswer.mockReset();
     pageConfig = {};
     (globalThis as unknown as { Page: typeof Page }).Page = vi.fn((config) => {
       pageConfig = config as CapturedPageConfig;
@@ -189,5 +206,142 @@ describe("Listen + Speak recognition runtime flow", () => {
       listeningSpeakingRecognitionStatus: "recognizing",
       listeningSpeakingRecognitionFeedback: "Checking your pronunciation..."
     });
+  });
+
+  it("updates speaking mastery and waits for continuation after a passed recognition", async () => {
+    const data: ListeningSpeakingRuntimeData = {
+      sceneId: "classroom",
+      listeningSpeakingTargetWordId: "projector",
+      listeningSpeakingRound: {
+        questions: [{ wordId: "projector" }, { wordId: "desk" }],
+        currentIndex: 0
+      }
+    };
+    const page = {
+      ...pageConfig,
+      data,
+      setData(update: Partial<ListeningSpeakingRuntimeData>) {
+        Object.assign(data, update);
+      }
+    } as ListeningSpeakingRuntimePage;
+
+    await page.handleListeningSpeakingRecordingStop({
+      tempFilePath: "/tmp/projector.mp3",
+      duration: 1200
+    });
+
+    expect(recordMistakeCorrectAnswer).toHaveBeenCalledWith("projector", "speaking");
+    expect(recordMistake).not.toHaveBeenCalledWith("projector", "classroom", "speaking");
+    expect(data.listeningSpeakingRecognitionStatus).toBe("passed");
+    expect(data.listeningSpeakingPendingNextQuestion).toBe(true);
+    expect(data.listeningSpeakingPendingNextQuestionIndex).toBe(1);
+    expect(data.listeningSpeakingContinueLabel).toBe("Continue");
+  });
+
+  it("records a speaking mistake and allows another recording after the first failed recognition", async () => {
+    recognizeWord.mockResolvedValueOnce({
+      transcript: "desk",
+      passed: false,
+      provider: "mock"
+    });
+    const data: ListeningSpeakingRuntimeData = {
+      sceneId: "classroom",
+      listeningSpeakingTargetWordId: "projector",
+      listeningSpeakingRecognitionAttemptCount: 0,
+      listeningSpeakingMistakeCount: 0,
+      listeningSpeakingNewMistakeCount: 0,
+      listeningSpeakingRound: {
+        questions: [{ wordId: "projector" }, { wordId: "desk" }],
+        currentIndex: 0
+      }
+    };
+    const page = {
+      ...pageConfig,
+      data,
+      setData(update: Partial<ListeningSpeakingRuntimeData>) {
+        Object.assign(data, update);
+      }
+    } as ListeningSpeakingRuntimePage;
+
+    await page.handleListeningSpeakingRecordingStop({
+      tempFilePath: "/tmp/projector.mp3",
+      duration: 1200
+    });
+
+    expect(recordMistake).toHaveBeenCalledWith("projector", "classroom", "speaking");
+    expect(data.listeningSpeakingRecognitionAttemptCount).toBe(1);
+    expect(data.listeningSpeakingRecognitionStatus).toBe("notRecognized");
+    expect(data.listeningSpeakingPendingNextQuestion).toBe(false);
+    expect(data.listeningSpeakingAnswerReveal).toBe("");
+    expect(data.listeningSpeakingMistakeCount).toBe(1);
+    expect(data.listeningSpeakingNewMistakeCount).toBe(1);
+  });
+
+  it("reveals the answer and waits for Finish after the second failed recognition on the final question", async () => {
+    recognizeWord.mockResolvedValueOnce({
+      transcript: "",
+      passed: false,
+      provider: "mock"
+    });
+    const data: ListeningSpeakingRuntimeData = {
+      sceneId: "classroom",
+      listeningSpeakingTargetWordId: "projector",
+      listeningSpeakingRecognitionAttemptCount: 1,
+      listeningSpeakingMistakeCount: 1,
+      listeningSpeakingNewMistakeCount: 1,
+      listeningSpeakingRound: {
+        questions: [{ wordId: "projector" }],
+        currentIndex: 0
+      }
+    };
+    const page = {
+      ...pageConfig,
+      data,
+      setData(update: Partial<ListeningSpeakingRuntimeData>) {
+        Object.assign(data, update);
+      }
+    } as ListeningSpeakingRuntimePage;
+
+    await page.handleListeningSpeakingRecordingStop({
+      tempFilePath: "/tmp/projector.mp3",
+      duration: 1200
+    });
+
+    expect(recordMistake).toHaveBeenCalledWith("projector", "classroom", "speaking");
+    expect(data.listeningSpeakingRecognitionAttemptCount).toBe(2);
+    expect(data.listeningSpeakingAnswerReveal).toBe("projector");
+    expect(data.listeningSpeakingPendingNextQuestion).toBe(true);
+    expect(data.listeningSpeakingPendingNextQuestionIndex).toBe(1);
+    expect(data.listeningSpeakingContinueLabel).toBe("Finish");
+  });
+
+  it("keeps Listen + Speak round stats visible when the final question finishes", () => {
+    const data: ListeningSpeakingRuntimeData = {
+      sceneId: "classroom",
+      listeningSpeakingTargetWordId: "projector",
+      listeningSpeakingPendingNextQuestion: true,
+      listeningSpeakingPendingNextQuestionIndex: 1,
+      listeningSpeakingCorrectCount: 3,
+      listeningSpeakingMistakeCount: 2,
+      listeningSpeakingNewMistakeCount: 1,
+      listeningSpeakingRound: {
+        questions: [{ wordId: "projector" }],
+        currentIndex: 0
+      }
+    };
+    const page = {
+      ...pageConfig,
+      data,
+      setData(update: Partial<ListeningSpeakingRuntimeData>) {
+        Object.assign(data, update);
+      }
+    } as ListeningSpeakingRuntimePage;
+
+    page.onContinueListeningSpeakingQuestion();
+
+    expect(data.listeningSpeakingIsRoundComplete).toBe(true);
+    expect(data.listeningSpeakingCorrectCount).toBe(3);
+    expect(data.listeningSpeakingMistakeCount).toBe(2);
+    expect(data.listeningSpeakingNewMistakeCount).toBe(1);
   });
 });

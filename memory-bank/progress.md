@@ -1046,3 +1046,24 @@
 - Remaining:
   - Step 8.4 still needs to record speaking mistakes, handle first/second failure behavior, advance questions, and complete the Listen + Speak round.
   - Mock recognition remains a demo simulation; real ASR is out of MVP scope.
+
+### 2026-05-27 - Phase 8 / Step 8.4 Listen + Speak speaking mistakes and completion
+
+- Completed:
+  - Listen + Speak now records `speaking` mistakes when mock recognition does not pass.
+  - A first speaking recognition failure records the mistake and lets the user record again.
+  - A second speaking recognition failure reveals the correct pronunciation and waits for the user to continue.
+  - Passed recognition updates `speaking` mastery progress through `recordMistakeCorrectAnswer(...)` and waits for `Continue` or `Finish`.
+  - The Listen + Speak round now advances through all 5 questions and shows a completion state after the final question.
+  - The completion state shows correct count, mistake count, and new mistake count, plus `New 5-word set` and `End practice` actions.
+  - Speaking mistakes now appear in the Mistakes page data through the existing mistake service.
+- Verification:
+  - User validated Step 8.4 in WeChat DevTools.
+  - `npm run typecheck` passed.
+  - `npm run lint` passed.
+  - `npm run format:check` passed.
+  - `npm test` passed: 37 test files, 192 tests.
+  - `git diff --check` passed with only Windows CRLF warnings.
+- Remaining:
+  - Speaking-specific mistake practice from the Mistakes page can be considered in a later step now that the Listen + Speak round exists.
+  - Mock recognition remains a demo simulation; real ASR is still out of MVP scope.

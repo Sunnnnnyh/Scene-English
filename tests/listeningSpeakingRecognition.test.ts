@@ -34,9 +34,9 @@ describe("Listen + Speak recognition feedback", () => {
 
   it("maps recognizing, success, failure, and empty-result states to user-facing feedback", () => {
     expect(scenePageScript).toContain('listeningSpeakingRecognitionStatus: "recognizing"');
-    expect(scenePageScript).toContain('listeningSpeakingRecognitionStatus: "passed"');
-    expect(scenePageScript).toContain('listeningSpeakingRecognitionStatus: "notRecognized"');
-    expect(scenePageScript).toContain('listeningSpeakingRecognitionStatus: "failed"');
+    expect(scenePageScript).toContain('recognitionStatus: "passed"');
+    expect(scenePageScript).toContain('"notRecognized"');
+    expect(scenePageScript).toContain('"failed"');
     expect(scenePageScript).toContain("Checking your pronunciation");
     expect(scenePageScript).toContain("Great pronunciation.");
     expect(scenePageScript).toContain("I could not hear the word clearly. Please try again.");
@@ -86,8 +86,10 @@ describe("Listen + Speak recognition feedback", () => {
     expect(sceneStyles).toContain("line-height: 1;");
   });
 
-  it("does not record speaking mistakes or advance the round in this step yet", () => {
-    expect(scenePageScript).not.toContain('recordMistake(targetWord.id, sceneId, "speaking")');
-    expect(scenePageScript).not.toContain("onContinueListeningSpeakingQuestion");
+  it("keeps recognition feedback separate from the Step 8.4 continuation controls", () => {
+    expect(scenePageScript).toContain("recognizeListeningSpeakingRecording");
+    expect(scenePageScript).toContain("onContinueListeningSpeakingQuestion");
+    expect(sceneMarkup).toContain("listening-speaking-recognition-card");
+    expect(sceneMarkup).toContain("listening-speaking-continue");
   });
 });

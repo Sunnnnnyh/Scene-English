@@ -572,6 +572,66 @@
   gap: 16rpx;
 }
 
+.listening-speaking-complete {
+  display: flex;
+  flex-direction: column;
+  gap: 22rpx;
+}
+
+.listening-speaking-complete-title {
+  display: block;
+  color: #19324d;
+  font-size: 38rpx;
+  font-weight: 800;
+}
+
+.listening-speaking-complete-text {
+  display: block;
+  color: #45647f;
+  font-size: 26rpx;
+  line-height: 1.5;
+}
+
+.listening-speaking-complete-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14rpx;
+}
+
+.listening-speaking-complete-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+  box-sizing: border-box;
+  min-height: 108rpx;
+  padding: 18rpx 12rpx;
+  border: 2rpx solid #d9e8f2;
+  border-radius: 18rpx;
+  background: #f7fbff;
+}
+
+.listening-speaking-complete-stat-value {
+  display: block;
+  color: #e87555;
+  font-size: 34rpx;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.listening-speaking-complete-stat-label {
+  display: block;
+  color: #45647f;
+  font-size: 22rpx;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.listening-speaking-complete-actions {
+  display: flex;
+  flex-direction: row;
+  gap: 16rpx;
+}
+
 .listening-speaking-scene-preview {
   position: relative;
 }
@@ -776,6 +836,34 @@
   overflow-wrap: anywhere;
 }
 
+.listening-speaking-answer-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+  box-sizing: border-box;
+  padding: 18rpx 20rpx;
+  border: 2rpx solid #f1aa90;
+  border-radius: 18rpx;
+  background: #fffaf2;
+}
+
+.listening-speaking-answer-label {
+  flex-shrink: 0;
+  color: #8b4a34;
+  font-size: 24rpx;
+  font-weight: 800;
+}
+
+.listening-speaking-answer-word {
+  min-width: 0;
+  color: #19324d;
+  font-size: 32rpx;
+  font-weight: 900;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
 .listening-speaking-record-saved {
   flex: 1 1 0;
   display: flex;
@@ -857,6 +945,21 @@
   background: #f7fbff;
 }
 
+.listening-speaking-continue {
+  margin: 8rpx 0 0;
+  min-height: 78rpx;
+  border: 2rpx solid #19324d;
+  border-radius: 999rpx;
+  background: #19324d;
+  color: #ffffff;
+  font-size: 26rpx;
+  font-weight: 800;
+}
+
+.listening-speaking-continue:active {
+  background: #2b4c6d;
+}
+
 .listening-writing-next-set {
   flex: 1;
   margin: 2rpx 0 0;
@@ -886,6 +989,38 @@
 }
 
 .listening-writing-end-practice:active {
+  background: #f7fbff;
+}
+
+.listening-speaking-next-set {
+  flex: 1;
+  margin: 2rpx 0 0;
+  min-height: 76rpx;
+  border: 2rpx solid #19324d;
+  border-radius: 14rpx;
+  background: #19324d;
+  color: #ffffff;
+  font-size: 26rpx;
+  font-weight: 800;
+}
+
+.listening-speaking-next-set:active {
+  background: #2b4c6d;
+}
+
+.listening-speaking-end-practice {
+  flex: 1;
+  margin: 2rpx 0 0;
+  min-height: 76rpx;
+  border: 2rpx solid #19324d;
+  border-radius: 14rpx;
+  background: #ffffff;
+  color: #19324d;
+  font-size: 26rpx;
+  font-weight: 800;
+}
+
+.listening-speaking-end-practice:active {
   background: #f7fbff;
 }
 
