@@ -1939,3 +1939,48 @@ File change record:
 | `tests/mobileVisualAdaptation.test.ts` | Covers the mobile visual adaptation requirements. | Phase 9 / Step 9.4 |
 | `tests/navigation.test.ts` | Covers native tabBar PNG icon requirements. | Phase 9 / Step 9.4 |
 | `tests/userFacingCopyCleanup.test.ts` | Guards against developer-facing explanatory copy returning to user pages. | Phase 9 / Step 9.4 |
+
+## 58. Phase 9 / Step 9.5 Me profile and learning dashboard
+
+The Me page now acts as a compact learner profile and local learning dashboard instead of a placeholder stats/status screen. This remains local-first and stays within the MVP scope: no cloud account, login system, social profile, or real ASR status panel was added.
+
+Current responsibilities:
+- `miniprogram/services/profileService.ts` owns local profile defaults, normalization, and persistence for nickname, signature, avatar initials, and avatar URL.
+- `miniprogram/services/learningActivityService.ts` owns daily learned-word activity reads, writes, and chart model generation for week/month views.
+- `miniprogram/services/progressService.ts` records learning activity only when a word is newly added to the learned set, preventing activity double-counting on repeated word-card opens.
+- `miniprogram/pages/me/meViewModel.ts` builds the Me page model from local progress, favorites, mistakes, profile, quick entries, chart tabs, and chart bars.
+- `miniprogram/pages/me/me.ts` coordinates profile editing, WeChat native avatar selection, chart range switching, and quick-entry navigation.
+- `miniprogram/pages/me/me.wxml` renders the profile card, editor, three stats, learning chart, and quick entries.
+- `miniprogram/pages/me/me.wxss` keeps the profile, stats, chart, and quick-entry layouts compact on narrow screens.
+
+Runtime notes:
+- Avatar selection uses the native WeChat `open-type="chooseAvatar"` flow because the MVP prioritizes the expected WeChat-avatar experience.
+- Canceling native avatar selection can print `chooseAvatar:fail cancel` in WeChat DevTools; this is treated as a development-console message from the native component, not an app data failure.
+- The profile editor currently supports nickname and signature edits. Avatar changes happen by tapping the avatar itself.
+- Quick entries route to the existing Learn tab, Favorites page, and Mistakes page.
+- The learning chart can show week or month data and uses local storage only.
+
+Test coverage:
+- `tests/profileService.test.ts` covers default and saved profile behavior.
+- `tests/learningActivityService.test.ts` covers daily activity recording and chart model generation.
+- `tests/meViewModel.test.ts` covers Me dashboard model output.
+- `tests/meDashboard.test.ts` covers Me page structure, native avatar picker wiring, small-screen layout hooks, and removal of the old speech status card.
+- `tests/progressService.test.ts` covers learned-word activity recording without repeated double-counting.
+- `tests/feedbackCopy.test.ts` remains aligned with the removal of the old Me speech status card.
+
+File change record:
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `miniprogram/services/profileService.ts` | Stores and normalizes the local learner profile for the Me page. | Phase 9 / Step 9.5 |
+| `miniprogram/services/learningActivityService.ts` | Records learned-word daily activity and generates week/month chart data. | Phase 9 / Step 9.5 |
+| `miniprogram/services/progressService.ts` | Records daily activity when a word becomes newly learned. | Phase 9 / Step 9.5 |
+| `miniprogram/types/index.ts` | Adds profile and learning-activity storage/data types. | Phase 9 / Step 9.5 |
+| `miniprogram/pages/me/meViewModel.ts` | Builds profile, stats, chart, and quick-entry view data for the Me page. | Phase 9 / Step 9.5 |
+| `miniprogram/pages/me/me.ts` | Handles profile editing, native avatar selection, chart tabs, and quick-entry navigation. | Phase 9 / Step 9.5 |
+| `miniprogram/pages/me/me.wxml` | Renders the profile card/editor, stats, learning chart, and quick entries. | Phase 9 / Step 9.5 |
+| `miniprogram/pages/me/me.wxss` | Styles the Me dashboard and narrow-screen layout. | Phase 9 / Step 9.5 |
+| `tests/profileService.test.ts` | Covers local profile defaults and persistence. | Phase 9 / Step 9.5 |
+| `tests/learningActivityService.test.ts` | Covers local activity recording and chart generation. | Phase 9 / Step 9.5 |
+| `tests/meViewModel.test.ts` | Covers Me dashboard view model output. | Phase 9 / Step 9.5 |
+| `tests/meDashboard.test.ts` | Covers Me page structure, avatar picker wiring, and compact layout guards. | Phase 9 / Step 9.5 |
+| `tests/progressService.test.ts` | Covers activity recording from newly learned words. | Phase 9 / Step 9.5 |

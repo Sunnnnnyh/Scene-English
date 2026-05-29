@@ -1,29 +1,54 @@
-import { feedbackCopy } from "../../utils/feedbackCopy";
-import type { Favorite, Mistake, UserProgress } from "../../types";
+import type {
+  Favorite,
+  LearningActivityChartPoint,
+  LearningActivityRange,
+  Mistake,
+  UserProfile,
+  UserProgress
+} from "../../types";
 
 export type MeStat = {
   label: string;
   value: string;
 };
 
+export type MeChartTab = {
+  label: string;
+  value: LearningActivityRange;
+  isActive: boolean;
+};
+
+export type MeQuickEntry = {
+  label: string;
+  target: "learn" | "favorites" | "mistakes";
+};
+
 export type MeViewModel = {
   title: string;
-  nickname: string;
+  profile: UserProfile;
+  isEditingProfile: boolean;
+  editableProfile: UserProfile;
   stats: MeStat[];
-  asrStatus: {
-    label: string;
-    value: string;
-  };
+  chartTabs: MeChartTab[];
+  activityChart: LearningActivityChartPoint[];
+  quickEntries: MeQuickEntry[];
 };
 
 export function createMeViewModel(
   progress: UserProgress,
   favorites: Favorite[],
-  mistakes: Mistake[]
+  mistakes: Mistake[],
+  profile: UserProfile,
+  activeChartRange: LearningActivityRange,
+  activityChart: LearningActivityChartPoint[],
+  isEditingProfile = false,
+  editableProfile: UserProfile = profile
 ): MeViewModel {
   return {
     title: "我的",
-    nickname: "SceneEnglish Learner",
+    profile,
+    isEditingProfile,
+    editableProfile,
     stats: [
       {
         label: "已学单词",
@@ -38,9 +63,32 @@ export function createMeViewModel(
         value: `${mistakes.length}`
       }
     ],
-    asrStatus: {
-      label: "口语识别",
-      value: feedbackCopy.speechStatusReady
-    }
+    chartTabs: [
+      {
+        label: "周",
+        value: "week",
+        isActive: activeChartRange === "week"
+      },
+      {
+        label: "月",
+        value: "month",
+        isActive: activeChartRange === "month"
+      }
+    ],
+    activityChart,
+    quickEntries: [
+      {
+        label: "继续学习",
+        target: "learn"
+      },
+      {
+        label: "收藏夹",
+        target: "favorites"
+      },
+      {
+        label: "错题夹",
+        target: "mistakes"
+      }
+    ]
   };
 }

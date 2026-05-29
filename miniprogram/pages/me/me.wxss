@@ -1,37 +1,160 @@
 .me-page {
   min-height: 100vh;
   box-sizing: border-box;
-  padding: 56rpx 32rpx 112rpx;
+  padding: 48rpx 32rpx 112rpx;
   padding-bottom: calc(112rpx + env(safe-area-inset-bottom));
   background: #f7fbff;
 }
 
-.profile-card {
-  padding: 32rpx;
+.profile-card,
+.dashboard-card {
+  padding: 28rpx;
   border: 2rpx solid #19324d;
   border-radius: 24rpx;
   background: #ffffff;
 }
 
-.me-title {
+.profile-main {
+  display: grid;
+  grid-template-columns: 112rpx minmax(0, 1fr) 88rpx;
+  gap: 20rpx;
+  align-items: center;
+}
+
+.profile-avatar-shell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 112rpx;
+  height: 112rpx;
+  margin: 0;
+  padding: 0;
+  border: 2rpx solid #19324d;
+  border-radius: 56rpx;
+  background: #fff4df;
+  overflow: hidden;
+  line-height: 1;
+}
+
+.profile-avatar-picker {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
+  opacity: 0;
+  line-height: 1;
+}
+
+.profile-avatar-picker::after {
+  border: 0;
+}
+
+.profile-avatar,
+.profile-avatar-image {
   display: block;
-  color: #19324d;
-  font-size: 40rpx;
+  width: 108rpx;
+  height: 108rpx;
+  border-radius: 54rpx;
+}
+
+.profile-avatar {
+  color: #e8754f;
+  font-size: 34rpx;
   font-weight: 800;
+  text-align: center;
+}
+
+.profile-copy {
+  min-width: 0;
+}
+
+.nickname,
+.signature {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.status-value {
+  overflow-wrap: anywhere;
 }
 
 .nickname {
+  color: #19324d;
+  font-size: 34rpx;
+  font-weight: 800;
+}
+
+.signature {
+  margin-top: 8rpx;
+  color: #6d86a0;
+  font-size: 24rpx;
+}
+
+.profile-edit,
+.profile-action,
+.chart-tab,
+.quick-entry {
   display: block;
-  margin-top: 20rpx;
-  color: #45647f;
-  font-size: 28rpx;
+  box-sizing: border-box;
+  min-height: 64rpx;
+  margin: 0;
+  padding: 0;
+  border: 2rpx solid #19324d;
+  border-radius: 999rpx;
+  background: #ffffff;
+  color: #19324d;
+  font-size: 24rpx;
+  font-weight: 700;
+  line-height: 60rpx;
+  text-align: center;
+}
+
+.profile-edit {
+  width: 88rpx;
+}
+
+.profile-editor {
+  display: grid;
+  gap: 16rpx;
+  margin-top: 24rpx;
+}
+
+.profile-input {
+  height: 72rpx;
+  box-sizing: border-box;
+  padding: 0 22rpx;
+  border: 2rpx solid #cfe0ed;
+  border-radius: 18rpx;
+  color: #19324d;
+  font-size: 26rpx;
+  background: #f7fbff;
+}
+
+.profile-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16rpx;
+}
+
+.profile-action.primary {
+  border-color: #e8754f;
+  background: #f58b64;
+  color: #ffffff;
 }
 
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12rpx;
-  margin-top: 28rpx;
+  margin-top: 24rpx;
 }
 
 .stat-card {
@@ -58,26 +181,146 @@
   font-size: 20rpx;
 }
 
-.status-card {
-  margin-top: 28rpx;
-  padding: 28rpx;
-  border: 2rpx solid #19324d;
-  border-radius: 24rpx;
-  background: #ffffff;
+.dashboard-card {
+  margin-top: 24rpx;
 }
 
-.status-label {
-  display: block;
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+}
+
+.section-title {
   color: #19324d;
-  font-size: 28rpx;
+  font-size: 30rpx;
   font-weight: 800;
 }
 
-.status-value {
+.chart-tabs {
+  display: grid;
+  grid-template-columns: repeat(2, 76rpx);
+  gap: 8rpx;
+}
+
+.chart-tab {
+  width: 76rpx;
+  min-height: 56rpx;
+  padding: 0;
+  line-height: 52rpx;
+}
+
+.chart-tab.active {
+  border-color: #e8754f;
+  background: #fff4df;
+  color: #e8754f;
+}
+
+.chart-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 8rpx;
+  margin-top: 24rpx;
+  align-items: end;
+}
+
+.chart-column {
+  min-width: 0;
+  text-align: center;
+}
+
+.chart-track {
+  position: relative;
+  height: 132rpx;
+  border-radius: 999rpx;
+  background: #edf5fb;
+  overflow: hidden;
+}
+
+.chart-bar {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  min-height: 4rpx;
+  border-radius: 999rpx;
+  background: #f58b64;
+}
+
+.chart-value,
+.chart-label {
   display: block;
-  margin-top: 10rpx;
   color: #45647f;
-  font-size: 26rpx;
-  line-height: 1.45;
-  overflow-wrap: anywhere;
+  font-size: 18rpx;
+  line-height: 1.3;
+}
+
+.chart-value {
+  margin-top: 8rpx;
+  color: #19324d;
+  font-weight: 800;
+}
+
+.quick-entry-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12rpx;
+  margin-top: 24rpx;
+}
+
+.quick-entry {
+  width: 100%;
+  min-height: 76rpx;
+  padding: 0 8rpx;
+  background: #ffffff;
+  line-height: 72rpx;
+}
+
+@media (max-width: 360px) {
+  .me-page {
+    padding-right: 20rpx;
+    padding-left: 20rpx;
+  }
+
+  .profile-card,
+  .dashboard-card {
+    padding: 22rpx;
+  }
+
+  .profile-main {
+    grid-template-columns: 92rpx minmax(0, 1fr) 76rpx;
+    gap: 14rpx;
+  }
+
+  .profile-avatar-shell {
+    width: 92rpx;
+    height: 92rpx;
+  }
+
+  .profile-avatar,
+  .profile-avatar-image {
+    width: 88rpx;
+    height: 88rpx;
+  }
+
+  .nickname {
+    font-size: 30rpx;
+  }
+
+  .signature,
+  .profile-edit,
+  .profile-action,
+  .chart-tab,
+  .quick-entry {
+    font-size: 20rpx;
+  }
+
+  .chart-grid {
+    gap: 6rpx;
+  }
+
+  .chart-track {
+    height: 104rpx;
+  }
 }

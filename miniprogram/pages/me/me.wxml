@@ -1,7 +1,43 @@
 <view class="me-page">
   <view class="profile-card">
-    <text class="me-title">{{title}}</text>
-    <text class="nickname">{{nickname}}</text>
+    <view class="profile-main">
+      <view class="profile-avatar-shell">
+        <image wx:if="{{profile.avatarUrl}}" class="profile-avatar-image" src="{{profile.avatarUrl}}" mode="aspectFill" />
+        <text wx:else class="profile-avatar">{{profile.avatarText}}</text>
+        <button
+          class="profile-avatar-picker"
+          open-type="chooseAvatar"
+          bind:chooseavatar="onChooseAvatar"
+          aria-label="选择头像"
+        ></button>
+      </view>
+      <view class="profile-copy">
+        <text class="nickname">{{profile.nickname}}</text>
+        <text class="signature">{{profile.signature}}</text>
+      </view>
+      <view class="profile-edit" bindtap="onStartEditProfile">编辑</view>
+    </view>
+
+    <view wx:if="{{isEditingProfile}}" class="profile-editor">
+      <input
+        class="profile-input"
+        value="{{editableProfile.nickname}}"
+        maxlength="18"
+        bindinput="onNicknameInput"
+        placeholder="昵称"
+      />
+      <input
+        class="profile-input"
+        value="{{editableProfile.signature}}"
+        maxlength="28"
+        bindinput="onSignatureInput"
+        placeholder="个性签名"
+      />
+      <view class="profile-actions">
+        <view class="profile-action secondary" bindtap="onCancelEditProfile">取消</view>
+        <view class="profile-action primary" bindtap="onSaveProfile">保存</view>
+      </view>
+    </view>
   </view>
 
   <view class="stats-grid">
@@ -11,8 +47,41 @@
     </view>
   </view>
 
-  <view class="status-card">
-    <text class="status-label">{{asrStatus.label}}</text>
-    <text class="status-value">{{asrStatus.value}}</text>
+  <view class="dashboard-card">
+    <view class="section-header">
+      <text class="section-title">学习进度</text>
+      <view class="chart-tabs">
+        <view
+          wx:for="{{chartTabs}}"
+          wx:key="value"
+          class="chart-tab {{item.isActive ? 'active' : ''}}"
+          data-range="{{item.value}}"
+          bindtap="onChangeChartRange"
+        >
+          {{item.label}}
+        </view>
+      </view>
+    </view>
+    <view class="chart-grid">
+      <view wx:for="{{activityChart}}" wx:key="date" class="chart-column">
+        <view class="chart-track">
+          <view class="chart-bar" style="height: {{item.heightPercent}}%;"></view>
+        </view>
+        <text class="chart-value">{{item.value}}</text>
+        <text class="chart-label">{{item.label}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="quick-entry-grid">
+    <view
+      wx:for="{{quickEntries}}"
+      wx:key="target"
+      class="quick-entry"
+      data-target="{{item.target}}"
+      bindtap="onTapQuickEntry"
+    >
+      {{item.label}}
+    </view>
   </view>
 </view>

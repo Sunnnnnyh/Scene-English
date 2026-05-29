@@ -1,7 +1,13 @@
 import { describe, expect, it } from "vitest";
 
 import { createMeViewModel } from "../miniprogram/pages/me/meViewModel";
-import type { Favorite, Mistake, UserProgress } from "../miniprogram/types";
+import type {
+  Favorite,
+  LearningActivityChartPoint,
+  Mistake,
+  UserProfile,
+  UserProgress
+} from "../miniprogram/types";
 
 const progress: UserProgress = {
   sceneId: "classroom",
@@ -41,11 +47,28 @@ const mistakes: Mistake[] = [
   }
 ];
 
+const profile: UserProfile = {
+  nickname: "Sunny",
+  signature: "每天多记一点点",
+  avatarText: "SU",
+  avatarUrl: "",
+  updatedAt: "2026-05-27T08:00:00.000Z"
+};
+
+const activityChart: LearningActivityChartPoint[] = [
+  { date: "2026-05-26", label: "5/26", value: 3, heightPercent: 50 },
+  { date: "2026-05-27", label: "5/27", value: 6, heightPercent: 100 }
+];
+
 describe("me page view model", () => {
-  it("builds a lightweight profile summary from local learning data", () => {
-    expect(createMeViewModel(progress, favorites, mistakes)).toEqual({
+  it("builds a profile dashboard from local learning data", () => {
+    expect(
+      createMeViewModel(progress, favorites, mistakes, profile, "week", activityChart)
+    ).toEqual({
       title: "我的",
-      nickname: "SceneEnglish Learner",
+      profile,
+      isEditingProfile: false,
+      editableProfile: profile,
       stats: [
         {
           label: "已学单词",
@@ -60,10 +83,16 @@ describe("me page view model", () => {
           value: "1"
         }
       ],
-      asrStatus: {
-        label: "口语识别",
-        value: "Speech practice ready."
-      }
+      chartTabs: [
+        { label: "周", value: "week", isActive: true },
+        { label: "月", value: "month", isActive: false }
+      ],
+      activityChart,
+      quickEntries: [
+        { label: "继续学习", target: "learn" },
+        { label: "收藏夹", target: "favorites" },
+        { label: "错题夹", target: "mistakes" }
+      ]
     });
   });
 });

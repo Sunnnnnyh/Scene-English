@@ -1,5 +1,6 @@
 import type { Scene, StudyMode, UserProgress, Word } from "../types";
 import { readStorage, type StorageAdapter, writeStorage } from "../utils/storage";
+import { recordDailyLearnedWord } from "./learningActivityService";
 
 const PROGRESS_DEFAULT: UserProgress[] = [];
 
@@ -39,9 +40,14 @@ export function recordLearnedWord(
   adapter?: StorageAdapter
 ): UserProgress {
   const currentProgress = getSceneProgress(sceneId, adapter);
-  const learnedWordIds = currentProgress.learnedWordIds.includes(wordId)
-    ? currentProgress.learnedWordIds
-    : [...currentProgress.learnedWordIds, wordId];
+  const isNewLearnedWord = !currentProgress.learnedWordIds.includes(wordId);
+  const learnedWordIds = isNewLearnedWord
+    ? [...currentProgress.learnedWordIds, wordId]
+    : currentProgress.learnedWordIds;
+
+  if (isNewLearnedWord) {
+    recordDailyLearnedWord(adapter);
+  }
 
   return saveSceneProgress(
     {

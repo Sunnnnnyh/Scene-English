@@ -8,7 +8,14 @@ export type SpeechProvider = "mock" | "asr";
 
 export type MasteryProgress = 0 | 50 | 100;
 
-export type StorageEntity = "favorites" | "mistakes" | "progress" | "settings" | "onboarding";
+export type StorageEntity =
+  | "favorites"
+  | "mistakes"
+  | "progress"
+  | "settings"
+  | "onboarding"
+  | "profile"
+  | "learningActivity";
 
 export type SceneEnglishStorageKey = `sceneenglish:${StorageEntity}`;
 
@@ -56,6 +63,29 @@ export type UserProgress = {
   completedWritingCount: number;
   completedSpeakingCount: number;
   updatedAt: ISODateString;
+};
+
+export type UserProfile = {
+  nickname: string;
+  signature: string;
+  avatarText: string;
+  avatarUrl: string;
+  updatedAt: ISODateString;
+};
+
+export type LearningActivityRange = "week" | "month";
+
+export type DailyLearningActivity = {
+  date: string;
+  learnedWordCount: number;
+  updatedAt: ISODateString;
+};
+
+export type LearningActivityChartPoint = {
+  date: string;
+  label: string;
+  value: number;
+  heightPercent: number;
 };
 
 export type Favorite = {

@@ -16,10 +16,6 @@ const indexViewModelScript = readFileSync(
   join(process.cwd(), "miniprogram/pages/index/indexViewModel.ts"),
   "utf8"
 );
-const meViewModelScript = readFileSync(
-  join(process.cwd(), "miniprogram/pages/me/meViewModel.ts"),
-  "utf8"
-);
 const mistakesPageScript = readFileSync(
   join(process.cwd(), "miniprogram/pages/mistakes/mistakes.ts"),
   "utf8"
@@ -49,7 +45,6 @@ describe("unified user-facing feedback copy", () => {
     expect(indexViewModelScript).toContain(
       'import { feedbackCopy } from "../../utils/feedbackCopy"'
     );
-    expect(meViewModelScript).toContain('import { feedbackCopy } from "../../utils/feedbackCopy"');
     expect(mistakesPageScript).toContain('import { feedbackCopy } from "../../utils/feedbackCopy"');
     expect(favoritesPageScript).toContain(
       'import { feedbackCopy } from "../../utils/feedbackCopy"'
@@ -61,7 +56,6 @@ describe("unified user-facing feedback copy", () => {
       scenePageScript,
       sceneMarkup,
       indexViewModelScript,
-      meViewModelScript,
       mistakesPageScript,
       favoritesPageScript
     ].join("\n");

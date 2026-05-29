@@ -1146,3 +1146,27 @@
   - `git diff --check` passed with only Windows CRLF warnings.
 - Remaining:
   - Me page can now move into a fuller profile and learning-dashboard polish step.
+
+### 2026-05-29 - Phase 9 / Step 9.5 Me profile and learning dashboard
+
+- Completed:
+  - Replaced the lightweight Me placeholder with an editable local profile card.
+  - Added nickname and signature editing, plus WeChat native avatar selection through `open-type="chooseAvatar"`.
+  - Kept the avatar picker layout-neutral by placing a transparent native button inside a fixed avatar shell, avoiding the earlier large-button layout shift.
+  - Added local profile persistence through `profileService`.
+  - Added a weekly/monthly learning progress chart backed by local daily activity records.
+  - Updated progress writes so newly learned words contribute to the activity chart without double-counting already learned words.
+  - Added compact three-column stats and quick entries for continuing learning, favorites, and mistakes.
+  - Removed the old Me-page speech recognition status card.
+  - Added regression tests for profile persistence, learning activity chart data, Me view model output, Me page avatar controls, and progress activity recording.
+- Verification:
+  - User validated the Me profile/dashboard changes in WeChat DevTools.
+  - User accepted the WeChat avatar picker behavior, including the DevTools-only `chooseAvatar:fail cancel` message when canceling native avatar selection.
+  - TypeScript miniprogram config passed.
+  - TypeScript test config passed.
+  - ESLint passed.
+  - Prettier check passed.
+  - Vitest passed: 45 test files, 218 tests.
+  - `git diff --check` passed with only Windows CRLF warnings.
+- Remaining:
+  - Continue with the next verified MVP polish step only after user approval.

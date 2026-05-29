@@ -82,6 +82,26 @@ describe("progressService", () => {
     expect(getSceneProgress("classroom", storage).learnedWordIds).toEqual(["projector"]);
   });
 
+  it("records daily learning activity only when a new word is learned", () => {
+    const storage = createStorageAdapter();
+
+    recordLearnedWord("classroom", "projector", storage);
+    recordLearnedWord("classroom", "projector", storage);
+    recordLearnedWord("classroom", "whiteboard", storage);
+
+    expect(storage.setStorageSync).toHaveBeenCalledWith("sceneenglish:learningActivity", {
+      version: 1,
+      updatedAt: "2026-05-16T05:00:00.000Z",
+      data: [
+        {
+          date: "2026-05-16",
+          learnedWordCount: 2,
+          updatedAt: "2026-05-16T05:00:00.000Z"
+        }
+      ]
+    });
+  });
+
   it("increments completion counts for memory, writing, and speaking modes", () => {
     const storage = createStorageAdapter();
 
