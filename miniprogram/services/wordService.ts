@@ -1,7 +1,7 @@
-import { classroomWords } from "../data/scenes";
+import { classroomWords, lectureHallWords } from "../data/scenes";
 import type { Scene, Word } from "../types";
 
-const words: Word[] = classroomWords;
+const words: Word[] = [...classroomWords, ...lectureHallWords];
 
 export function getWordsBySceneId(sceneId: Scene["id"]): Word[] {
   return words.filter((word) => word.sceneId === sceneId);

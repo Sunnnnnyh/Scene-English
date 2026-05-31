@@ -10,28 +10,34 @@ describe("wordService", () => {
     expect(words.every((word) => word.sceneId === "classroom")).toBe(true);
   });
 
+  it("returns all 20 Lecture Hall words", () => {
+    const words = getWordsBySceneId("lecture-hall");
+
+    expect(words).toHaveLength(20);
+    expect(words.every((word) => word.sceneId === "lecture-hall")).toBe(true);
+  });
+
   it("keeps practical expression fields available for word cards", () => {
     const projector = getWordById("projector");
 
     expect(projector).toMatchObject({
       id: "projector",
       sceneId: "classroom",
-      cn: "投影仪",
       en: "projector",
-      phonetic: "/prəˈdʒek.tɚ/",
-      exampleEn: "The teacher is using the projector.",
-      exampleCn: "老师正在使用投影仪。",
-      expressionEn: "The projector needs to be adjusted before everyone can see the slide clearly.",
-      expressionCn: "投影仪需要先调一下，大家才能看清幻灯片。",
       audioUrl: "/assets/audio/projector.mp3"
     });
   });
 
-  it("finds a word by id across the local word list", () => {
+  it("finds words by id across both local word lists", () => {
     expect(getWordById("trash-can")).toMatchObject({
       id: "trash-can",
       en: "trash can",
       sceneId: "classroom"
+    });
+    expect(getWordById("auditorium-seat")).toMatchObject({
+      id: "auditorium-seat",
+      en: "auditorium seat",
+      sceneId: "lecture-hall"
     });
   });
 

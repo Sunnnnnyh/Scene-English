@@ -60,6 +60,63 @@ describe("scene page view model", () => {
     expect(viewModel.progressPercent).toBe(15);
   });
 
+  it("offers memory hint while unlearned words remain", () => {
+    if (!classroom) {
+      throw new Error("Classroom scene fixture is missing");
+    }
+
+    const viewModel = createSceneViewModel(classroom, emptyProgress, classroomWords);
+
+    expect(viewModel.memoryHintButtonLabel).toBe("提示一下");
+    expect(viewModel.memoryHintButtonDisabled).toBe(false);
+    expect(viewModel.memoryHintWordId).toBe("");
+  });
+
+  it("keeps the memory hint control stable after all words are learned", () => {
+    if (!classroom) {
+      throw new Error("Classroom scene fixture is missing");
+    }
+
+    const viewModel = createSceneViewModel(
+      classroom,
+      {
+        ...emptyProgress,
+        learnedWordIds: classroomWords.map((word) => word.id)
+      },
+      classroomWords
+    );
+
+    expect(viewModel.memoryHintButtonLabel).toBe("已找完");
+    expect(viewModel.memoryHintButtonDisabled).toBe(true);
+  });
+
+  it("builds a scene word list for review", () => {
+    if (!classroom) {
+      throw new Error("Classroom scene fixture is missing");
+    }
+
+    const viewModel = createSceneViewModel(
+      classroom,
+      {
+        ...emptyProgress,
+        learnedWordIds: ["blackboard"]
+      },
+      classroomWords
+    );
+
+    expect(viewModel.showSceneWordList).toBe(false);
+    expect(viewModel.sceneWordList).toHaveLength(20);
+    expect(viewModel.sceneWordList[0]).toMatchObject({
+      wordId: "blackboard",
+      en: "blackboard",
+      isLearned: true
+    });
+    expect(viewModel.sceneWordList[1]).toMatchObject({
+      wordId: "whiteboard",
+      isLearned: false
+    });
+  });
+
   it("maps scene entries to in-tab mode selection actions", () => {
     expect(getSceneEntryAction("memory")).toEqual({
       type: "selectMode",

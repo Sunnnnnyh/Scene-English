@@ -1,4 +1,5 @@
 import { addFavorite, isFavorite, removeFavorite } from "../../services/favoriteService";
+import { getSelectedSceneId } from "../../services/currentSceneService";
 import { getSceneProgress, recordLearnedWord } from "../../services/progressService";
 import {
   getMistakes,
@@ -33,7 +34,8 @@ import {
   type SceneListeningWritingState,
   type SceneMemoryWordCard,
   type SceneEntryId,
-  type SceneViewModel
+  type SceneViewModel,
+  type SceneWordListItem
 } from "./sceneViewModel";
 import type {
   Mistake,
@@ -129,6 +131,12 @@ type ListeningSpeakingCompletionStats = {
   listeningSpeakingCorrectCount: number;
   listeningSpeakingMistakeCount: number;
   listeningSpeakingNewMistakeCount: number;
+};
+
+type SceneLearningAssistData = {
+  memoryHintButtonLabel: string;
+  memoryHintButtonDisabled: boolean;
+  sceneWordList: SceneWordListItem[];
 };
 
 function createListeningSpeakingRecordingData(
@@ -478,7 +486,27 @@ function refreshSceneProgress(sceneId: Scene["id"]) {
 
   return {
     progressLabel: `Learned ${learnedCount} / ${scene.wordCount}`,
-    progressPercent: scene.wordCount > 0 ? Math.round((learnedCount / scene.wordCount) * 100) : 0
+    progressPercent: scene.wordCount > 0 ? Math.round((learnedCount / scene.wordCount) * 100) : 0,
+    ...createSceneLearningAssistData(scene.id)
+  };
+}
+
+function createSceneLearningAssistData(sceneId: Scene["id"]): SceneLearningAssistData {
+  const words = getWordsBySceneId(sceneId);
+  const progress = getSceneProgress(sceneId);
+  const learnedWordIdSet = new Set(progress.learnedWordIds);
+  const hasUnlearnedWords = words.some((word) => !learnedWordIdSet.has(word.id));
+
+  return {
+    memoryHintButtonLabel: hasUnlearnedWords ? "提示一下" : "已找完",
+    memoryHintButtonDisabled: !hasUnlearnedWords,
+    sceneWordList: words.map((word) => ({
+      wordId: word.id,
+      en: word.en,
+      cn: word.cn,
+      phonetic: word.phonetic,
+      isLearned: learnedWordIdSet.has(word.id)
+    }))
   };
 }
 
@@ -716,8 +744,10 @@ function createSceneHomeModeResetData() {
     selectedModeTitle: "",
     showMemoryGuide: false,
     showMemoryTranslationGuide: false,
+    memoryHintWordId: "",
     selectedMemoryWordId: "",
     selectedMemoryWordCard: null,
+    showSceneWordList: false,
     ...createEmptyListeningWritingModeData(),
     ...createEmptyListeningSpeakingModeData()
   };
@@ -807,7 +837,12 @@ Page({
     : ({} as SceneViewModel),
 
   onLoad(options: ScenePageOptions) {
-    const sceneId = options.sceneId ?? "classroom";
+    const sceneId = options.sceneId ?? getSelectedSceneId() ?? "classroom";
+
+    this.loadScene(sceneId);
+  },
+
+  loadScene(sceneId: Scene["id"]) {
     const scene = getSceneById(sceneId);
 
     if (!scene || scene.status !== "available") {
@@ -846,20 +881,28 @@ Page({
   },
 
   onShow() {
-    this.startPendingMistakePracticeIfNeeded();
+    if (this.startPendingMistakePracticeIfNeeded()) {
+      return;
+    }
+
+    const selectedSceneId = getSelectedSceneId();
+
+    if (selectedSceneId && selectedSceneId !== this.data.sceneId) {
+      this.loadScene(selectedSceneId);
+    }
   },
 
   startPendingMistakePracticeIfNeeded() {
     const request = consumePendingMistakePracticeRequest();
 
     if (!request) {
-      return;
+      return false;
     }
 
     const scene = getSceneById(request.sceneId);
 
     if (!scene || scene.status !== "available") {
-      return;
+      return false;
     }
 
     if (request.mistakeType === "speaking") {
@@ -894,6 +937,8 @@ Page({
       ...createMistakePracticeModeData(request.sceneId, request.mistakeType),
       ...createEmptyListeningSpeakingModeData()
     });
+
+    return true;
   },
 
   onEntryTap(event: SceneEntryTapEvent) {
@@ -926,8 +971,11 @@ Page({
       selectedModeTitle: selectedMode?.title ?? "",
       showMemoryGuide: action.mode === "memory" ? shouldShowMemoryGuide() : false,
       showMemoryTranslationGuide: false,
+      memoryHintWordId: "",
       selectedMemoryWordId: "",
       selectedMemoryWordCard: null,
+      showSceneWordList: false,
+      ...createSceneLearningAssistData(sceneId),
       ...listeningWritingData,
       ...listeningSpeakingData
     });
@@ -990,10 +1038,49 @@ Page({
       selectedMemoryWordId: wordId,
       selectedMemoryWordCard: createMemoryWordCard(selectedWord, isFavorite(selectedWord.id)),
       showMemoryTranslationGuide: shouldShowMemoryTranslationGuide(),
+      memoryHintWordId: "",
       ...refreshSceneProgress(selectedWord.sceneId)
     });
     playMemoryWordAudio(selectedWord.audioUrl, showAudioPlaybackErrorToast);
     this.completeMemoryGuideIfNeeded();
+  },
+
+  onShowMemoryHint() {
+    const sceneId = this.data.sceneId;
+
+    if (!sceneId || this.data.memoryHintButtonDisabled) {
+      return;
+    }
+
+    const words = getWordsBySceneId(sceneId);
+    const progress = getSceneProgress(sceneId);
+    const learnedWordIdSet = new Set(progress.learnedWordIds);
+    const unlearnedWords = words.filter((word) => !learnedWordIdSet.has(word.id));
+
+    if (unlearnedWords.length === 0) {
+      this.setData({
+        memoryHintWordId: "",
+        ...createSceneLearningAssistData(sceneId)
+      });
+      return;
+    }
+
+    const currentHintIndex = unlearnedWords.findIndex(
+      (word) => word.id === this.data.memoryHintWordId
+    );
+    const nextHintWord =
+      unlearnedWords[(currentHintIndex + 1) % unlearnedWords.length] ?? unlearnedWords[0];
+
+    this.setData({
+      memoryHintWordId: nextHintWord.id,
+      ...createSceneLearningAssistData(sceneId)
+    });
+  },
+
+  onToggleSceneWordList() {
+    this.setData({
+      showSceneWordList: !this.data.showSceneWordList
+    });
   },
 
   onToggleMemoryFavorite() {

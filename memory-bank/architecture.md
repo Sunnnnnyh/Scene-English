@@ -1984,3 +1984,55 @@ File change record:
 | `tests/meViewModel.test.ts` | Covers Me dashboard view model output. | Phase 9 / Step 9.5 |
 | `tests/meDashboard.test.ts` | Covers Me page structure, avatar picker wiring, and compact layout guards. | Phase 9 / Step 9.5 |
 | `tests/progressService.test.ts` | Covers activity recording from newly learned words. | Phase 9 / Step 9.5 |
+
+## 59. Lecture Hall scene content and hotspot calibration
+
+Lecture Hall is now a selectable learnable scene using a local artwork, local audio, and local TypeScript vocabulary data. This preserves the existing local-first architecture while allowing the Home scene selection flow to choose which available scene the Learn tab should load.
+
+Current responsibilities:
+- `miniprogram/services/currentSceneService.ts` stores the selected learnable scene ID in local settings storage.
+- `miniprogram/pages/index/index.ts` saves the selected available scene before switching to the Learn tab.
+- `miniprogram/pages/scene/scene.ts` loads the selected scene from storage when the Learn tab is shown and reloads if the selected scene changes.
+- `miniprogram/pages/scene/scene.wxml` renders the current scene name dynamically and disables default hover feedback on transparent hotspots.
+- `miniprogram/pages/scene/scene.wxss` keeps memory, listening-writing, and listening-speaking hotspots visually transparent during taps.
+- `miniprogram/data/scenes.ts` stores the approved Lecture Hall scene metadata, 20-word vocabulary, repeated-object `positions`, and calibrated hotspot coordinates.
+- `miniprogram/services/wordService.ts` resolves words by globally unique IDs so repeated English labels such as podium and clock can coexist across scenes.
+- `miniprogram/assets/picture/lecture-hall.png` stores the approved Lecture Hall artwork.
+- `miniprogram/assets/audio/lecture-hall/` stores local MP3 pronunciation assets for all 20 Lecture Hall words.
+
+Runtime notes:
+- Lecture Hall and Classroom are both available scenes. Dormitory and Cafeteria remain coming soon.
+- Vocabulary IDs remain globally unique even when English labels repeat across scenes; Lecture Hall uses `lecture-hall-podium` and `lecture-hall-clock` for the repeated labels.
+- Lecture Hall useful-expression Chinese copy starts folded in the word card and appears only after the user expands it.
+- Transparent scene hotspots use `hover-class="none"` so tapping a hotspot does not show a temporary white flash.
+- Right-side acoustic panel and exit-sign hotspots are intentionally separated so the acoustic panel does not cover the exit sign.
+
+Test coverage:
+- `tests/currentSceneService.test.ts` covers local selected-scene persistence.
+- `tests/sceneSelection.test.ts` covers Home-to-Learn scene selection and dynamic scene name rendering.
+- `tests/scenes.test.ts` covers the 20-word Lecture Hall dataset, image dimensions, repeated labels, readable Chinese copy, audio paths, and calibrated hotspots.
+- `tests/assets.test.ts` covers required Lecture Hall image and audio assets.
+- `tests/sceneMemoryHotspots.test.ts` covers transparent hotspot tap behavior.
+- `tests/sceneMemoryWordCard.test.ts` covers folded useful-expression translation behavior.
+- Existing scene and word service tests cover multi-scene loading and globally unique word lookup.
+
+File change record:
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `miniprogram/services/currentSceneService.ts` | Stores and reads the selected learnable scene ID. | Lecture Hall scene content |
+| `miniprogram/pages/index/index.ts` | Saves selected available scene before tab navigation. | Lecture Hall scene content |
+| `miniprogram/pages/index/indexViewModel.ts` | Returns the selected scene ID with available-scene navigation actions. | Lecture Hall scene content |
+| `miniprogram/pages/scene/scene.ts` | Loads the selected scene from storage and updates scene-specific state. | Lecture Hall scene content |
+| `miniprogram/pages/scene/scene.wxml` | Renders dynamic scene names and disables transparent hotspot hover feedback. | Lecture Hall scene content |
+| `miniprogram/pages/scene/scene.wxss` | Removes active-state visual flashes from transparent hotspots. | Lecture Hall scene content |
+| `miniprogram/pages/scene/sceneViewModel.ts` | Keeps useful-expression Chinese copy folded by default. | Lecture Hall scene content |
+| `miniprogram/data/scenes.ts` | Adds the approved Lecture Hall scene, 20 words, and calibrated hotspots. | Lecture Hall scene content |
+| `miniprogram/services/wordService.ts` | Supports unique word lookup across repeated scene labels. | Lecture Hall scene content |
+| `miniprogram/types/index.ts` | Adds multi-position hotspot support. | Lecture Hall scene content |
+| `miniprogram/assets/picture/lecture-hall.png` | Stores the approved Lecture Hall artwork. | Lecture Hall scene content |
+| `miniprogram/assets/audio/lecture-hall/` | Stores local pronunciation audio for the 20 Lecture Hall words. | Lecture Hall scene content |
+| `tests/currentSceneService.test.ts` | Covers selected-scene storage. | Lecture Hall scene content |
+| `tests/sceneSelection.test.ts` | Covers scene selection and dynamic Learn tab loading. | Lecture Hall scene content |
+| `tests/scenes.test.ts` | Covers Lecture Hall data, assets, and hotspot calibration. | Lecture Hall scene content |
+| `tests/assets.test.ts` | Covers Lecture Hall image and audio asset availability. | Lecture Hall scene content |
+| `tests/sceneMemoryHotspots.test.ts` | Covers transparent hotspot tap behavior. | Lecture Hall scene content |

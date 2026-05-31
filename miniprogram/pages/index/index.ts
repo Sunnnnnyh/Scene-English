@@ -1,4 +1,5 @@
 import { getScenes } from "../../services/sceneService";
+import { saveSelectedSceneId } from "../../services/currentSceneService";
 import { createIndexViewModel, getIndexSceneAction } from "./indexViewModel";
 
 type SceneTapEvent = WechatMiniprogram.BaseEvent & {
@@ -24,6 +25,7 @@ Page({
     const action = getIndexSceneAction(sceneId, scenes);
 
     if (action.type === "switchTab") {
+      saveSelectedSceneId(action.sceneId);
       wx.switchTab({
         url: action.url
       });

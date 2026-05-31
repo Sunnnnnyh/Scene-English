@@ -2,7 +2,7 @@
   <block wx:if="{{!activeMode}}">
     <view class="scene-header">
       <view>
-        <text class="scene-kicker">Classroom Scene</text>
+        <text class="scene-kicker">{{sceneNameEn}} Scene</text>
         <text class="scene-title">{{title}}</text>
       </view>
       <text class="scene-count">{{progressLabel}}</text>
@@ -29,6 +29,24 @@
       </view>
     </view>
 
+    <view class="scene-actions">
+      <button class="scene-word-list-toggle" bindtap="onToggleSceneWordList">
+        {{showSceneWordList ? '收起清单' : '单词清单'}}
+      </button>
+    </view>
+
+    <view wx:if="{{showSceneWordList}}" class="scene-word-list">
+      <block wx:for="{{sceneWordList}}" wx:key="wordId">
+        <view class="scene-word-list-item {{item.isLearned ? 'scene-word-list-item--learned' : ''}}">
+          <view class="scene-word-list-item__copy">
+            <text class="scene-word-list-item__word">{{item.en}}</text>
+            <text class="scene-word-list-item__cn">{{item.cn}}</text>
+          </view>
+          <text class="scene-word-list-item__phonetic">{{item.phonetic}}</text>
+        </view>
+      </block>
+    </view>
+
     <view class="mode-section">
       <text class="section-title">学习模式</text>
       <block wx:for="{{modeEntries}}" wx:key="id">
@@ -48,7 +66,7 @@
 
   <block wx:if="{{activeMode}}">
     <view class="mode-topbar">
-      <view class="mode-back-icon" bindtap="onBackToSceneHome" aria-label="Back to Classroom">
+      <view class="mode-back-icon" bindtap="onBackToSceneHome" aria-label="Back to scene">
         <text class="mode-back-chevron">‹</text>
       </view>
       <view class="mode-heading">
@@ -68,6 +86,31 @@
     </view>
 
     <block wx:if="{{activeMode === 'memory'}}">
+      <view class="memory-assist">
+        <button
+          class="memory-hint {{memoryHintButtonDisabled ? 'memory-hint--disabled' : ''}}"
+          disabled="{{memoryHintButtonDisabled}}"
+          bindtap="onShowMemoryHint"
+        >
+          {{memoryHintButtonLabel}}
+        </button>
+        <button class="scene-word-list-toggle scene-word-list-toggle--compact" bindtap="onToggleSceneWordList">
+          {{showSceneWordList ? '收起清单' : '单词清单'}}
+        </button>
+      </view>
+
+      <view wx:if="{{showSceneWordList}}" class="scene-word-list scene-word-list--memory">
+        <block wx:for="{{sceneWordList}}" wx:key="wordId">
+          <view class="scene-word-list-item {{item.isLearned ? 'scene-word-list-item--learned' : ''}}">
+            <view class="scene-word-list-item__copy">
+              <text class="scene-word-list-item__word">{{item.en}}</text>
+              <text class="scene-word-list-item__cn">{{item.cn}}</text>
+            </view>
+            <text class="scene-word-list-item__phonetic">{{item.phonetic}}</text>
+          </view>
+        </block>
+      </view>
+
       <view class="scene-preview mode-page-preview memory-scene-preview" bindtap="onMemoryBlankTap">
         <image
           wx:if="{{sceneImageLoadStatus !== 'failed'}}"
@@ -81,11 +124,12 @@
           <text class="scene-image-fallback__title">Image unavailable.</text>
           <button class="scene-image-fallback__retry" catchtap="onRetrySceneImage">Try again</button>
         </view>
-        <block wx:for="{{memoryHotspots}}" wx:key="wordId">
+        <block wx:for="{{memoryHotspots}}" wx:key="hotspotId">
           <view
-            class="memory-hotspot {{showMemoryGuide && item.wordId === memoryGuideWordId ? 'memory-hotspot--guided' : ''}}"
+            class="memory-hotspot {{showMemoryGuide && item.wordId === memoryGuideWordId ? 'memory-hotspot--guided' : ''}} {{memoryHintWordId === item.wordId ? 'memory-hotspot--hinted' : ''}}"
             style="{{item.style}}"
             data-word-id="{{item.wordId}}"
+            hover-class="none"
             catchtap="onMemoryHotspotTap"
           ></view>
         </block>
@@ -179,11 +223,12 @@
             <text class="scene-image-fallback__title">Image unavailable.</text>
             <button class="scene-image-fallback__retry" catchtap="onRetrySceneImage">Try again</button>
           </view>
-          <block wx:for="{{memoryHotspots}}" wx:key="wordId">
+          <block wx:for="{{memoryHotspots}}" wx:key="hotspotId">
             <view
               class="listening-writing-hotspot {{listeningWritingTargetWordId === item.wordId ? 'listening-writing-hotspot--target listening-writing-hotspot--flash' : ''}}"
               style="{{item.style}}"
               data-word-id="{{item.wordId}}"
+              hover-class="none"
               catchtap="onListeningWritingHotspotTap"
             ></view>
           </block>
@@ -311,11 +356,12 @@
             <text class="scene-image-fallback__title">Image unavailable.</text>
             <button class="scene-image-fallback__retry" catchtap="onRetrySceneImage">Try again</button>
           </view>
-          <block wx:for="{{memoryHotspots}}" wx:key="wordId">
+          <block wx:for="{{memoryHotspots}}" wx:key="hotspotId">
             <view
               class="listening-speaking-hotspot {{listeningSpeakingTargetWordId === item.wordId ? 'listening-speaking-hotspot--target listening-writing-hotspot--flash' : ''}}"
               style="{{item.style}}"
               data-word-id="{{item.wordId}}"
+              hover-class="none"
               catchtap="onListeningSpeakingHotspotTap"
             ></view>
           </block>

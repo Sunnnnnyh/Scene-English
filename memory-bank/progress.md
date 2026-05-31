@@ -1170,3 +1170,25 @@
   - `git diff --check` passed with only Windows CRLF warnings.
 - Remaining:
   - Continue with the next verified MVP polish step only after user approval.
+
+### 2026-06-01 - Lecture Hall scene content and hotspot calibration
+
+- Completed:
+  - Enabled Lecture Hall as a selectable learnable scene from Home while preserving Dormitory and Cafeteria as coming soon.
+  - Added a local selected-scene service so the Learn tab can load the scene chosen from Home.
+  - Replaced the Lecture Hall artwork with the approved image asset.
+  - Rebuilt the Lecture Hall vocabulary to exactly 20 clickable words: auditorium seat, aisle, stair, handrail, stage, presentation screen, spotlight, speaker array, control booth, monitor, acoustic panel, ventilation grille, wall light, exit sign, camera, tripod, floor cable cover, podium, microphone stand, and clock.
+  - Added Lecture Hall audio assets, including unique IDs for repeated vocabulary names shared with Classroom.
+  - Calibrated Lecture Hall hotspots for seats, stage objects, wall objects, lights, acoustic panels, and the exit sign.
+  - Removed the tap-time white flash from transparent memory/listening/speaking hotspots.
+  - Restored word-card translation flow so useful-expression Chinese copy starts folded and appears only after user action.
+  - Added regression coverage for Lecture Hall scene data, assets, scene selection, hotspot behavior, word lookup, and word-card display.
+- Verification:
+  - User validated the Lecture Hall image, word list, hotspot adjustments, Chinese copy behavior, and final exit-sign adjustment in WeChat DevTools.
+  - TypeScript miniprogram config passed.
+  - TypeScript test config passed.
+  - ESLint passed.
+  - Prettier check passed.
+  - Vitest passed: 47 test files, 242 tests.
+- Remaining:
+  - Continue with the next verified step only after user approval.

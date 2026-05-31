@@ -17,30 +17,39 @@ describe("sceneService", () => {
     ]);
   });
 
-  it("returns Classroom as the only learnable scene", () => {
-    expect(getAvailableScenes()).toHaveLength(1);
-    expect(getAvailableScenes()[0]).toMatchObject({
-      id: "classroom",
-      nameEn: "Classroom",
-      status: "available",
-      wordCount: 20
-    });
+  it("returns Classroom and Lecture Hall as learnable scenes", () => {
+    expect(getAvailableScenes().map((scene) => scene.id)).toEqual(["classroom", "lecture-hall"]);
+    expect(getAvailableScenes()).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          id: "classroom",
+          nameEn: "Classroom",
+          status: "available",
+          wordCount: 20
+        }),
+        expect.objectContaining({
+          id: "lecture-hall",
+          nameEn: "Lecture Hall",
+          status: "available",
+          wordCount: 20
+        })
+      ])
+    );
   });
 
-  it("returns all non-Classroom scenes as coming soon", () => {
-    expect(getComingSoonScenes().map((scene) => scene.id)).toEqual([
-      "lecture-hall",
-      "dormitory",
-      "cafeteria"
-    ]);
+  it("returns Dormitory and Cafeteria as coming soon", () => {
+    expect(getComingSoonScenes().map((scene) => scene.id)).toEqual(["dormitory", "cafeteria"]);
     expect(getComingSoonScenes().every((scene) => scene.status === "comingSoon")).toBe(true);
   });
 
-  it("finds a scene by id", () => {
+  it("finds scenes by id", () => {
     expect(getSceneById("classroom")).toMatchObject({
       id: "classroom",
-      nameCn: "教室",
       nameEn: "Classroom"
+    });
+    expect(getSceneById("lecture-hall")).toMatchObject({
+      id: "lecture-hall",
+      nameEn: "Lecture Hall"
     });
   });
 

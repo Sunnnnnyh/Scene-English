@@ -54,6 +54,7 @@ export type Word = {
   expressionCn: string;
   audioUrl: AssetPath;
   position: HotspotPosition;
+  positions?: HotspotPosition[];
 };
 
 export type UserProgress = {

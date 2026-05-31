@@ -16,12 +16,12 @@ export const scenes: Scene[] = [
     id: "lecture-hall",
     nameCn: "阶梯教室",
     nameEn: "Lecture Hall",
-    coverImage: "/assets/images/coming-soon-cover.png",
-    sceneImage: "/assets/images/coming-soon-cover.png",
-    baseWidth: 1920,
-    baseHeight: 1080,
-    wordCount: 0,
-    status: "comingSoon"
+    coverImage: "/assets/picture/lecture-hall.png",
+    sceneImage: "/assets/picture/lecture-hall.png",
+    baseWidth: 1672,
+    baseHeight: 941,
+    wordCount: 20,
+    status: "available"
   },
   {
     id: "dormitory",
@@ -311,5 +311,325 @@ export const classroomWords: Word[] = [
     expressionCn: "小组活动用过的纸放进垃圾桶。",
     audioUrl: "/assets/audio/trash-can.mp3",
     position: { x: 1401, y: 715, width: 158, height: 185 }
+  }
+];
+
+export const lectureHallWords: Word[] = [
+  {
+    id: "auditorium-seat",
+    sceneId: "lecture-hall",
+    cn: "阶梯座椅",
+    en: "auditorium seat",
+    phonetic: "/ˌɔː.dəˈtɔːr.i.əm siːt/",
+    exampleEn: "The auditorium seats are arranged in rows.",
+    exampleCn: "阶梯座椅是一排排排列的。",
+    expressionEn: "Please choose an auditorium seat where you can see the screen clearly.",
+    expressionCn: "请选择一个能看清屏幕的阶梯座椅。",
+    audioUrl: "/assets/audio/lecture-hall/auditorium-seat.mp3",
+    position: { x: 0, y: 329, width: 120, height: 174 },
+    positions: [
+      { x: 0, y: 329, width: 120, height: 174 },
+      { x: 104, y: 399, width: 166, height: 162 },
+      { x: 282, y: 385, width: 154, height: 185 },
+      { x: 428, y: 451, width: 165, height: 190 },
+      { x: 559, y: 501, width: 160, height: 198 },
+      { x: 698, y: 574, width: 161, height: 201 },
+      { x: 810, y: 635, width: 176, height: 169 },
+      { x: 327, y: 618, width: 153, height: 212 },
+      { x: 573, y: 680, width: 178, height: 220 }
+    ]
+  },
+  {
+    id: "aisle",
+    sceneId: "lecture-hall",
+    cn: "过道",
+    en: "aisle",
+    phonetic: "/aɪl/",
+    exampleEn: "The aisle leads to the stage.",
+    exampleCn: "过道通向讲台区域。",
+    expressionEn: "Keep the aisle clear so people can leave safely.",
+    expressionCn: "保持过道畅通，方便大家安全离开。",
+    audioUrl: "/assets/audio/lecture-hall/aisle.mp3",
+    position: { x: 0, y: 505, width: 95, height: 185 },
+    positions: [
+      { x: 0, y: 505, width: 95, height: 185 },
+      { x: 95, y: 772, width: 180, height: 169 },
+      { x: 745, y: 735, width: 245, height: 170 }
+    ]
+  },
+  {
+    id: "stair",
+    sceneId: "lecture-hall",
+    cn: "台阶",
+    en: "stair",
+    phonetic: "/ster/",
+    exampleEn: "The stairs go down to the stage.",
+    exampleCn: "台阶通向舞台。",
+    expressionEn: "Watch your step on the stair when the lights are low.",
+    expressionCn: "灯光较暗时，走台阶要小心。",
+    audioUrl: "/assets/audio/lecture-hall/stair.mp3",
+    position: { x: 900, y: 780, width: 235, height: 160 },
+    positions: [
+      { x: 900, y: 780, width: 235, height: 160 },
+      { x: 1467, y: 669, width: 91, height: 92 }
+    ]
+  },
+  {
+    id: "handrail",
+    sceneId: "lecture-hall",
+    cn: "扶栏",
+    en: "handrail",
+    phonetic: "/ˈhænd.reɪl/",
+    exampleEn: "The handrail is beside the stairs.",
+    exampleCn: "扶栏在台阶旁边。",
+    expressionEn: "Hold the handrail when you walk down to the front row.",
+    expressionCn: "走到前排时，可以扶着扶栏。",
+    audioUrl: "/assets/audio/lecture-hall/handrail.mp3",
+    position: { x: 0, y: 677, width: 299, height: 50 },
+    positions: [
+      { x: 0, y: 677, width: 299, height: 50 },
+      { x: 286, y: 344, width: 345, height: 36 },
+      { x: 477, y: 376, width: 183, height: 86 },
+      { x: 34, y: 727, width: 43, height: 185 },
+      { x: 1586, y: 686, width: 65, height: 217 }
+    ]
+  },
+  {
+    id: "stage",
+    sceneId: "lecture-hall",
+    cn: "讲台区",
+    en: "stage",
+    phonetic: "/steɪdʒ/",
+    exampleEn: "The speaker stands on the stage.",
+    exampleCn: "演讲者站在讲台区。",
+    expressionEn: "The guest speaker will come onto the stage after the introduction.",
+    expressionCn: "介绍结束后，嘉宾会走上讲台区。",
+    audioUrl: "/assets/audio/lecture-hall/stage.mp3",
+    position: { x: 780, y: 475, width: 730, height: 150 },
+    positions: [
+      { x: 780, y: 475, width: 730, height: 150 },
+      { x: 870, y: 610, width: 565, height: 90 }
+    ]
+  },
+  {
+    id: "presentation-screen",
+    sceneId: "lecture-hall",
+    cn: "演示屏",
+    en: "presentation screen",
+    phonetic: "/ˌprez.ənˈteɪ.ʃən skriːn/",
+    exampleEn: "The presentation screen is at the front.",
+    exampleCn: "演示屏在前方。",
+    expressionEn: "The presentation screen is bright enough for the back row.",
+    expressionCn: "演示屏足够亮，后排也能看清。",
+    audioUrl: "/assets/audio/lecture-hall/presentation-screen.mp3",
+    position: { x: 965, y: 149, width: 452, height: 337 }
+  },
+  {
+    id: "spotlight",
+    sceneId: "lecture-hall",
+    cn: "射灯",
+    en: "spotlight",
+    phonetic: "/ˈspɑːt.laɪt/",
+    exampleEn: "The spotlight shines on the stage.",
+    exampleCn: "射灯照在讲台区。",
+    expressionEn: "The spotlight helps the audience focus on the speaker.",
+    expressionCn: "射灯能帮助观众把注意力集中到演讲者身上。",
+    audioUrl: "/assets/audio/lecture-hall/spotlight.mp3",
+    position: { x: 906, y: 50, width: 30, height: 68 },
+    positions: [
+      { x: 906, y: 50, width: 30, height: 68 },
+      { x: 1017, y: 33, width: 31, height: 72 },
+      { x: 1132, y: 19, width: 35, height: 73 },
+      { x: 1258, y: 4, width: 37, height: 82 },
+      { x: 1386, y: 0, width: 38, height: 77 }
+    ]
+  },
+  {
+    id: "speaker-array",
+    sceneId: "lecture-hall",
+    cn: "线阵音箱",
+    en: "speaker array",
+    phonetic: "/ˈspiː.kɚ əˌreɪ/",
+    exampleEn: "The speaker array hangs beside the screen.",
+    exampleCn: "线阵音箱悬挂在屏幕旁边。",
+    expressionEn: "The speaker array makes the lecturer's voice clear in the whole hall.",
+    expressionCn: "线阵音箱让整个讲堂都能听清讲者的声音。",
+    audioUrl: "/assets/audio/lecture-hall/speaker-array.mp3",
+    position: { x: 786, y: 114, width: 80, height: 200 },
+    positions: [
+      { x: 786, y: 114, width: 80, height: 200 },
+      { x: 1454, y: 76, width: 96, height: 251 }
+    ]
+  },
+  {
+    id: "control-booth",
+    sceneId: "lecture-hall",
+    cn: "控制室",
+    en: "control booth",
+    phonetic: "/kənˈtroʊl buːθ/",
+    exampleEn: "The control booth is behind the glass.",
+    exampleCn: "控制室在玻璃后面。",
+    expressionEn: "The technician checks the sound from the control booth.",
+    expressionCn: "技术人员在控制室检查声音。",
+    audioUrl: "/assets/audio/lecture-hall/control-booth.mp3",
+    position: { x: 70, y: 119, width: 327, height: 160 }
+  },
+  {
+    id: "monitor",
+    sceneId: "lecture-hall",
+    cn: "监视器",
+    en: "monitor",
+    phonetic: "/ˈmɑː.nə.tɚ/",
+    exampleEn: "A monitor sits inside the control booth.",
+    exampleCn: "控制室里有一台监视器。",
+    expressionEn: "The monitor shows whether the camera is recording.",
+    expressionCn: "监视器会显示摄像机是否正在录制。",
+    audioUrl: "/assets/audio/lecture-hall/monitor.mp3",
+    position: { x: 112, y: 218, width: 77, height: 48 },
+    positions: [
+      { x: 112, y: 218, width: 77, height: 48 },
+      { x: 219, y: 219, width: 80, height: 48 },
+      { x: 324, y: 220, width: 70, height: 48 }
+    ]
+  },
+  {
+    id: "acoustic-panel",
+    sceneId: "lecture-hall",
+    cn: "吸音板",
+    en: "acoustic panel",
+    phonetic: "/əˈkuː.stɪk ˈpæn.əl/",
+    exampleEn: "The acoustic panels are on the wall.",
+    exampleCn: "吸音板安装在墙上。",
+    expressionEn: "The acoustic panel reduces echo in the lecture hall.",
+    expressionCn: "吸音板可以减少讲堂里的回声。",
+    audioUrl: "/assets/audio/lecture-hall/acoustic-panel.mp3",
+    position: { x: 510, y: 128, width: 130, height: 323 },
+    positions: [
+      { x: 510, y: 128, width: 130, height: 323 },
+      { x: 1594, y: 224, width: 66, height: 218 }
+    ]
+  },
+  {
+    id: "ventilation-grille",
+    sceneId: "lecture-hall",
+    cn: "通风格栅",
+    en: "ventilation grille",
+    phonetic: "/ˌven.təˈleɪ.ʃən ɡrɪl/",
+    exampleEn: "The ventilation grille is on the wall.",
+    exampleCn: "通风格栅在墙上。",
+    expressionEn: "Air comes through the ventilation grille during a long lecture.",
+    expressionCn: "长时间讲座时，空气会从通风格栅进入。",
+    audioUrl: "/assets/audio/lecture-hall/ventilation-grille.mp3",
+    position: { x: 684, y: 143, width: 70, height: 210 }
+  },
+  {
+    id: "wall-light",
+    sceneId: "lecture-hall",
+    cn: "壁灯",
+    en: "wall light",
+    phonetic: "/ˈwɔːl laɪt/",
+    exampleEn: "A wall light is beside the panel.",
+    exampleCn: "壁灯在装饰板旁边。",
+    expressionEn: "The wall light keeps the side area bright without shining on the screen.",
+    expressionCn: "壁灯让侧边区域保持明亮，又不会照到屏幕。",
+    audioUrl: "/assets/audio/lecture-hall/wall-light.mp3",
+    position: { x: 4, y: 205, width: 32, height: 88 },
+    positions: [
+      { x: 4, y: 205, width: 32, height: 88 },
+      { x: 432, y: 218, width: 28, height: 78 },
+      { x: 706, y: 354, width: 34, height: 88 }
+    ]
+  },
+  {
+    id: "exit-sign",
+    sceneId: "lecture-hall",
+    cn: "出口标志",
+    en: "exit sign",
+    phonetic: "/ˈeɡ.zɪt saɪn/",
+    exampleEn: "The exit sign is near the door.",
+    exampleCn: "出口标志在门附近。",
+    expressionEn: "Follow the exit sign if the hall needs to be cleared quickly.",
+    expressionCn: "如果需要快速疏散讲堂，就跟着出口标志走。",
+    audioUrl: "/assets/audio/lecture-hall/exit-sign.mp3",
+    position: { x: 1588, y: 486, width: 58, height: 62 }
+  },
+  {
+    id: "camera",
+    sceneId: "lecture-hall",
+    cn: "摄像机",
+    en: "camera",
+    phonetic: "/ˈkæm.rə/",
+    exampleEn: "The camera records the lecture.",
+    exampleCn: "摄像机录制讲座。",
+    expressionEn: "The camera is set up to record the speaker and the screen.",
+    expressionCn: "摄像机已经架好，用来录制演讲者和屏幕。",
+    audioUrl: "/assets/audio/lecture-hall/camera.mp3",
+    position: { x: 1307, y: 610, width: 143, height: 94 }
+  },
+  {
+    id: "tripod",
+    sceneId: "lecture-hall",
+    cn: "三脚架",
+    en: "tripod",
+    phonetic: "/ˈtraɪ.pɑːd/",
+    exampleEn: "The camera is on a tripod.",
+    exampleCn: "摄像机架在三脚架上。",
+    expressionEn: "Adjust the tripod so the camera stays level.",
+    expressionCn: "调整三脚架，让摄像机保持水平。",
+    audioUrl: "/assets/audio/lecture-hall/tripod.mp3",
+    position: { x: 1269, y: 668, width: 207, height: 258 }
+  },
+  {
+    id: "floor-cable-cover",
+    sceneId: "lecture-hall",
+    cn: "地面线槽",
+    en: "floor cable cover",
+    phonetic: "/flɔːr ˈkeɪ.bəl ˈkʌv.ɚ/",
+    exampleEn: "The cable runs under the floor cable cover.",
+    exampleCn: "线缆从地面线槽下方通过。",
+    expressionEn: "Do not move the floor cable cover during the recording.",
+    expressionCn: "录制过程中不要移动地面线槽。",
+    audioUrl: "/assets/audio/lecture-hall/floor-cable-cover.mp3",
+    position: { x: 1139, y: 813, width: 108, height: 126 },
+    positions: [{ x: 1139, y: 813, width: 108, height: 126 }]
+  },
+  {
+    id: "lecture-hall-podium",
+    sceneId: "lecture-hall",
+    cn: "讲台",
+    en: "podium",
+    phonetic: "/ˈpoʊ.di.əm/",
+    exampleEn: "The podium is on the stage.",
+    exampleCn: "讲台在舞台上。",
+    expressionEn: "The speaker puts notes on the podium before the lecture starts.",
+    expressionCn: "讲座开始前，演讲者把讲稿放在讲台上。",
+    audioUrl: "/assets/audio/lecture-hall/lecture-hall-podium.mp3",
+    position: { x: 1008, y: 422, width: 145, height: 186 }
+  },
+  {
+    id: "microphone-stand",
+    sceneId: "lecture-hall",
+    cn: "麦克风支架",
+    en: "microphone stand",
+    phonetic: "/ˈmaɪ.krə.foʊn stænd/",
+    exampleEn: "The microphone stand is beside the podium.",
+    exampleCn: "麦克风支架在讲台旁边。",
+    expressionEn: "Adjust the microphone stand so the speaker can talk comfortably.",
+    expressionCn: "调整麦克风支架，让演讲者能舒服地讲话。",
+    audioUrl: "/assets/audio/lecture-hall/microphone-stand.mp3",
+    position: { x: 1436, y: 412, width: 48, height: 254 }
+  },
+  {
+    id: "lecture-hall-clock",
+    sceneId: "lecture-hall",
+    cn: "时钟",
+    en: "clock",
+    phonetic: "/klɑːk/",
+    exampleEn: "The clock is on the wall.",
+    exampleCn: "时钟在墙上。",
+    expressionEn: "The clock helps the speaker keep track of the lecture time.",
+    expressionCn: "时钟帮助演讲者掌握讲座时间。",
+    audioUrl: "/assets/audio/lecture-hall/lecture-hall-clock.mp3",
+    position: { x: 1589, y: 116, width: 69, height: 91 }
   }
 ];

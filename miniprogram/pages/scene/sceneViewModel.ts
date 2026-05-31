@@ -19,6 +19,7 @@ export type SceneModeEntry = {
 };
 
 export type SceneMemoryHotspot = {
+  hotspotId: string;
   wordId: Word["id"];
   label: Word["en"];
   style: string;
@@ -34,6 +35,14 @@ export type SceneMemoryWordCard = {
   expressionEn: Word["expressionEn"];
   expressionCn: Word["expressionCn"];
   showExpressionCn: boolean;
+};
+
+export type SceneWordListItem = {
+  wordId: Word["id"];
+  en: Word["en"];
+  cn: Word["cn"];
+  phonetic: Word["phonetic"];
+  isLearned: boolean;
 };
 
 export type SceneImageLoadStatus = "idle" | "failed";
@@ -95,8 +104,13 @@ export type SceneViewModel = {
   showMemoryGuide: boolean;
   showMemoryTranslationGuide: boolean;
   memoryGuideWordId: Word["id"];
+  memoryHintWordId: Word["id"] | "";
+  memoryHintButtonLabel: string;
+  memoryHintButtonDisabled: boolean;
   selectedMemoryWordId: string;
   selectedMemoryWordCard: SceneMemoryWordCard | null;
+  showSceneWordList: boolean;
+  sceneWordList: SceneWordListItem[];
   listeningWritingRound: QuizRound | null;
   listeningWritingState: SceneListeningWritingState;
   listeningWritingClickAttemptCount: number;
@@ -250,12 +264,24 @@ export function createSceneViewModel(
   words: Word[] = []
 ): SceneViewModel {
   const learnedCount = progress.learnedWordIds.length;
+  const learnedWordIdSet = new Set(progress.learnedWordIds);
+  const hasUnlearnedWords = words.some((word) => !learnedWordIdSet.has(word.id));
   const progressPercent =
     scene.wordCount > 0 ? Math.round((learnedCount / scene.wordCount) * 100) : 0;
-  const memoryHotspots = words.map((word) => ({
+  const memoryHotspots = words.flatMap((word) =>
+    (word.positions ?? [word.position]).map((position, index) => ({
+      hotspotId: `${word.id}:${index}`,
+      wordId: word.id,
+      label: word.en,
+      style: createHotspotStyle(position, scene.baseWidth, scene.baseHeight)
+    }))
+  );
+  const sceneWordList = words.map((word) => ({
     wordId: word.id,
-    label: word.en,
-    style: createHotspotStyle(word.position, scene.baseWidth, scene.baseHeight)
+    en: word.en,
+    cn: word.cn,
+    phonetic: word.phonetic,
+    isLearned: learnedWordIdSet.has(word.id)
   }));
 
   return {
@@ -275,8 +301,13 @@ export function createSceneViewModel(
     showMemoryGuide: false,
     showMemoryTranslationGuide: false,
     memoryGuideWordId: "projector",
+    memoryHintWordId: "",
+    memoryHintButtonLabel: hasUnlearnedWords ? "提示一下" : "已找完",
+    memoryHintButtonDisabled: !hasUnlearnedWords,
     selectedMemoryWordId: "",
     selectedMemoryWordCard: null,
+    showSceneWordList: false,
+    sceneWordList,
     listeningWritingRound: null,
     listeningWritingState: createEmptyListeningWritingState(),
     listeningWritingClickAttemptCount: 0,

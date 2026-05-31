@@ -20,6 +20,7 @@ export type IndexViewModel = {
 export type IndexSceneAction =
   | {
       type: "switchTab";
+      sceneId: Scene["id"];
       url: string;
     }
   | {
@@ -55,6 +56,7 @@ export function getIndexSceneAction(sceneId: Scene["id"], scenes: Scene[]): Inde
   if (scene?.status === "available") {
     return {
       type: "switchTab",
+      sceneId: scene.id,
       url: "/pages/scene/scene"
     };
   }

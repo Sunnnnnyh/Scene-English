@@ -252,7 +252,7 @@ describe("Listen + Spell start state inside the Learn tab", () => {
     expect(sceneMarkup).toContain("mode-back-icon");
     expect(sceneMarkup).toContain("mode-back-chevron");
     expect(sceneMarkup).toContain("‹");
-    expect(sceneMarkup).toContain('aria-label="Back to Classroom"');
+    expect(sceneMarkup).toContain('aria-label="Back to scene"');
     expect(sceneStyles).toContain(".mode-topbar");
     expect(sceneStyles).toContain(".mode-back-icon");
     expect(sceneStyles).toContain(".mode-back-chevron");
