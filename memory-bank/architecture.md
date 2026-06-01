@@ -2092,3 +2092,97 @@ File change record:
 | `miniprogram/services/sceneTutorContextService.ts` | Builds local Scene Tutor learning signals and base context for later RAG retrieval. | v2 Scene Tutor / Step 1.2 |
 | `miniprogram/types/index.ts` | Adds structured result/input types for context-service functions. | v2 Scene Tutor / Step 1.2 |
 | `tests/sceneTutorContextService.test.ts` | Covers the local Scene Tutor context-service behavior. | v2 Scene Tutor / Step 1.2 |
+
+## 62. v2 Scene Tutor / Step 1.3 Lightweight RAG retrieval service
+
+Scene Tutor now has a local retrieval service that converts the user's current scene, query, selected words, and learning signals into a compact `matchedWords` list. This is the mini-program side of the lightweight RAG flow; it remains local-only and does not call CloudBase or an external model.
+
+Current responsibilities:
+- `miniprogram/services/sceneTutorRetrievalService.ts` retrieves words only from the requested available scene.
+- `miniprogram/services/sceneTutorRetrievalService.ts` matches against English word text, Chinese meaning, useful-expression English, and useful-expression Chinese.
+- `miniprogram/services/sceneTutorRetrievalService.ts` ranks selected words first when they are provided.
+- `miniprogram/services/sceneTutorRetrievalService.ts` applies small ranking boosts for mistake words, favorite words, and learned words.
+- `miniprogram/services/sceneTutorRetrievalService.ts` returns current-scene fallback words when there is no direct text or selected-word match.
+- `miniprogram/services/sceneTutorRetrievalService.ts` caps `matchedWords` at 5 items to keep the future cloud payload compact.
+- `miniprogram/types/index.ts` defines input/result types for retrieval.
+
+Runtime notes:
+- The service returns structured `unavailable` results for unknown or unavailable scenes.
+- Ranking is intentionally lightweight and explainable; it is not semantic embedding search.
+- The fallback path still respects current scene boundaries and learning signals.
+- `SceneTutorMatchedWord` includes favorite, mistake-type, and learned flags so prompt construction can reference the learner's current state without sending raw local-storage records.
+
+Test coverage:
+- `tests/sceneTutorRetrievalService.test.ts` covers Classroom `projector` matching.
+- `tests/sceneTutorRetrievalService.test.ts` covers Lecture Hall `stage` retrieval without Classroom contamination.
+- `tests/sceneTutorRetrievalService.test.ts` covers mistake/favorite ranking boosts.
+- `tests/sceneTutorRetrievalService.test.ts` covers selected-word priority.
+- `tests/sceneTutorRetrievalService.test.ts` covers current-scene fallback words.
+
+File change record:
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `miniprogram/services/sceneTutorRetrievalService.ts` | Retrieves and ranks compact Scene Tutor matched words from the current scene. | v2 Scene Tutor / Step 1.3 |
+| `miniprogram/types/index.ts` | Adds Scene Tutor retrieval input/result types. | v2 Scene Tutor / Step 1.3 |
+| `tests/sceneTutorRetrievalService.test.ts` | Covers local retrieval behavior and scene scoping. | v2 Scene Tutor / Step 1.3 |
+
+## 63. v2 Scene Tutor / Step 1.4 Scene Tutor payload builder
+
+Scene Tutor now has a mini-program payload builder that combines the local context and retrieval layers into the minimal request shape needed by the future CloudBase function. This step still does not call CloudBase or any external model.
+
+Current responsibilities:
+- `miniprogram/services/sceneTutorPromptService.ts` receives the Scene Tutor task, scene ID, query, and optional selected word IDs from future UI/service callers.
+- `miniprogram/services/sceneTutorPromptService.ts` calls `sceneTutorContextService` to build scene metadata and learning signals.
+- `miniprogram/services/sceneTutorPromptService.ts` calls `sceneTutorRetrievalService` to populate compact `matchedWords`.
+- `miniprogram/services/sceneTutorPromptService.ts` returns a `SceneTutorRequestPayload` containing only `task` and `context`.
+- `miniprogram/types/index.ts` defines the Scene Tutor payload input/result contracts.
+
+Runtime notes:
+- The payload intentionally excludes API keys, provider credentials, raw local-storage keys, storage adapter methods, and full cross-scene vocabulary data.
+- Unavailable-scene results are propagated as structured `unavailable` errors.
+- Ask AI and Make Sentences share the same payload boundary; task-specific generation behavior belongs to the CloudBase function and prompt layer.
+
+Test coverage:
+- `tests/sceneTutorPromptService.test.ts` covers Ask AI payload shape.
+- `tests/sceneTutorPromptService.test.ts` covers Make Sentences selected-word preservation.
+- `tests/sceneTutorPromptService.test.ts` checks that secret-like fields and raw storage structures are absent from the payload.
+- `tests/sceneTutorPromptService.test.ts` covers structured unavailable-scene handling.
+
+File change record:
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `miniprogram/services/sceneTutorPromptService.ts` | Builds minimal Scene Tutor cloud-function payloads from local context and retrieval results. | v2 Scene Tutor / Step 1.4 |
+| `miniprogram/types/index.ts` | Adds Scene Tutor payload input/result contracts. | v2 Scene Tutor / Step 1.4 |
+| `tests/sceneTutorPromptService.test.ts` | Covers payload shape, selected-word preservation, and secret/raw-storage exclusions. | v2 Scene Tutor / Step 1.4 |
+
+## 64. v2 Scene Tutor / Step 2.1 CloudBase function skeleton
+
+Scene Tutor now has a CloudBase cloud function directory with a local-testable core handler. The skeleton prepares the server-side boundary for future prompt building, response parsing, and LLM provider integration without storing API credentials in the repository.
+
+Current responsibilities:
+- `cloudfunctions/sceneTutor/package.json` defines the cloud function package as a private CommonJS module.
+- `cloudfunctions/sceneTutor/index.js` exports `main` for CloudBase and `handleSceneTutorRequest` for local unit tests.
+- `cloudfunctions/sceneTutor/guardrails.js` defines the supported v2 task set and initial request validation.
+- `cloudfunctions/sceneTutor/promptBuilder.js` reserves the prompt builder module for the next server-side implementation steps.
+- `cloudfunctions/sceneTutor/responseParser.js` reserves the model response parser module for later structured parsing.
+- `tests/cloudSceneTutorFunction.test.ts` imports the CommonJS handler through Node's `createRequire` so Vitest can exercise the cloud function core.
+
+Runtime notes:
+- No API key, provider key, base URL, or model secret is stored in the cloud function directory.
+- `handleSceneTutorRequest` currently returns a minimal success object after guardrail validation; model invocation is intentionally deferred.
+- The initial guardrails validate supported task values and query length. Fuller matched-word, selected-word, scene, and secret-field validation belongs to Step 2.2.
+
+Test coverage:
+- `tests/cloudSceneTutorFunction.test.ts` covers a supported Scene Tutor task.
+- `tests/cloudSceneTutorFunction.test.ts` covers unsupported task handling with `invalid_request`.
+- `tests/cloudSceneTutorFunction.test.ts` covers query length over 500 characters.
+
+File change record:
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `cloudfunctions/sceneTutor/package.json` | Defines the CloudBase function package metadata. | v2 Scene Tutor / Step 2.1 |
+| `cloudfunctions/sceneTutor/index.js` | Exposes the CloudBase `main` entry and local-testable handler. | v2 Scene Tutor / Step 2.1 |
+| `cloudfunctions/sceneTutor/guardrails.js` | Provides initial task and query-length validation. | v2 Scene Tutor / Step 2.1 |
+| `cloudfunctions/sceneTutor/promptBuilder.js` | Reserves the server-side prompt builder module. | v2 Scene Tutor / Step 2.1 |
+| `cloudfunctions/sceneTutor/responseParser.js` | Reserves the server-side response parser module. | v2 Scene Tutor / Step 2.1 |
+| `tests/cloudSceneTutorFunction.test.ts` | Covers the cloud function skeleton through the local handler. | v2 Scene Tutor / Step 2.1 |

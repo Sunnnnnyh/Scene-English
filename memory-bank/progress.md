@@ -1225,3 +1225,58 @@
   - Vitest passed: 48 test files, 249 tests.
 - Remaining:
   - Step 1.3 needs lightweight local word retrieval so selected words and user queries can populate `matchedWords`.
+
+### 2026-06-01 - v2 Scene Tutor / Step 1.3 Lightweight RAG retrieval service
+
+- Completed:
+  - Added `sceneTutorRetrievalService` to retrieve Scene Tutor matched words from the current scene's local word list.
+  - Supported matching by English word, Chinese meaning, useful-expression English, and useful-expression Chinese.
+  - Kept retrieval scoped to the requested scene so Classroom and Lecture Hall vocabulary do not cross-contaminate.
+  - Added lightweight ranking boosts for selected words, mistake words, favorite words, and learned words.
+  - Added current-scene fallback matched words when the query has no direct hit.
+  - Limited matched words to at most 5 items for prompt-size control.
+  - Added regression coverage for projector matching, Lecture Hall stage scoping, favorite/mistake ranking, selected-word priority, and fallback words.
+- Verification:
+  - User validated Step 1.3.
+  - TypeScript miniprogram config passed.
+  - TypeScript test config passed.
+  - ESLint passed.
+  - Prettier check passed.
+  - Vitest passed: 49 test files, 254 tests.
+- Remaining:
+  - Step 1.4 needs `sceneTutorPromptService` to combine base context and retrieval results into the minimal cloud-function payload.
+
+### 2026-06-01 - v2 Scene Tutor / Step 1.4 Scene Tutor payload builder
+
+- Completed:
+  - Added `sceneTutorPromptService` to build the minimal cloud-function request payload from task, scene ID, query, and selected word IDs.
+  - Combined `sceneTutorContextService` and `sceneTutorRetrievalService` so payloads include scene metadata, query, selected words, matched words, and learning signals.
+  - Added safeguards through tests to confirm the mini-program payload does not include API key fields, raw storage keys, or storage adapter methods.
+  - Added structured unavailable-scene propagation from the lower-level context/retrieval services.
+- Verification:
+  - User validated Step 1.4.
+  - TypeScript miniprogram config passed.
+  - TypeScript test config passed.
+  - ESLint passed.
+  - Prettier check passed.
+  - Vitest passed: 50 test files, 258 tests.
+- Remaining:
+  - Phase 2 / Step 2.1 needs the CloudBase `sceneTutor` cloud function skeleton and local unit-testable handler.
+
+### 2026-06-01 - v2 Scene Tutor / Step 2.1 CloudBase function skeleton
+
+- Completed:
+  - Added the `cloudfunctions/sceneTutor/` cloud function directory.
+  - Added `package.json`, `index.js`, `guardrails.js`, `promptBuilder.js`, and `responseParser.js`.
+  - Kept API credentials out of the repository and out of the cloud function skeleton.
+  - Exposed `handleSceneTutorRequest` from `index.js` so the cloud function core can be covered by local unit tests.
+  - Added initial guardrail behavior for supported tasks, unsupported tasks, and query length over 500 characters.
+- Verification:
+  - User validated Step 2.1.
+  - TypeScript miniprogram config passed.
+  - TypeScript test config passed.
+  - ESLint passed.
+  - Prettier check passed.
+  - Vitest passed: 51 test files, 261 tests.
+- Remaining:
+  - Step 2.2 needs fuller cloud function guardrails for scene ID, matched word count, selected word count, and secret-like request fields.

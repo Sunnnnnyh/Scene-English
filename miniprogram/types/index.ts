@@ -238,6 +238,34 @@ export type SceneTutorBaseContextResult =
     }
   | SceneTutorUnavailableResult;
 
+export type SceneTutorRetrievalInput = {
+  sceneId: Scene["id"];
+  query: string;
+  selectedWordIds?: Word["id"][];
+  learningSignals: SceneTutorLearningSignals;
+};
+
+export type SceneTutorRetrievalResult =
+  | {
+      ok: true;
+      matchedWords: SceneTutorMatchedWord[];
+    }
+  | SceneTutorUnavailableResult;
+
+export type SceneTutorPayloadInput = {
+  sceneId: Scene["id"];
+  task: SceneTutorTask;
+  query: string;
+  selectedWordIds?: Word["id"][];
+};
+
+export type SceneTutorPayloadResult =
+  | {
+      ok: true;
+      payload: SceneTutorRequestPayload;
+    }
+  | SceneTutorUnavailableResult;
+
 export type LocalStore<T> = {
   version: number;
   updatedAt: ISODateString;
