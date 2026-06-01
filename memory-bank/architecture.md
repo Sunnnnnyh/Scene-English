@@ -2186,3 +2186,143 @@ File change record:
 | `cloudfunctions/sceneTutor/promptBuilder.js` | Reserves the server-side prompt builder module. | v2 Scene Tutor / Step 2.1 |
 | `cloudfunctions/sceneTutor/responseParser.js` | Reserves the server-side response parser module. | v2 Scene Tutor / Step 2.1 |
 | `tests/cloudSceneTutorFunction.test.ts` | Covers the cloud function skeleton through the local handler. | v2 Scene Tutor / Step 2.1 |
+
+## 65. v2 Scene Tutor / Step 2.2 Cloud function guardrails
+
+The Scene Tutor cloud function now validates the request more fully before any prompt building or model call can occur. This keeps the server-side boundary narrow and prevents obvious malformed or secret-bearing requests from moving deeper into the AI pipeline.
+
+Current responsibilities:
+- `cloudfunctions/sceneTutor/guardrails.js` validates that `task` belongs to the supported v2 task set.
+- `cloudfunctions/sceneTutor/guardrails.js` validates that `context.scene.id` exists.
+- `cloudfunctions/sceneTutor/guardrails.js` validates that `context.query` exists and is at most 500 characters.
+- `cloudfunctions/sceneTutor/guardrails.js` validates that `matchedWords` is an array with at most 5 items.
+- `cloudfunctions/sceneTutor/guardrails.js` validates that Make Sentences selected words do not exceed 5 items.
+- `cloudfunctions/sceneTutor/guardrails.js` recursively rejects secret-like request fields such as `apiKey`, `LLM_API_KEY`, `providerKey`, `token`, and `secret`.
+
+Runtime notes:
+- Guardrails return structured `invalid_request` results and do not throw for expected malformed requests.
+- Out-of-scope semantic handling remains outside this guardrail layer; later prompt instructions and model response handling constrain that behavior.
+- API keys remain environment-only and are not accepted from client payloads.
+
+Test coverage:
+- `tests/cloudSceneTutorFunction.test.ts` covers valid tasks, unsupported tasks, query length, missing scene ID, excessive matched words, excessive selected words, and secret-like fields.
+
+File change record:
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `cloudfunctions/sceneTutor/guardrails.js` | Adds fuller server-side request validation before prompt/model work. | v2 Scene Tutor / Step 2.2 |
+| `tests/cloudSceneTutorFunction.test.ts` | Expands guardrail coverage for malformed or unsafe cloud requests. | v2 Scene Tutor / Step 2.2 |
+
+## 66. v2 Scene Tutor / Step 2.3 Prompt builder
+
+The Scene Tutor cloud function can now build stable prompt messages for the two v2 task families. Prompt construction stays server-side and uses only the minimal context supplied by the mini-program payload.
+
+Current responsibilities:
+- `cloudfunctions/sceneTutor/promptBuilder.js` returns separate `system` and `user` prompt messages.
+- `cloudfunctions/sceneTutor/promptBuilder.js` instructs the model to act as Scene Tutor, stay within the current scene, prioritize matched words, and return JSON only.
+- `cloudfunctions/sceneTutor/promptBuilder.js` includes current scene metadata, user query, selected words, matched word summaries, and learning signals.
+- `cloudfunctions/sceneTutor/promptBuilder.js` defines Ask AI output fields: `answer`, `example`, `relatedWords`, and `basedOn`.
+- `cloudfunctions/sceneTutor/promptBuilder.js` defines Make Sentences output fields: `generatedText`, `keyWordsUsed`, `chineseHelp`, and `trySaying`.
+
+Runtime notes:
+- Prompt building does not read provider environment variables and does not include API key values.
+- Prompt output is still plain message text; actual provider invocation and response parsing are handled by later steps.
+- The prompt uses compact matched-word summaries rather than raw local-storage records or full cross-scene data.
+
+Test coverage:
+- `tests/cloudSceneTutorPromptBuilder.test.ts` covers Ask AI prompt content.
+- `tests/cloudSceneTutorPromptBuilder.test.ts` covers Make Sentences prompt content.
+- `tests/cloudSceneTutorPromptBuilder.test.ts` verifies environment API key values are not included in prompt output.
+
+File change record:
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `cloudfunctions/sceneTutor/promptBuilder.js` | Builds server-side Scene Tutor prompt messages for Ask AI and Make Sentences tasks. | v2 Scene Tutor / Step 2.3 |
+| `tests/cloudSceneTutorPromptBuilder.test.ts` | Covers prompt content and secret-value exclusion. | v2 Scene Tutor / Step 2.3 |
+
+## 67. v2 Scene Tutor / Step 2.4 OpenAI-compatible provider abstraction
+
+Scene Tutor now has a replaceable LLM provider layer for OpenAI-compatible chat completions. The provider is configured exclusively through environment variables and can be tested locally through an injected request function.
+
+Current responsibilities:
+- `cloudfunctions/sceneTutor/providers/llmProvider.js` exposes `callLlmProvider` as the cloud function's provider entry point.
+- `cloudfunctions/sceneTutor/providers/openaiCompatibleProvider.js` builds OpenAI-compatible `/chat/completions` requests.
+- `cloudfunctions/sceneTutor/providers/openaiCompatibleProvider.js` reads `LLM_API_KEY`, `LLM_BASE_URL`, and `LLM_MODEL` from the provided environment object or `process.env`.
+- `cloudfunctions/sceneTutor/providers/openaiCompatibleProvider.js` defaults `LLM_MODEL` to `deepseek-v4-flash` when the model variable is absent.
+- `cloudfunctions/sceneTutor/providers/openaiCompatibleProvider.js` returns model text from the first chat completion choice.
+- `cloudfunctions/sceneTutor/providers/openaiCompatibleProvider.js` returns structured provider errors without exposing API key values.
+
+Runtime notes:
+- `LLM_BASE_URL` is not hardcoded; it must be configured in CloudBase environment variables during real integration.
+- The provider layer does not parse model JSON; it only returns raw model text for `responseParser.js`.
+- Unit tests inject a fake request function, so this step does not depend on network access or a real API key.
+
+Test coverage:
+- `tests/cloudSceneTutorProvider.test.ts` covers missing provider configuration.
+- `tests/cloudSceneTutorProvider.test.ts` covers successful OpenAI-compatible request shape and model text extraction.
+- `tests/cloudSceneTutorProvider.test.ts` covers the default `deepseek-v4-flash` model.
+- `tests/cloudSceneTutorProvider.test.ts` covers provider failure without API key leakage.
+
+File change record:
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `cloudfunctions/sceneTutor/providers/llmProvider.js` | Exposes the replaceable Scene Tutor LLM provider entry. | v2 Scene Tutor / Step 2.4 |
+| `cloudfunctions/sceneTutor/providers/openaiCompatibleProvider.js` | Implements OpenAI-compatible chat completions provider behavior. | v2 Scene Tutor / Step 2.4 |
+| `tests/cloudSceneTutorProvider.test.ts` | Covers provider configuration, request shape, default model, and safe errors. | v2 Scene Tutor / Step 2.4 |
+
+## 68. v2 Scene Tutor / Step 2.5 Response parser and fallback
+
+Scene Tutor now has a response parser that converts raw model text into structured cloud function results. The parser protects the mini-program from malformed or incomplete model output by normalizing known response shapes and returning structured errors for unusable content.
+
+Current responsibilities:
+- `cloudfunctions/sceneTutor/responseParser.js` parses JSON model output when the response appears JSON-like.
+- `cloudfunctions/sceneTutor/responseParser.js` normalizes Ask AI fields: `answer`, `example`, `relatedWords`, and `basedOn`.
+- `cloudfunctions/sceneTutor/responseParser.js` normalizes Make Sentences fields: `generatedText`, `keyWordsUsed`, `chineseHelp`, and `trySaying`.
+- `cloudfunctions/sceneTutor/responseParser.js` converts plain text into a structured fallback response.
+- `cloudfunctions/sceneTutor/responseParser.js` returns `model_response_invalid` for empty text or malformed JSON-like output.
+
+Runtime notes:
+- Missing optional arrays become empty arrays; missing optional strings become empty strings.
+- The parser does not call the provider or inspect prompts; it only handles raw text plus task type.
+- The mini-program can later distinguish successful parsed responses from structured parser errors without crashing.
+
+Test coverage:
+- `tests/cloudSceneTutorResponseParser.test.ts` covers valid Ask AI JSON.
+- `tests/cloudSceneTutorResponseParser.test.ts` covers valid Make Sentences JSON.
+- `tests/cloudSceneTutorResponseParser.test.ts` covers plain-text fallback.
+- `tests/cloudSceneTutorResponseParser.test.ts` covers malformed JSON-like output and empty text.
+
+File change record:
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `cloudfunctions/sceneTutor/responseParser.js` | Parses raw model text into structured Scene Tutor responses or structured errors. | v2 Scene Tutor / Step 2.5 |
+| `tests/cloudSceneTutorResponseParser.test.ts` | Covers model response parsing, fallback, and invalid-output behavior. | v2 Scene Tutor / Step 2.5 |
+
+## 69. v2 Scene Tutor / Step 2.6 Local cloud function end-to-end test
+
+The Scene Tutor cloud function core now runs as a complete local pipeline in unit tests. This closes the server-side loop from validated request to prompt creation, provider invocation, response parsing, and structured output without requiring a real API key or network call.
+
+Current responsibilities:
+- `cloudfunctions/sceneTutor/index.js` calls `validateSceneTutorRequest` before any AI processing.
+- `cloudfunctions/sceneTutor/index.js` builds prompt messages through `buildSceneTutorPrompt`.
+- `cloudfunctions/sceneTutor/index.js` calls an injected provider in tests or `callLlmProvider` by default.
+- `cloudfunctions/sceneTutor/index.js` parses provider text through `parseSceneTutorResponse`.
+- `cloudfunctions/sceneTutor/index.js` returns parsed Scene Tutor responses with provider model metadata when available.
+- `tests/cloudSceneTutorFunction.test.ts` injects fake providers to exercise the full local pipeline.
+
+Runtime notes:
+- Without CloudBase provider environment variables, valid requests return the structured `provider_not_configured` result.
+- Local tests do not use real API keys, do not call the network, and do not depend on the selected production provider.
+- Guardrail failures still return before prompt building or provider invocation.
+
+Test coverage:
+- `tests/cloudSceneTutorFunction.test.ts` covers invalid request guardrails.
+- `tests/cloudSceneTutorFunction.test.ts` covers provider-not-configured behavior.
+- `tests/cloudSceneTutorFunction.test.ts` covers local end-to-end Ask AI success with fake provider output.
+- `tests/cloudSceneTutorFunction.test.ts` covers local end-to-end Make Sentences success with fake provider output.
+
+File change record:
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `cloudfunctions/sceneTutor/index.js` | Connects guardrails, prompt builder, provider, and parser into the cloud function core pipeline. | v2 Scene Tutor / Step 2.6 |
+| `tests/cloudSceneTutorFunction.test.ts` | Covers the local end-to-end cloud function pipeline with fake providers. | v2 Scene Tutor / Step 2.6 |

@@ -1280,3 +1280,94 @@
   - Vitest passed: 51 test files, 261 tests.
 - Remaining:
   - Step 2.2 needs fuller cloud function guardrails for scene ID, matched word count, selected word count, and secret-like request fields.
+
+### 2026-06-01 - v2 Scene Tutor / Step 2.2 Cloud function guardrails
+
+- Completed:
+  - Expanded `guardrails.js` request validation before any model call.
+  - Added validation for required `context.scene.id`.
+  - Added validation that `matchedWords` is an array with at most 5 items.
+  - Added validation that Make Sentences selected words do not exceed 5 items.
+  - Added recursive rejection of secret-like request fields such as `apiKey`, `LLM_API_KEY`, `providerKey`, `token`, and `secret`.
+  - Expanded cloud function tests for scene ID, matched word count, selected word count, and secret-like fields.
+- Verification:
+  - User validated Step 2.2.
+  - TypeScript miniprogram config passed.
+  - TypeScript test config passed.
+  - ESLint passed.
+  - Prettier check passed.
+  - Vitest passed: 51 test files, 265 tests.
+- Remaining:
+  - Step 2.3 needs server-side prompt builder output for Ask AI and Make Sentences tasks.
+
+### 2026-06-01 - v2 Scene Tutor / Step 2.3 Prompt builder
+
+- Completed:
+  - Implemented `promptBuilder.js` to return stable `system` and `user` prompt messages for Scene Tutor.
+  - Added Ask AI prompt instructions to stay within the current scene, prioritize matched words, return JSON only, and include `answer`, `example`, `relatedWords`, and `basedOn`.
+  - Added Make Sentences prompt instructions to use selected words and return JSON fields `generatedText`, `keyWordsUsed`, `chineseHelp`, and `trySaying`.
+  - Kept prompt construction limited to payload context and verified it does not include `LLM_API_KEY` values.
+- Verification:
+  - User validated Step 2.3.
+  - TypeScript miniprogram config passed.
+  - TypeScript test config passed.
+  - ESLint passed.
+  - Prettier check passed.
+  - Vitest passed: 52 test files, 268 tests.
+- Remaining:
+  - Step 2.4 needs the OpenAI-compatible LLM provider abstraction with injected request testing and environment-only credentials.
+
+### 2026-06-01 - v2 Scene Tutor / Step 2.4 OpenAI-compatible provider abstraction
+
+- Completed:
+  - Added `providers/llmProvider.js` as the cloud function's replaceable LLM provider entry.
+  - Added `providers/openaiCompatibleProvider.js` for OpenAI-compatible chat completions requests.
+  - Read `LLM_API_KEY`, `LLM_BASE_URL`, and `LLM_MODEL` from environment-only configuration.
+  - Kept `LLM_BASE_URL` out of source code defaults and used `deepseek-v4-flash` when `LLM_MODEL` is not set.
+  - Added request-function injection so provider behavior can be unit-tested without real network calls or real API keys.
+  - Added structured `provider_not_configured` and `provider_error` results that do not leak API key values.
+- Verification:
+  - User validated Step 2.4.
+  - TypeScript miniprogram config passed.
+  - TypeScript test config passed.
+  - ESLint passed.
+  - Prettier check passed.
+  - Vitest passed: 53 test files, 272 tests.
+- Remaining:
+  - Step 2.5 needs response parsing and safe fallback behavior for model output.
+
+### 2026-06-01 - v2 Scene Tutor / Step 2.5 Response parser and fallback
+
+- Completed:
+  - Implemented `responseParser.js` to parse model JSON before returning data to the caller.
+  - Added Ask AI response normalization with missing `relatedWords` and `basedOn` filled as empty arrays.
+  - Added Make Sentences response normalization with missing `chineseHelp` and `trySaying` filled as empty strings.
+  - Added plain-text fallback conversion into structured displayable responses.
+  - Added `model_response_invalid` errors for empty text and malformed JSON-like output.
+- Verification:
+  - User validated Step 2.5.
+  - TypeScript miniprogram config passed.
+  - TypeScript test config passed.
+  - ESLint passed.
+  - Prettier check passed.
+  - Vitest passed: 54 test files, 277 tests.
+- Remaining:
+  - Step 2.6 needs local end-to-end cloud function tests that inject a fake provider and return parsed Ask AI / Make Sentences results.
+
+### 2026-06-01 - v2 Scene Tutor / Step 2.6 Local cloud function end-to-end test
+
+- Completed:
+  - Connected the cloud function handler pipeline across guardrails, prompt builder, provider, and response parser.
+  - Updated `handleSceneTutorRequest` to support dependency injection for local fake-provider tests.
+  - Added local end-to-end tests for Ask AI and Make Sentences successful responses using fake provider output.
+  - Kept tests independent from real API keys and network access.
+  - Preserved structured provider configuration errors when the handler runs without provider environment variables.
+- Verification:
+  - User validated Step 2.6.
+  - TypeScript miniprogram config passed.
+  - TypeScript test config passed.
+  - ESLint passed.
+  - Prettier check passed.
+  - Vitest passed: 54 test files, 279 tests.
+- Remaining:
+  - Phase 3 / Step 3.1 needs mini-program cloud capability initialization and safe unavailable handling.
