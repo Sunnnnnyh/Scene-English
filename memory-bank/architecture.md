@@ -2036,3 +2036,59 @@ File change record:
 | `tests/scenes.test.ts` | Covers Lecture Hall data, assets, and hotspot calibration. | Lecture Hall scene content |
 | `tests/assets.test.ts` | Covers Lecture Hall image and audio asset availability. | Lecture Hall scene content |
 | `tests/sceneMemoryHotspots.test.ts` | Covers transparent hotspot tap behavior. | Lecture Hall scene content |
+
+## 60. v2 Scene Tutor / Step 1.1 Scene Tutor domain types
+
+Scene Tutor now has shared TypeScript contracts for the upcoming RAG-based AI assistant flow. This step establishes the data boundary only; it does not add runtime UI, cloud calls, API keys, model configuration, or prompt execution.
+
+Current responsibilities:
+- `miniprogram/types/index.ts` defines Scene Tutor task kinds for Ask AI and Make Sentences modes.
+- `miniprogram/types/index.ts` defines matched-word RAG metadata so later services can pass the relevant scene vocabulary with match reasons and scores.
+- `miniprogram/types/index.ts` defines local learning signals for favorites, mistake words, mastered words, and recently viewed words.
+- `miniprogram/types/index.ts` defines the Scene Tutor context and cloud request payload that will later be sent to the CloudBase function.
+- `miniprogram/types/index.ts` defines structured response types for Ask AI and Make Sentences.
+- `miniprogram/types/index.ts` defines stable error codes for unavailable service, invalid request, out-of-scope request, model timeout, and invalid model response.
+
+Runtime notes:
+- The default model selection and API credentials remain outside the mini-program codebase and will be configured through CloudBase environment variables during the later integration step.
+- The mini-program will continue to build context from local scene and learning data; this type layer prepares that boundary without changing existing learning flows.
+- Quiz generation, real ASR, cloud sync, and generic chatbot behavior remain outside the current v2 implementation scope.
+
+Test coverage:
+- `tests/sceneTutorContextService.test.ts` currently covers the shared type imports and expected request/response contract shape. It will expand in Step 1.2 when the local context service is implemented.
+
+File change record:
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `miniprogram/types/index.ts` | Adds Scene Tutor task, RAG context, request, response, learning-signal, and error-code contracts. | v2 Scene Tutor / Step 1.1 |
+| `tests/sceneTutorContextService.test.ts` | Starts the Scene Tutor TDD coverage with type-contract checks. | v2 Scene Tutor / Step 1.1 |
+
+## 61. v2 Scene Tutor / Step 1.2 Scene Tutor context service
+
+Scene Tutor now has a local context service that gathers the learner and scene signals needed before retrieval and cloud generation. This remains local-only and does not call CloudBase, the LLM provider, or any external API.
+
+Current responsibilities:
+- `miniprogram/services/sceneTutorContextService.ts` checks that the requested scene exists and is available.
+- `miniprogram/services/sceneTutorContextService.ts` reads the current scene word list through `wordService`.
+- `miniprogram/services/sceneTutorContextService.ts` reads favorites, mistakes, and progress through the existing service layer.
+- `miniprogram/services/sceneTutorContextService.ts` builds `SceneTutorLearningSignals` with scene-scoped favorite word IDs, mistake word IDs, learned word IDs, learned count, and total word count.
+- `miniprogram/services/sceneTutorContextService.ts` builds a base `SceneTutorContext` containing scene metadata, task, query, selected word IDs, empty `matchedWords`, and learning signals.
+- `miniprogram/types/index.ts` defines result types for Scene Tutor learning-signal and base-context builders.
+
+Runtime notes:
+- Unknown, unavailable, or coming-soon scenes return a structured `unavailable` result so later page code can show a controlled fallback.
+- Favorites, mistakes, learned words, and selected word IDs are filtered against the requested scene's real word list before entering the AI context.
+- Retrieval ranking is intentionally deferred to the next step; `matchedWords` is empty in the base context until the local retrieval service populates it.
+
+Test coverage:
+- `tests/sceneTutorContextService.test.ts` covers Classroom and Lecture Hall context signals.
+- `tests/sceneTutorContextService.test.ts` covers empty local data.
+- `tests/sceneTutorContextService.test.ts` covers cross-scene scoping for favorites, mistakes, and learned words.
+- `tests/sceneTutorContextService.test.ts` covers base context creation and unknown scene handling.
+
+File change record:
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `miniprogram/services/sceneTutorContextService.ts` | Builds local Scene Tutor learning signals and base context for later RAG retrieval. | v2 Scene Tutor / Step 1.2 |
+| `miniprogram/types/index.ts` | Adds structured result/input types for context-service functions. | v2 Scene Tutor / Step 1.2 |
+| `tests/sceneTutorContextService.test.ts` | Covers the local Scene Tutor context-service behavior. | v2 Scene Tutor / Step 1.2 |

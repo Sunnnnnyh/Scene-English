@@ -8,6 +8,12 @@ export type SpeechProvider = "mock" | "asr";
 
 export type MasteryProgress = 0 | 50 | 100;
 
+export type SceneTutorTask =
+  | "ask"
+  | "generate_sentence"
+  | "generate_paragraph"
+  | "generate_dialogue";
+
 export type StorageEntity =
   | "favorites"
   | "mistakes"
@@ -143,6 +149,94 @@ export type SpeechResult = {
   provider: SpeechProvider;
   confidence?: number;
 };
+
+export type SceneTutorMatchedWord = {
+  id: Word["id"];
+  sceneId: Scene["id"];
+  en: Word["en"];
+  cn: Word["cn"];
+  phonetic: Word["phonetic"];
+  expressionEn: Word["expressionEn"];
+  expressionCn: Word["expressionCn"];
+  isFavorite: boolean;
+  mistakeTypes: MistakeType[];
+  isLearned: boolean;
+};
+
+export type SceneTutorLearningSignals = {
+  favoriteWordIds: Word["id"][];
+  mistakeWordIds: Word["id"][];
+  learnedWordIds: Word["id"][];
+  learnedCount: number;
+  totalWordCount: number;
+};
+
+export type SceneTutorContext = {
+  scene: Pick<Scene, "id" | "nameEn" | "nameCn" | "wordCount">;
+  task: SceneTutorTask;
+  query: string;
+  selectedWordIds: Word["id"][];
+  matchedWords: SceneTutorMatchedWord[];
+  learningSignals: SceneTutorLearningSignals;
+};
+
+export type SceneTutorRequestPayload = {
+  task: SceneTutorTask;
+  context: SceneTutorContext;
+};
+
+export type SceneTutorAskResponse = {
+  type: "ask";
+  answer: string;
+  example: string;
+  relatedWords: string[];
+  basedOn: string[];
+};
+
+export type SceneTutorMakeSentencesResponse = {
+  type: Exclude<SceneTutorTask, "ask">;
+  generatedText: string;
+  keyWordsUsed: string[];
+  chineseHelp: string;
+  trySaying: string;
+};
+
+export type SceneTutorResponse = SceneTutorAskResponse | SceneTutorMakeSentencesResponse;
+
+export type SceneTutorErrorCode =
+  | "unavailable"
+  | "invalid_request"
+  | "out_of_scope"
+  | "model_timeout"
+  | "model_response_invalid";
+
+export type SceneTutorUnavailableResult = {
+  ok: false;
+  errorCode: Extract<SceneTutorErrorCode, "unavailable">;
+  message: string;
+};
+
+export type SceneTutorLearningSignalsResult =
+  | {
+      ok: true;
+      scene: Pick<Scene, "id" | "nameEn" | "nameCn" | "wordCount">;
+      signals: SceneTutorLearningSignals;
+    }
+  | SceneTutorUnavailableResult;
+
+export type SceneTutorBaseContextInput = {
+  sceneId: Scene["id"];
+  task: SceneTutorTask;
+  query: string;
+  selectedWordIds?: Word["id"][];
+};
+
+export type SceneTutorBaseContextResult =
+  | {
+      ok: true;
+      context: SceneTutorContext;
+    }
+  | SceneTutorUnavailableResult;
 
 export type LocalStore<T> = {
   version: number;

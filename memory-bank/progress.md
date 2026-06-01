@@ -1192,3 +1192,36 @@
   - Vitest passed: 47 test files, 242 tests.
 - Remaining:
   - Continue with the next verified step only after user approval.
+
+### 2026-06-01 - v2 Scene Tutor / Step 1.1 Scene Tutor domain types
+
+- Completed:
+  - Added the initial Scene Tutor type contracts for task kinds, matched RAG words, local learning signals, request context, cloud request payloads, successful responses, and structured error codes.
+  - Added a focused RED test for the upcoming `sceneTutorContextService` contract before implementing the service itself.
+  - Confirmed this step only defines shared domain contracts; it does not add runtime AI UI, cloud calls, API keys, or model provider configuration.
+- Verification:
+  - User validated Step 1.1.
+  - TypeScript miniprogram config passed.
+  - TypeScript test config passed.
+  - ESLint passed.
+  - Prettier check passed.
+  - Vitest passed: 48 test files, 244 tests.
+- Remaining:
+  - Step 1.2 needs `sceneTutorContextService` to build local RAG context from the selected scene, local word list, favorites, mistakes, and progress.
+
+### 2026-06-01 - v2 Scene Tutor / Step 1.2 Scene Tutor context service
+
+- Completed:
+  - Added `sceneTutorContextService` to build local Scene Tutor learning signals from the selected scene, scene word list, favorites, mistakes, and progress.
+  - Added a base Scene Tutor context builder that prepares scene metadata, task, query, selected word IDs, empty retrieval results, and learning signals for later RAG retrieval.
+  - Added unavailable-scene handling that returns a structured result instead of throwing a page-level exception.
+  - Expanded Scene Tutor tests to cover Classroom, Lecture Hall, empty local data, cross-scene scoping for favorites/mistakes/learned words, base context creation, and unknown scene IDs.
+- Verification:
+  - User validated Step 1.2.
+  - TypeScript miniprogram config passed.
+  - TypeScript test config passed.
+  - ESLint passed.
+  - Prettier check passed.
+  - Vitest passed: 48 test files, 249 tests.
+- Remaining:
+  - Step 1.3 needs lightweight local word retrieval so selected words and user queries can populate `matchedWords`.
