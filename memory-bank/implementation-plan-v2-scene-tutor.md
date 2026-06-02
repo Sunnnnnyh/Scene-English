@@ -1,5 +1,9 @@
 # SceneEnglish v2 Scene Tutor 实施计划
 
+> Status: Current active implementation plan.
+>
+> 当前“下一步”以本文件为准，并结合 `memory-bank/progress.md` 最新 Remaining 记录判断。完整类型检查、lint、格式检查和全量测试默认由用户自行运行；Codex 只在需要时运行与当前改动直接相关的最小化专项测试或检查，除非用户明确要求运行四项完整检查。
+
 > 面向对象：AI 开发者  
 > 输入依据：`memory-bank/prd-v2-scene-tutor.md`、`memory-bank/design-document.md`、`memory-bank/tech-stack.md`、`memory-bank/architecture.md`、`memory-bank/progress.md`  
 > 目标：实现基于 CloudBase 云函数、真实 LLM API 和轻量 RAG context 的 Scene Tutor 场景 AI 助教。  

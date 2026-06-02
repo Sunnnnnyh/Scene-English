@@ -34,6 +34,7 @@ describe("sceneTutorCopy", () => {
     ]);
     expect(sceneTutorCopy.ask.inputPlaceholder).toBe("Ask about this scene");
     expect(sceneTutorCopy.ask.sendLabel).toBe("Ask");
+    expect(sceneTutorCopy.ask.retryLabel).toBe("Try again");
     expect(sceneTutorCopy.make.generationTypes).toEqual([
       {
         task: "generate_sentence",

@@ -21,6 +21,25 @@
 
 ## 当前进度
 
+### Current Active Track - 2026-06-02
+
+- Active plan:
+  - `memory-bank/implementation-plan-v2-scene-tutor.md` is the current implementation source of truth.
+  - `memory-bank/implementation-plan.md` is historical v1/MVP background and should not be used to decide the next step unless the user explicitly asks.
+- Current product baseline:
+  - Available learning scenes are `Classroom` and `Lecture Hall`.
+  - `Dormitory` and `Cafeteria` remain coming soon.
+  - Scene Tutor v2 covers available scenes and is limited to `Ask AI` and `Make Sentences` for the first release.
+- Latest validated work:
+  - v2 Scene Tutor Step 5.3 Ask AI structured result card with Answer, Useful example, Related words, and Based on source information.
+  - CloudBase `sceneTutor` deployment path and Node 16 HTTPS provider request fix.
+  - Memory mode hint button removal and hotspot rendering cleanup.
+- Next planned work:
+  - v2 Scene Tutor Step 6.1: Make Sentences panel input and word-selection shell.
+- Verification rule:
+  - Full typecheck, lint, format check, and full test suite are run by the user unless explicitly requested.
+  - Codex may run focused checks that directly cover the current change.
+
 ### 2026-05-14｜GitHub 连接与提交策略记录
 
 - 完成内容：
@@ -1520,3 +1539,55 @@
   - Full typecheck, lint, format check, and full test suite were not run by Codex per the updated project rule; the user will run those checks separately.
 - Remaining:
   - Continue with v2 Scene Tutor Step 5.2 when the user requests the next implementation step.
+
+### 2026-06-02 - v2 Scene Tutor active-plan documentation alignment
+
+- Completed:
+  - Updated `AGENTS.md` so the current implementation source of truth is `memory-bank/implementation-plan-v2-scene-tutor.md`, not the historical v1/MVP `implementation-plan.md`.
+  - Clarified that current available learning scenes are `Classroom` and `Lecture Hall`, while `Dormitory` and `Cafeteria` remain coming soon.
+  - Added current-track notes to `progress.md`, `architecture.md`, `tech-stack.md`, `design-document.md`, `ui-notes.md`, `implementation-plan.md`, and `implementation-plan-v2-scene-tutor.md`.
+  - Recorded that full typecheck, lint, format check, and full test suite are run by the user unless explicitly requested; Codex may run focused checks for current changes.
+  - Marked `memory-bank/implementation-plan.md` as a historical v1/MVP baseline so it no longer drives “next step” decisions.
+- Verification:
+  - Documentation-only update; no code checks were run.
+- Remaining:
+  - Continue with v2 Scene Tutor Step 5.2 when the user requests implementation work.
+
+### 2026-06-02 - v2 Scene Tutor / Step 5.2 Ask AI submit cloud call
+
+- Completed:
+  - Wired Ask AI submit to `buildSceneTutorRequestPayload` with task `ask`, current `sceneId`, trimmed query, and no selected words.
+  - Called `sceneTutorCloudService.requestSceneTutor` from the Scene Tutor Ask AI page state.
+  - Added page states for loading, successful Ask AI result, and retryable failure.
+  - Preserved the user's Ask AI input after cloud function failure so the same question can be retried.
+  - Added a visible `Try again` action in the Ask AI error state, reusing the same submit handler.
+  - Kept Make Sentences controls out of this step.
+- Verification:
+  - User validated Step 5.2 in WeChat DevTools.
+  - Focused Vitest passed: `tests/sceneTutorPromptService.test.ts`, `tests/sceneTutorCloudService.test.ts`, `tests/sceneTutorPage.test.ts`, and `tests/sceneTutorCopy.test.ts`.
+  - Focused Vitest result: 4 test files, 20 tests passed.
+  - Full typecheck, lint, format check, and full test suite were not run by Codex per the updated project rule; the user will run those checks separately.
+- Remaining:
+  - Step 5.3 needs the Ask AI result card to render Answer, Useful example, Related words, and Based on source information.
+
+### 2026-06-02 - v2 Scene Tutor / Step 5.3 Ask AI structured result card and CloudBase runtime fix
+
+- Completed:
+  - Replaced the compact Ask AI success preview with a structured result card.
+  - Rendered Ask AI result sections for `Answer`, `Useful example`, `Related words`, and `Based on`.
+  - Added `createSceneTutorAskResultCard` to normalize related words and source labels for display.
+  - Mapped source word ids / English labels back to user-facing word labels when possible.
+  - Added a fallback source label using the current scene name when the provider returns no `basedOn` values.
+  - Added `cloudfunctionRoot: "cloudfunctions/"` to the project configuration so WeChat DevTools recognizes the CloudBase cloud function root.
+  - Replaced the cloud function provider default request path from global `fetch` to a Node 16-compatible `node:https` request helper.
+  - Added sanitized provider diagnostics for request failures without logging the model API key.
+  - Guided CloudBase deployment and environment variable setup for `LLM_API_KEY`, `LLM_BASE_URL`, and `LLM_MODEL`.
+- Verification:
+  - User validated the successful Ask AI card in WeChat DevTools after deploying `sceneTutor` and setting provider environment variables.
+  - Focused Vitest passed for Step 5.3 UI coverage: `tests/sceneTutorPage.test.ts`, `tests/sceneTutorCopy.test.ts`, `tests/sceneTutorPromptService.test.ts`, and `tests/sceneTutorCloudService.test.ts`.
+  - Focused Vitest result for Step 5.3 UI coverage: 4 test files, 22 tests passed.
+  - Focused Vitest passed for CloudBase provider/runtime coverage: `tests/cloudSceneTutorProvider.test.ts`, `tests/cloudSceneTutorFunction.test.ts`, and `tests/cloudSceneTutorResponseParser.test.ts`.
+  - Focused Vitest result for CloudBase provider/runtime coverage: 3 test files, 19 tests passed before diagnostics, then 2 test files, 15 tests passed after sanitized diagnostics.
+  - Full typecheck, lint, format check, and full test suite were not run by Codex per the updated project rule; the user will run those checks separately.
+- Remaining:
+  - Step 6.1 needs the Make Sentences panel input and word-selection shell.

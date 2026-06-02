@@ -370,9 +370,39 @@
           </view>
           <view wx:if="{{sceneTutorAskError}}" class="scene-tutor-response-error">
             <text class="scene-tutor-response-error-text">{{sceneTutorAskError}}</text>
+            <button
+              class="scene-tutor-response-retry"
+              disabled="{{!sceneTutorAskCanSubmit || sceneTutorAskStatus === 'loading'}}"
+              bindtap="onSubmitSceneTutorAsk"
+            >
+              {{sceneTutorPanel.ask.retryLabel}}
+            </button>
           </view>
-          <view wx:if="{{sceneTutorAskResult}}" class="scene-tutor-ask-result-preview">
-            <text class="scene-tutor-ask-result-answer">{{sceneTutorAskResult.answer}}</text>
+          <view wx:if="{{sceneTutorAskResultCard}}" class="scene-tutor-ask-result-card">
+            <view class="scene-tutor-ask-result-section">
+              <text class="scene-tutor-ask-result-label">Answer</text>
+              <text class="scene-tutor-ask-result-answer">{{sceneTutorAskResultCard.answer}}</text>
+            </view>
+            <view class="scene-tutor-ask-result-section">
+              <text class="scene-tutor-ask-result-label">Useful example</text>
+              <text class="scene-tutor-ask-result-example">{{sceneTutorAskResultCard.example}}</text>
+            </view>
+            <view wx:if="{{sceneTutorAskResultCard.relatedWords.length}}" class="scene-tutor-ask-result-section">
+              <text class="scene-tutor-ask-result-label">Related words</text>
+              <view class="scene-tutor-ask-result-tags">
+                <block wx:for="{{sceneTutorAskResultCard.relatedWords}}" wx:key="*this">
+                  <text class="scene-tutor-ask-result-source">{{item}}</text>
+                </block>
+              </view>
+            </view>
+            <view class="scene-tutor-ask-result-section">
+              <text class="scene-tutor-ask-result-label">Based on</text>
+              <view class="scene-tutor-ask-result-tags">
+                <block wx:for="{{sceneTutorAskResultCard.basedOn}}" wx:key="*this">
+                  <text class="scene-tutor-ask-result-source">{{item}}</text>
+                </block>
+              </view>
+            </view>
           </view>
         </view>
       </view>

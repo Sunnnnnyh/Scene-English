@@ -219,14 +219,23 @@ Figma 文件：
 
 ## 9. 与实施计划的关系
 
-`memory-bank/implementation-plan.md` 仍然是开发主计划。
+`memory-bank/implementation-plan-v2-scene-tutor.md` 是当前开发主计划。
+
+`memory-bank/implementation-plan.md` 是历史 v1/MVP 计划，仅作为旧版本背景资料；除非用户明确要求回到 v1/MVP 基线，否则不要再按它决定下一步。
 
 本文件只记录 UI 方向和视觉取舍。开发时如果 UI 与功能进度冲突，优先完成核心功能闭环。
+
+Scene Tutor 后续 UI 精修必须覆盖：
+
+1. Scene Tutor 入口在场景学习页中的层级和视觉权重。
+2. Ask AI 输入区、推荐问题 chips、loading、error 和结果卡片。
+3. Make Sentences 类型选择、词语 chips、生成结果、长英文换行和小对话换行。
+4. Classroom 和 Lecture Hall 两个已开放场景的移动端显示稳定性。
 
 建议节奏：
 
 1. 使用当前低保真作为结构参考。
-2. 按实施计划完成功能 MVP。
+2. 按当前 v2 实施计划完成功能闭环。
 3. 通过真机或微信开发者工具验证主要路径。
 4. 回到 Figma 修正视觉和交互细节。
 5. 再同步到代码中做 UI 精修。

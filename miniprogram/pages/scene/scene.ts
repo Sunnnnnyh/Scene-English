@@ -27,6 +27,7 @@ import {
   createListeningSpeakingStartState,
   createListeningWritingStartState,
   createMemoryWordCard,
+  createSceneTutorAskResultCard,
   createSceneViewModel,
   getSceneEntryAction,
   type SceneListeningSpeakingRecognitionStatus,
@@ -767,6 +768,7 @@ function createSceneHomeModeResetData() {
     sceneTutorAskCanSubmit: false,
     sceneTutorAskStatus: "idle" as const,
     sceneTutorAskResult: null,
+    sceneTutorAskResultCard: null,
     sceneTutorAskError: "",
     showMemoryGuide: false,
     showMemoryTranslationGuide: false,
@@ -1008,6 +1010,7 @@ Page({
       sceneTutorAskCanSubmit: false,
       sceneTutorAskStatus: "idle",
       sceneTutorAskResult: null,
+      sceneTutorAskResultCard: null,
       sceneTutorAskError: "",
       ...createSceneLearningAssistData(sceneId),
       ...listeningWritingData,
@@ -1028,6 +1031,7 @@ Page({
       sceneTutorAskCanSubmit: false,
       sceneTutorAskStatus: "idle",
       sceneTutorAskResult: null,
+      sceneTutorAskResultCard: null,
       sceneTutorAskError: ""
     });
   },
@@ -1040,6 +1044,7 @@ Page({
       sceneTutorAskCanSubmit: value.trim().length > 0,
       sceneTutorAskStatus: "idle",
       sceneTutorAskResult: null,
+      sceneTutorAskResultCard: null,
       sceneTutorAskError: ""
     });
   },
@@ -1052,6 +1057,7 @@ Page({
       sceneTutorAskCanSubmit: question.trim().length > 0,
       sceneTutorAskStatus: "idle",
       sceneTutorAskResult: null,
+      sceneTutorAskResultCard: null,
       sceneTutorAskError: ""
     });
   },
@@ -1080,6 +1086,7 @@ Page({
       this.setData({
         sceneTutorAskStatus: "error",
         sceneTutorAskResult: null,
+        sceneTutorAskResultCard: null,
         sceneTutorAskError: payloadResult.message
       });
       return;
@@ -1088,6 +1095,7 @@ Page({
     this.setData({
       sceneTutorAskStatus: "loading",
       sceneTutorAskResult: null,
+      sceneTutorAskResultCard: null,
       sceneTutorAskError: ""
     });
 
@@ -1097,6 +1105,7 @@ Page({
       this.setData({
         sceneTutorAskStatus: "error",
         sceneTutorAskResult: null,
+        sceneTutorAskResultCard: null,
         sceneTutorAskError: result.message
       });
       return;
@@ -1106,6 +1115,19 @@ Page({
       this.setData({
         sceneTutorAskStatus: "error",
         sceneTutorAskResult: null,
+        sceneTutorAskResultCard: null,
+        sceneTutorAskError: sceneTutorCopy.errorUnavailable
+      });
+      return;
+    }
+
+    const scene = getSceneById(sceneId);
+
+    if (!scene) {
+      this.setData({
+        sceneTutorAskStatus: "error",
+        sceneTutorAskResult: null,
+        sceneTutorAskResultCard: null,
         sceneTutorAskError: sceneTutorCopy.errorUnavailable
       });
       return;
@@ -1114,6 +1136,11 @@ Page({
     this.setData({
       sceneTutorAskStatus: "success",
       sceneTutorAskResult: result.response,
+      sceneTutorAskResultCard: createSceneTutorAskResultCard(
+        result.response,
+        scene,
+        getWordsBySceneId(sceneId)
+      ),
       sceneTutorAskError: ""
     });
   },

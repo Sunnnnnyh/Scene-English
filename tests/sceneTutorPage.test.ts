@@ -3,12 +3,14 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
 import { scenes } from "../miniprogram/data/scenes";
+import { classroomWords } from "../miniprogram/data/scenes";
 import {
+  createSceneTutorAskResultCard,
   createSceneViewModel,
   getSceneEntryAction
 } from "../miniprogram/pages/scene/sceneViewModel";
 import { sceneTutorCopy } from "../miniprogram/utils/sceneTutorCopy";
-import type { Scene, UserProgress } from "../miniprogram/types";
+import type { Scene, SceneTutorAskResponse, UserProgress } from "../miniprogram/types";
 
 function createEmptyProgress(sceneId: Scene["id"]): UserProgress {
   return {
@@ -202,6 +204,53 @@ describe("Scene Tutor scene entry", () => {
     expect(sceneWxml).toContain("{{sceneTutorPanel.loading}}");
     expect(sceneWxml).toContain('wx:if="{{sceneTutorAskError}}"');
     expect(sceneWxml).toContain("{{sceneTutorAskError}}");
-    expect(sceneWxml).toContain("{{sceneTutorAskResult.answer}}");
+    expect(sceneWxml).toContain("{{sceneTutorPanel.ask.retryLabel}}");
+    expect(sceneWxml).toContain("{{sceneTutorAskResultCard.answer}}");
+  });
+
+  it("renders the structured Ask AI result card for Step 5.3", () => {
+    const sceneWxml = readFileSync(
+      join(process.cwd(), "miniprogram/pages/scene/scene.wxml"),
+      "utf8"
+    );
+    const sceneWxss = readFileSync(
+      join(process.cwd(), "miniprogram/pages/scene/scene.wxss"),
+      "utf8"
+    );
+
+    expect(sceneWxml).toContain("sceneTutorAskResultCard");
+    expect(sceneWxml).toContain("Answer");
+    expect(sceneWxml).toContain("Useful example");
+    expect(sceneWxml).toContain("Related words");
+    expect(sceneWxml).toContain("Based on");
+    expect(sceneWxml).toContain("{{sceneTutorAskResultCard.answer}}");
+    expect(sceneWxml).toContain("{{sceneTutorAskResultCard.example}}");
+    expect(sceneWxml).toContain('wx:for="{{sceneTutorAskResultCard.relatedWords}}"');
+    expect(sceneWxml).toContain('wx:for="{{sceneTutorAskResultCard.basedOn}}"');
+    expect(sceneWxss).toContain(".scene-tutor-ask-result-card");
+    expect(sceneWxss).toContain(".scene-tutor-ask-result-source");
+  });
+
+  it("maps Ask AI result sources to readable words and falls back to the current scene", () => {
+    const classroom = scenes.find((scene) => scene.id === "classroom");
+
+    if (!classroom) {
+      throw new Error("Classroom scene fixture is missing");
+    }
+
+    const result: SceneTutorAskResponse = {
+      type: "ask",
+      answer: "A projector shows slides on a screen.",
+      example: "The projector needs to be adjusted before class.",
+      relatedWords: ["projector", "whiteboard"],
+      basedOn: []
+    };
+
+    expect(createSceneTutorAskResultCard(result, classroom, classroomWords)).toEqual({
+      answer: result.answer,
+      example: result.example,
+      relatedWords: ["projector", "whiteboard"],
+      basedOn: ["Classroom Scene"]
+    });
   });
 });

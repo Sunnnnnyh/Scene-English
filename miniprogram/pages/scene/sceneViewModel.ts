@@ -40,6 +40,7 @@ export type SceneTutorPanelAsk = {
   title: string;
   inputPlaceholder: string;
   sendLabel: string;
+  retryLabel: string;
   recommendedQuestions: readonly string[];
 };
 
@@ -50,6 +51,13 @@ export type SceneTutorPanel = {
   actions: SceneTutorPanelAction[];
   ask: SceneTutorPanelAsk;
   loading: string;
+};
+
+export type SceneTutorAskResultCard = {
+  answer: string;
+  example: string;
+  relatedWords: string[];
+  basedOn: string[];
 };
 
 export type SceneMemoryHotspot = {
@@ -144,6 +152,7 @@ export type SceneViewModel = {
   sceneTutorAskCanSubmit: boolean;
   sceneTutorAskStatus: SceneTutorAskStatus;
   sceneTutorAskResult: SceneTutorAskResponse | null;
+  sceneTutorAskResultCard: SceneTutorAskResultCard | null;
   sceneTutorAskError: string;
   memoryHotspots: SceneMemoryHotspot[];
   showMemoryGuide: boolean;
@@ -264,6 +273,7 @@ function createSceneTutorPanel(scene: Scene): SceneTutorPanel {
       title: sceneTutorCopy.ask.title,
       inputPlaceholder: sceneTutorCopy.ask.inputPlaceholder,
       sendLabel: sceneTutorCopy.ask.sendLabel,
+      retryLabel: sceneTutorCopy.ask.retryLabel,
       recommendedQuestions: sceneTutorCopy.ask.recommendedQuestions
     },
     loading: sceneTutorCopy.loading
@@ -389,6 +399,7 @@ export function createSceneViewModel(
     sceneTutorAskCanSubmit: false,
     sceneTutorAskStatus: "idle",
     sceneTutorAskResult: null,
+    sceneTutorAskResultCard: null,
     sceneTutorAskError: "",
     memoryHotspots,
     showMemoryGuide: false,
@@ -458,6 +469,37 @@ export function createMemoryWordCard(word: Word, isFavorite = false): SceneMemor
     expressionCn: word.expressionCn,
     showExpressionCn: false
   };
+}
+
+export function createSceneTutorAskResultCard(
+  result: SceneTutorAskResponse,
+  scene: Scene,
+  words: Word[]
+): SceneTutorAskResultCard {
+  const readableRelatedWords = normalizeSceneTutorSourceLabels(result.relatedWords, words);
+  const readableBasedOn = normalizeSceneTutorSourceLabels(result.basedOn, words);
+
+  return {
+    answer: result.answer,
+    example: result.example,
+    relatedWords: readableRelatedWords,
+    basedOn: readableBasedOn.length > 0 ? readableBasedOn : [`${scene.nameEn} Scene`]
+  };
+}
+
+function normalizeSceneTutorSourceLabels(values: string[], words: Word[]): string[] {
+  const labels = values.map((value) => {
+    const normalizedValue = value.trim();
+    const matchedWord = words.find(
+      (word) =>
+        word.id.toLowerCase() === normalizedValue.toLowerCase() ||
+        word.en.toLowerCase() === normalizedValue.toLowerCase()
+    );
+
+    return matchedWord?.en ?? normalizedValue;
+  });
+
+  return Array.from(new Set(labels.filter((label) => label.length > 0)));
 }
 
 export function getSceneEntryAction(entryId: SceneEntryId): SceneEntryAction {

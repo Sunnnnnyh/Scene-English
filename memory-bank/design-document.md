@@ -6,6 +6,10 @@
 > 当前版本：v1.0 设计稿  
 > 日期：2026-05-13
 
+> Current status - 2026-06-02:
+>
+> 本文件是 v1/MVP 基础学习闭环的产品设计基线。当前开发主线已经切换到 v2 Scene Tutor；v2 产品范围、验收标准和实施顺序以 `memory-bank/prd-v2-scene-tutor.md`、`memory-bank/implementation-plan-v2-scene-tutor.md` 和 `memory-bank/progress.md` 为准。
+
 ---
 
 ## 1. 产品概述

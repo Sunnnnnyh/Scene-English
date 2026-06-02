@@ -6,6 +6,18 @@
 
 ## 1. 当前阶段
 
+### Current Active Development Baseline - 2026-06-02
+
+- Current active plan: `memory-bank/implementation-plan-v2-scene-tutor.md`.
+- Historical plan: `memory-bank/implementation-plan.md` remains useful as v1/MVP background, but it is no longer the source for deciding the next implementation step.
+- Current available learning scenes: `Classroom` and `Lecture Hall`.
+- Current coming-soon scenes: `Dormitory` and `Cafeteria`.
+- Current v2 scope: Scene Tutor for available scenes, with first-release support for `Ask AI` and `Make Sentences` only.
+- Latest validated implementation: v2 Scene Tutor Step 5.3 Ask AI structured result card, plus CloudBase `sceneTutor` deployment configuration and Node 16-compatible HTTPS provider request handling.
+- Next implementation target: v2 Scene Tutor Step 6.1, building the Make Sentences panel input and word-selection shell.
+- Verification rule: complete typecheck, lint, format check, and full test suite are run by the user unless explicitly requested. Codex may run focused checks for the current change.
+- Reading note: earlier sections that describe `Classroom` as the only available scene or `Lecture Hall` as locked are historical. Use this section, latest numbered architecture entries, and `progress.md` for the current state.
+
 当前项目已完成阶段 6 / Step 6.5 Listen + Spell 拼写输入、答案校验和基础完成页。项目已初始化微信小程序 TypeScript 工程，建立基础目录结构和全部规划页面占位，配置基础开发质量工具，完成核心类型、场景数据、Classroom 20 个单词静态数据、正式 Classroom 图片、正式热区校准和真实单词音频资源，并实现本地缓存工具、字符串标准化工具、热区计算工具、场景服务、单词服务、收藏服务、学习进度服务、错题服务、抽题服务、音频服务和 mock 口语识别服务。首页已接入场景选择页，可以展示 Classroom 主场景和 Lecture Hall、Dormitory、Cafeteria 三个 Coming soon 场景；底部导航已包含 Home / Learn / Review / Me。Home 负责选择学习场景，Learn 负责进入当前学习场景；MVP 阶段只有 Classroom，因此直接点击 Learn 默认进入 Classroom 学习首页。Classroom 学习首页可查看场景预览、学习进度和三个学习模式入口，Coming soon 场景只提示不跳转。点击学习模式入口时，当前采用 Learn tab 内部状态切换，不再 `navigateTo` 普通页面，从而避免底部 tabBar 在过渡中消失。Review 页已预留收藏夹和错题夹全局入口，Me 页已展示本地轻量统计和 mock ASR 状态。Memory Mode 当前优先在 Learn tab 内联视图中推进：已能稳定展示 Classroom 场景图，并根据 Classroom 20 个单词数据覆盖透明热区；Memory 视图标题下方同样展示 `单词进度`、`Learned x / 20` 和进度条；点击热区会打开对应单词卡，卡片展示英文、中文、美式音标、音频播放入口、收藏状态和 1 条 Useful expression；点击 Useful expression 英文句子可展开或收起中文翻译，并通过 `sceneenglish:onboarding` 记录表达翻译轻引导完成状态。点击热区打开单词卡时会通过 `progressService` 记录该词为已学，并刷新 `Learned x / 20` 进度；点击星标会通过 `favoriteService` 写入或移除收藏；打开单词卡时会自动播放当前单词音频一次，用户也可以手动复听。Favorites 页面已接入真实收藏列表：从本地收藏记录生成列表项，支持空状态，允许点击多个收藏项同时展开音标和 Useful expression，并在展开详情中支持播放单词音频和取消收藏；取消收藏后会写入 `sceneenglish:favorites` 并立即刷新列表。Listen + Spell 当前已能生成 5 题练习开始状态、播放当前题音频、完成听音找物点击判断并进入拼写输入：目标音频播放结束前点击热区不会进入判定，播放结束后才允许选择物品；点对后进入 `spellingReady`，输入框和并排的 `Play audio` / `Submit` 按钮成为视觉焦点；首次点错会记录 `click` 类型错题并允许重试，第二次点错会高亮正确物品并进入拼写；首次拼写错误会记录 `spelling` 类型错题并允许再试一次，第二次拼写错误会展示正确拼写并等待用户继续；答题后通过 `Continue` 进入下一题，完成 5 题后展示 `Round complete`，可开启新一组或结束练习。正确和错误反馈已补充短 WAV 音效，其中错误音效保留但更柔和并降低播放音量。点击空白区域只给轻提示。首次进入单词记忆模式时会展示一次性轻引导，高亮 `projector` 并通过 `sceneenglish:onboarding` 本地缓存记录完成状态。工程可以被微信开发者工具识别，所有已注册页面都能打开；TypeScript、ESLint、Prettier 和 Vitest 命令均可运行。
 
 当前源码目录为：
@@ -73,7 +85,9 @@ D:\SceneEnglish
 | `AGENTS.md` | 面向 AI 开发者的项目规则和协作说明 |
 | `memory-bank/design-document.md` | 产品定位、MVP 范围、核心流程、内容和验收标准 |
 | `memory-bank/tech-stack.md` | 技术栈、模块划分、测试策略和实施顺序建议 |
-| `memory-bank/implementation-plan.md` | 面向 AI 开发者的分步实施计划 |
+| `memory-bank/prd-v2-scene-tutor.md` | 当前 v2 Scene Tutor 产品范围、用户流程、能力边界和验收标准 |
+| `memory-bank/implementation-plan-v2-scene-tutor.md` | 当前 v2 Scene Tutor 主实施计划和下一步来源 |
+| `memory-bank/implementation-plan.md` | 历史 v1/MVP 分步实施计划，仅作背景参考 |
 | `memory-bank/ui-notes.md` | UI 风格、Figma 参考、已知视觉问题和后续精修记录 |
 | `memory-bank/progress.md` | 实施进度、验证结果和遗留问题记录 |
 | `memory-bank/architecture.md` | 本架构记录文件 |
@@ -190,6 +204,7 @@ data/scenes.ts + utils/storage.ts
 
 ## 6. 核心规则
 
+- Current v2 note: `Classroom` and `Lecture Hall` are both available learning scenes. The older rule that only `Classroom` can be entered is historical v1/MVP context.
 - MVP 只有 Classroom 可进入。
 - Lecture Hall、Dormitory、Cafeteria 只展示锁定状态，点击提示 `Coming soon`。
 - 课堂场景图先使用占位 / 低保真资源。
@@ -2540,3 +2555,117 @@ File change record:
 | `miniprogram/pages/scene/scene.wxml` | Removes the Memory hint button and renders Memory scene art as a view background. | Memory hint removal |
 | `miniprogram/pages/scene/scene.wxss` | Removes `.memory-hint*` styles and keeps hotspot highlight styles for onboarding/practice states. | Memory hint removal |
 | `tests/sceneMemoryHotspots.test.ts` | Covers absence of the hint button feature and current hotspot rendering structure. | Memory hint removal |
+
+## 77. v2 Scene Tutor active-plan documentation alignment
+
+The project documentation now treats `memory-bank/implementation-plan-v2-scene-tutor.md` as the active implementation plan. The old `memory-bank/implementation-plan.md` remains in the repository as historical v1/MVP background, but it should not drive next-step decisions unless the user explicitly asks to return to that baseline.
+
+Current documentation responsibilities:
+- `AGENTS.md` defines v2 Scene Tutor as the current development track and records the latest execution rules.
+- `memory-bank/progress.md` exposes a `Current Active Track` block near the top so the next step can be found quickly.
+- `memory-bank/architecture.md` exposes a current baseline note before older historical architecture prose.
+- `memory-bank/tech-stack.md` keeps the native mini-program stack while adding the CloudBase-only v2 Scene Tutor backend boundary.
+- `memory-bank/design-document.md` is marked as the v1/MVP baseline document.
+- `memory-bank/ui-notes.md` now points to the v2 plan and includes Scene Tutor UI refinement scope.
+- `memory-bank/implementation-plan.md` is marked as historical.
+- `memory-bank/implementation-plan-v2-scene-tutor.md` is marked as the active plan and records the user-run full-check rule.
+
+Runtime notes:
+- Available learning scenes are `Classroom` and `Lecture Hall`.
+- `Dormitory` and `Cafeteria` remain coming soon.
+- v2 Scene Tutor first release remains limited to `Ask AI` and `Make Sentences`.
+- Full typecheck, lint, format check, and full test suite are run by the user unless explicitly requested; focused task-specific checks remain acceptable.
+
+File change record:
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `AGENTS.md` | Aligns agent instructions with v2 Scene Tutor as the current active implementation track. | v2 active-plan documentation alignment |
+| `memory-bank/implementation-plan.md` | Marks the old v1/MVP plan as historical background. | v2 active-plan documentation alignment |
+| `memory-bank/implementation-plan-v2-scene-tutor.md` | Marks the v2 Scene Tutor plan as active and records the user-run full-check rule. | v2 active-plan documentation alignment |
+| `memory-bank/progress.md` | Adds current active track and records this documentation alignment. | v2 active-plan documentation alignment |
+| `memory-bank/architecture.md` | Adds current active development baseline and this architecture record. | v2 active-plan documentation alignment |
+| `memory-bank/tech-stack.md` | Adds v2 CloudBase Scene Tutor technical addendum. | v2 active-plan documentation alignment |
+| `memory-bank/design-document.md` | Marks the design document as v1/MVP baseline. | v2 active-plan documentation alignment |
+| `memory-bank/ui-notes.md` | Points UI work to the v2 plan and adds Scene Tutor refinement scope. | v2 active-plan documentation alignment |
+
+## 78. v2 Scene Tutor / Step 5.2 Ask AI submit cloud call
+
+Ask AI now has a working mini-program submission path from the in-page Scene Tutor Ask panel to the CloudBase service boundary. The page still renders only a compact answer preview; the fuller structured result card is handled by Step 5.3.
+
+Current responsibilities:
+- `miniprogram/pages/scene/scene.ts` trims Ask AI input and blocks empty, unavailable, or already-loading submissions.
+- `miniprogram/pages/scene/scene.ts` builds the Ask AI payload through `buildSceneTutorRequestPayload`.
+- `miniprogram/pages/scene/scene.ts` sends the payload through `requestSceneTutor` instead of calling `wx.cloud.callFunction` directly.
+- `miniprogram/pages/scene/scene.ts` stores Ask AI loading, success, and error state in page data.
+- `miniprogram/pages/scene/scene.ts` verifies the cloud response is an Ask AI response before storing it for display.
+- `miniprogram/pages/scene/scene.wxml` renders the Ask AI loading state, retryable error state, and current compact answer preview.
+- `miniprogram/pages/scene/scene.wxml` keeps the user's question in the textarea after failure so retry does not require retyping.
+- `miniprogram/pages/scene/scene.wxss` styles the loading, error, retry, and answer preview states.
+- `miniprogram/utils/sceneTutorCopy.ts` now includes the Ask AI retry label.
+- `miniprogram/pages/scene/sceneViewModel.ts` exposes the retry label through the Scene Tutor panel model.
+
+Runtime notes:
+- The mini-program still does not store, hardcode, or transmit model API keys.
+- Cloud call failures, invalid cloud results, and timeouts are normalized by `sceneTutorCloudService`.
+- The retry button reuses the same submit handler, so retry behavior remains guarded by the same non-empty input and loading checks.
+- Make Sentences controls remain intentionally absent at this step.
+- Full typecheck, lint, format check, and full test suite are intentionally left for the user to run unless explicitly requested.
+
+Test coverage:
+- `tests/sceneTutorPromptService.test.ts` covers payload construction and secret-field exclusions.
+- `tests/sceneTutorCloudService.test.ts` covers successful Ask AI / Make Sentences cloud results, rejected calls, invalid results, timeout fallback, and secret stripping.
+- `tests/sceneTutorPage.test.ts` covers Ask AI submit wiring, loading state, error state, retry copy rendering, and compact result preview rendering.
+- `tests/sceneTutorCopy.test.ts` covers centralized retry copy and forbidden technical wording exclusions.
+
+File change record:
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `miniprogram/pages/scene/scene.ts` | Wires Ask AI submit to payload construction, cloud service request, and loading / success / error page state. | v2 Scene Tutor / Step 5.2 |
+| `miniprogram/pages/scene/sceneViewModel.ts` | Adds Ask AI retry copy to the Scene Tutor panel model. | v2 Scene Tutor / Step 5.2 |
+| `miniprogram/pages/scene/scene.wxml` | Renders Ask AI loading, retryable error, and compact success preview states. | v2 Scene Tutor / Step 5.2 |
+| `miniprogram/pages/scene/scene.wxss` | Styles Ask AI response states and retry action. | v2 Scene Tutor / Step 5.2 |
+| `miniprogram/utils/sceneTutorCopy.ts` | Adds centralized Ask AI retry copy. | v2 Scene Tutor / Step 5.2 |
+| `tests/sceneTutorPage.test.ts` | Covers Ask AI submit wiring and response-state rendering. | v2 Scene Tutor / Step 5.2 |
+| `tests/sceneTutorCopy.test.ts` | Covers Ask AI retry copy. | v2 Scene Tutor / Step 5.2 |
+
+## 79. v2 Scene Tutor / Step 5.3 Ask AI structured result card and CloudBase runtime fix
+
+Ask AI now renders a structured success card after the `sceneTutor` cloud function returns a valid Ask AI response. The CloudBase project configuration and provider request path were also adjusted after deployment validation exposed WeChat DevTools and Node 16 runtime requirements.
+
+Current responsibilities:
+- `miniprogram/pages/scene/sceneViewModel.ts` defines `SceneTutorAskResultCard` and `createSceneTutorAskResultCard`.
+- `miniprogram/pages/scene/sceneViewModel.ts` normalizes Ask AI related word labels and source labels for display.
+- `miniprogram/pages/scene/scene.ts` stores both the raw Ask AI cloud response and the display-ready `sceneTutorAskResultCard`.
+- `miniprogram/pages/scene/scene.ts` clears stale result cards when the user changes tools, edits input, retries, or hits an error state.
+- `miniprogram/pages/scene/scene.wxml` renders the Ask AI result card with `Answer`, `Useful example`, `Related words`, and `Based on`.
+- `miniprogram/pages/scene/scene.wxss` styles the structured result card, section labels, example text, and related/source chips.
+- `project.config.json` declares `cloudfunctionRoot: "cloudfunctions/"` so WeChat DevTools recognizes the cloud function root.
+- `cloudfunctions/sceneTutor/providers/llmProvider.js` uses a Node 16-compatible `node:https` request helper as the default provider request path.
+- `cloudfunctions/sceneTutor/providers/openaiCompatibleProvider.js` logs sanitized request diagnostics on provider request exceptions without leaking `LLM_API_KEY`.
+
+Runtime notes:
+- The mini-program still never stores or transmits the provider API key; only the cloud function reads `LLM_API_KEY` from CloudBase environment variables.
+- CloudBase environment variables required for real AI output are `LLM_API_KEY`, `LLM_BASE_URL`, and `LLM_MODEL`.
+- For OpenAI-compatible providers, `LLM_BASE_URL` should be the API base URL that can be safely followed by `/chat/completions`.
+- The deployed CloudBase Node 16 runtime does not provide global `fetch`, so the cloud function must not rely on it for the default request path.
+- Provider diagnostics record only error code, sanitized message, base URL host, and model name.
+- Full typecheck, lint, format check, and full test suite are intentionally left for the user to run unless explicitly requested.
+
+Test coverage:
+- `tests/sceneTutorPage.test.ts` covers structured Ask AI result card rendering and result-card source mapping.
+- `tests/cloudSceneTutorProvider.test.ts` covers the Node 16 default request path, OpenAI-compatible request shape, default model selection, provider failure normalization, and sanitized diagnostics.
+- `tests/cloudSceneTutorFunction.test.ts` covers cloud function request handling around provider integration.
+- `tests/cloudSceneTutorResponseParser.test.ts` covers parsing provider text into supported Scene Tutor response shapes.
+
+File change record:
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `miniprogram/pages/scene/scene.ts` | Builds and stores structured Ask AI result-card data after successful cloud responses. | v2 Scene Tutor / Step 5.3 |
+| `miniprogram/pages/scene/sceneViewModel.ts` | Adds `SceneTutorAskResultCard` and result-card normalization helper. | v2 Scene Tutor / Step 5.3 |
+| `miniprogram/pages/scene/scene.wxml` | Renders the structured Ask AI success card. | v2 Scene Tutor / Step 5.3 |
+| `miniprogram/pages/scene/scene.wxss` | Styles Ask AI result-card sections and chips. | v2 Scene Tutor / Step 5.3 |
+| `cloudfunctions/sceneTutor/providers/llmProvider.js` | Replaces default global `fetch` usage with a Node 16-compatible HTTPS request helper. | CloudBase runtime fix |
+| `cloudfunctions/sceneTutor/providers/openaiCompatibleProvider.js` | Adds sanitized provider request diagnostics. | CloudBase runtime fix |
+| `project.config.json` | Declares `cloudfunctions/` as the WeChat DevTools cloud function root. | CloudBase deployment configuration |
+| `tests/sceneTutorPage.test.ts` | Covers structured result-card rendering and source mapping. | v2 Scene Tutor / Step 5.3 |
+| `tests/cloudSceneTutorProvider.test.ts` | Covers provider request behavior, Node 16 compatibility, and sanitized diagnostics. | CloudBase runtime fix |

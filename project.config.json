@@ -1,7 +1,8 @@
 {
-  "appid": "touristappid",
+  "appid": "wx31cd9ac950c9831f",
   "compileType": "miniprogram",
   "libVersion": "3.14.3",
+  "cloudfunctionRoot": "cloudfunctions/",
   "miniprogramRoot": "miniprogram/",
   "projectname": "SceneEnglish",
   "setting": {

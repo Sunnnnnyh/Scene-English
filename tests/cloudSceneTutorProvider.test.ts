@@ -1,4 +1,5 @@
 import { createRequire } from "node:module";
+import { readFileSync } from "node:fs";
 
 import { afterEach, describe, expect, it, vi } from "vitest";
 
@@ -27,6 +28,16 @@ describe("cloud sceneTutor LLM provider", () => {
       errorCode: "provider_not_configured",
       message: "Scene Tutor provider is not configured."
     });
+  });
+
+  it("does not rely on global fetch for the default CloudBase request path", () => {
+    const source = readFileSync(
+      new URL("../cloudfunctions/sceneTutor/providers/llmProvider.js", import.meta.url),
+      "utf8"
+    );
+
+    expect(source).not.toContain("request = fetch");
+    expect(source).toContain("node:https");
   });
 
   it("sends OpenAI-compatible chat completion request and returns model text", async () => {
@@ -134,5 +145,44 @@ describe("cloud sceneTutor LLM provider", () => {
       message: "Scene Tutor provider request failed."
     });
     expect(JSON.stringify(result)).not.toContain("sk-test-secret");
+  });
+
+  it("logs sanitized request diagnostics when the provider request throws", async () => {
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => undefined);
+    const request = vi.fn(async () => {
+      const error = new Error("bad key sk-test-secret");
+
+      Object.assign(error, {
+        code: "ENOTFOUND"
+      });
+
+      throw error;
+    });
+
+    const result = await callLlmProvider({
+      messages: [{ role: "user", content: "hello" }],
+      request,
+      env: {
+        LLM_API_KEY: "sk-test-secret",
+        LLM_BASE_URL: "https://provider.example/v1",
+        LLM_MODEL: "deepseek-v4-flash"
+      }
+    });
+
+    expect(result).toEqual({
+      ok: false,
+      errorCode: "provider_error",
+      message: "Scene Tutor provider request failed."
+    });
+    expect(errorSpy).toHaveBeenCalledWith(
+      "Scene Tutor provider request failed.",
+      expect.objectContaining({
+        code: "ENOTFOUND",
+        message: "bad key [redacted]",
+        baseUrlHost: "provider.example",
+        model: "deepseek-v4-flash"
+      })
+    );
+    expect(JSON.stringify(errorSpy.mock.calls)).not.toContain("sk-test-secret");
   });
 });

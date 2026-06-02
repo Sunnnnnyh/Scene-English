@@ -12,6 +12,7 @@ export const sceneTutorCopy = {
     homeActionLabel: "Ask",
     inputPlaceholder: "Ask about this scene",
     sendLabel: "Ask",
+    retryLabel: "Try again",
     recommendedQuestions: [
       "What is the difference between two words?",
       "Which words are most useful in this scene?",

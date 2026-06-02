@@ -22,6 +22,22 @@ function normalizeBaseUrl(baseUrl) {
   return baseUrl.replace(/\/+$/u, "");
 }
 
+function redactSecret(value, secret) {
+  if (!value || !secret) {
+    return value || "";
+  }
+
+  return String(value).split(secret).join("[redacted]");
+}
+
+function getBaseUrlHost(baseUrl) {
+  try {
+    return new URL(baseUrl).host;
+  } catch {
+    return "invalid-url";
+  }
+}
+
 function getProviderConfig(env) {
   const apiKey = env.LLM_API_KEY;
   const baseUrl = env.LLM_BASE_URL;
@@ -74,7 +90,14 @@ async function callOpenAiCompatibleProvider({ messages, request, env = process.e
       text,
       model: config.model
     };
-  } catch {
+  } catch (error) {
+    console.error("Scene Tutor provider request failed.", {
+      code: error && error.code ? error.code : undefined,
+      message: redactSecret(error && error.message ? error.message : "", config.apiKey),
+      baseUrlHost: getBaseUrlHost(config.baseUrl),
+      model: config.model
+    });
+
     return createProviderErrorResult(undefined);
   }
 }

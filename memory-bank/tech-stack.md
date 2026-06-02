@@ -7,6 +7,20 @@
 
 ## 1. 总体结论
 
+### Current v2 Scene Tutor addendum - 2026-06-02
+
+当前开发主线是 `memory-bank/implementation-plan-v2-scene-tutor.md`。v1/MVP 的“无后端”判断仍适用于基础学习闭环，但 v2 Scene Tutor 已确认引入 CloudBase 云函数作为唯一云端边界。
+
+- 小程序框架仍保持微信小程序原生框架 + TypeScript。
+- 基础学习数据仍来自本地 TypeScript 数据模块和 wx 本地缓存。
+- v2 新增 `cloudfunctions/sceneTutor/`，用于服务端 guardrails、prompt builder、OpenAI-compatible provider 调用和 response parser。
+- 小程序端通过 service 层调用 CloudBase 云函数，不直接调用模型 API。
+- 小程序端不得保存、硬编码或传递模型 API key。
+- `LLM_API_KEY`、`LLM_BASE_URL`、`LLM_MODEL` 只能配置在 CloudBase 环境变量或云端配置中。
+- v2 RAG 使用轻量关键词检索和学习状态加权，不引入向量数据库。
+- 现有 mock ASR 不因 v2 改动而替换为真实 ASR。
+- 完整 typecheck、lint、format check 和全量测试默认由用户运行；Codex 只运行当前改动相关的专项检查，除非用户明确要求全量检查。
+
 SceneEnglish 第一版推荐使用：
 
 ```text

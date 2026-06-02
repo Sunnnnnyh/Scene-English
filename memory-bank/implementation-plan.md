@@ -1,5 +1,9 @@
 # SceneEnglish 实施计划
 
+> Status: Historical v1/MVP implementation baseline.
+>
+> 当前开发主线已经切换到 `memory-bank/implementation-plan-v2-scene-tutor.md`。除非用户明确要求回到 v1/MVP 基线，否则不要再使用本文件判断“下一步”。当前下一步应先查看 `memory-bank/progress.md` 最新 Remaining 记录，再对照 v2 Scene Tutor 实施计划执行。
+
 > 面向对象：AI 开发者  
 > 输入依据：`memory-bank/design-document.md`、`memory-bank/tech-stack.md`  
 > 约束：每一步都要小而具体；每一步完成后必须验证；本文件只写指令，不包含代码。

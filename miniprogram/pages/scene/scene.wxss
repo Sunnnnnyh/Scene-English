@@ -522,8 +522,7 @@
 }
 
 .scene-tutor-response-state,
-.scene-tutor-response-error,
-.scene-tutor-ask-result-preview {
+.scene-tutor-response-error {
   box-sizing: border-box;
   width: 100%;
   padding: 18rpx 20rpx;
@@ -536,8 +535,7 @@
 }
 
 .scene-tutor-response-state-text,
-.scene-tutor-response-error-text,
-.scene-tutor-ask-result-answer {
+.scene-tutor-response-error-text {
   display: block;
   font-size: 24rpx;
   line-height: 1.45;
@@ -558,14 +556,94 @@
   font-weight: 800;
 }
 
-.scene-tutor-ask-result-preview {
+.scene-tutor-response-retry {
+  width: auto;
+  min-width: 132rpx;
+  min-height: 62rpx;
+  margin: 16rpx 0 0;
+  padding: 0 24rpx;
+  border: 2rpx solid #19324d;
+  border-radius: 999rpx;
+  background: #ffffff;
+  color: #19324d;
+  font-size: 23rpx;
+  font-weight: 900;
+  line-height: 62rpx;
+}
+
+.scene-tutor-response-retry:active {
+  background: #fff4df;
+}
+
+.scene-tutor-ask-result-card {
+  display: flex;
+  flex-direction: column;
+  gap: 18rpx;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 20rpx;
   border: 2rpx solid #d7e6f2;
+  border-radius: 18rpx;
   background: #ffffff;
 }
 
-.scene-tutor-ask-result-answer {
+.scene-tutor-ask-result-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+  padding-top: 16rpx;
+  border-top: 2rpx solid #eef4f8;
+}
+
+.scene-tutor-ask-result-section:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.scene-tutor-ask-result-label {
+  display: block;
+  color: #5d7892;
+  font-size: 21rpx;
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+.scene-tutor-ask-result-answer,
+.scene-tutor-ask-result-example {
+  display: block;
   color: #19324d;
+  font-size: 24rpx;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.scene-tutor-ask-result-answer {
+  font-weight: 800;
+}
+
+.scene-tutor-ask-result-example {
+  color: #45647f;
   font-weight: 700;
+}
+
+.scene-tutor-ask-result-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10rpx;
+}
+
+.scene-tutor-ask-result-source {
+  box-sizing: border-box;
+  max-width: 100%;
+  padding: 7rpx 12rpx;
+  border: 2rpx solid #d7e6f2;
+  border-radius: 999rpx;
+  background: #f7fbff;
+  color: #19324d;
+  font-size: 21rpx;
+  font-weight: 800;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
 }
 
 .mode-topbar {

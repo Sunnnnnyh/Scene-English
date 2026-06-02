@@ -60,19 +60,19 @@ describe("scene page view model", () => {
     expect(viewModel.progressPercent).toBe(15);
   });
 
-  it("offers memory hint while unlearned words remain", () => {
+  it("does not expose memory hint controls while unlearned words remain", () => {
     if (!classroom) {
       throw new Error("Classroom scene fixture is missing");
     }
 
     const viewModel = createSceneViewModel(classroom, emptyProgress, classroomWords);
 
-    expect(viewModel.memoryHintButtonLabel).toBe("提示一下");
-    expect(viewModel.memoryHintButtonDisabled).toBe(false);
-    expect(viewModel.memoryHintWordId).toBe("");
+    expect("memoryHintButtonLabel" in viewModel).toBe(false);
+    expect("memoryHintButtonDisabled" in viewModel).toBe(false);
+    expect("memoryHintWordId" in viewModel).toBe(false);
   });
 
-  it("keeps the memory hint control stable after all words are learned", () => {
+  it("keeps memory hint controls absent after all words are learned", () => {
     if (!classroom) {
       throw new Error("Classroom scene fixture is missing");
     }
@@ -86,8 +86,9 @@ describe("scene page view model", () => {
       classroomWords
     );
 
-    expect(viewModel.memoryHintButtonLabel).toBe("已找完");
-    expect(viewModel.memoryHintButtonDisabled).toBe(true);
+    expect("memoryHintButtonLabel" in viewModel).toBe(false);
+    expect("memoryHintButtonDisabled" in viewModel).toBe(false);
+    expect("memoryHintWordId" in viewModel).toBe(false);
   });
 
   it("builds a scene word list for review", () => {
