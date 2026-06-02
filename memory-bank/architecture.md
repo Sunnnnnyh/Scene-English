@@ -2506,3 +2506,37 @@ File change record:
 | `miniprogram/pages/scene/scene.wxml` | Renders Scene Tutor home cards and Ask AI input panel. | v2 Scene Tutor / Step 4.3 and Step 5.1 |
 | `miniprogram/pages/scene/scene.wxss` | Styles Scene Tutor home cards and Ask AI input controls. | v2 Scene Tutor / Step 4.3 and Step 5.1 |
 | `tests/sceneTutorPage.test.ts` | Covers Scene Tutor home rendering and Ask AI input setup. | v2 Scene Tutor / Step 4.3 and Step 5.1 |
+
+## 76. Memory mode hint button removal and hotspot rendering cleanup
+
+Memory mode no longer exposes the `提示一下` hint button. The feature was removed after repeated intermittent white-block repaint artifacts in WeChat DevTools when activating hints. The current Memory assist area only keeps the scene word list toggle.
+
+Current responsibilities:
+- `miniprogram/pages/scene/scene.wxml` renders only the `单词清单` assist button in Memory mode.
+- `miniprogram/pages/scene/scene.wxml` no longer binds `onShowMemoryHint` or reads hint-button state.
+- `miniprogram/pages/scene/sceneViewModel.ts` no longer exposes `memoryHintWordId`, `memoryHintButtonLabel`, or `memoryHintButtonDisabled`.
+- `miniprogram/pages/scene/scene.ts` no longer owns the Memory hint cycling handler or hint-button state refresh.
+- `miniprogram/pages/scene/scene.wxss` no longer keeps `.memory-hint*` styles.
+- `miniprogram/pages/scene/scene.wxss` keeps `.memory-hotspot--hinted` for the one-time onboarding guide highlight.
+- `miniprogram/pages/scene/scene.wxml` renders the Memory scene image as a normal view background, while Listen + Spell and Listen + Speak continue to use the existing scene image markup.
+- `tests/sceneMemoryHotspots.test.ts` protects the removal by asserting the hint button state, handler, and styles are absent.
+
+Runtime notes:
+- The scene word list remains available from Memory mode and the scene home view.
+- Whole clickable hotspot overlays remain in place for object taps.
+- Default hotspot overlays are visually transparent, with visible highlight only for onboarding and practice target states.
+- Full typecheck, lint, format check, and full test suite are intentionally left for the user to run unless explicitly requested.
+
+Test coverage:
+- `tests/sceneMemoryHotspots.test.ts` covers removal of the Memory hint button and related page/view-model state.
+- `tests/sceneMemoryHotspots.test.ts` covers Memory scene background rendering and hotspot transparency.
+- `tests/sceneMemoryHotspots.test.ts` covers the retained whole-hotspot onboarding highlight style.
+
+File change record:
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `miniprogram/pages/scene/scene.ts` | Removes Memory hint-button state and handler while keeping scene word list refresh. | Memory hint removal |
+| `miniprogram/pages/scene/sceneViewModel.ts` | Removes Memory hint-button fields from the page view model. | Memory hint removal |
+| `miniprogram/pages/scene/scene.wxml` | Removes the Memory hint button and renders Memory scene art as a view background. | Memory hint removal |
+| `miniprogram/pages/scene/scene.wxss` | Removes `.memory-hint*` styles and keeps hotspot highlight styles for onboarding/practice states. | Memory hint removal |
+| `tests/sceneMemoryHotspots.test.ts` | Covers absence of the hint button feature and current hotspot rendering structure. | Memory hint removal |

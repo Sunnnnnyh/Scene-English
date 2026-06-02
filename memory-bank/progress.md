@@ -1503,3 +1503,20 @@
   - `git diff --check` passed with only Windows CRLF warnings.
 - Remaining:
   - Step 5.2 needs Ask AI submit to build a Scene Tutor payload, call `sceneTutorCloudService`, and expose loading / success / failure state on the page.
+
+### 2026-06-02 - Memory mode hint button removal and hotspot rendering cleanup
+
+- Completed:
+  - Removed the Memory mode `提示一下` hint button after repeated WeChat DevTools repaint flicker during hint activation.
+  - Removed the related page state and handler: `memoryHintWordId`, `memoryHintButtonLabel`, `memoryHintButtonDisabled`, and `onShowMemoryHint`.
+  - Kept the `单词清单` button as the only Memory assist control.
+  - Kept the whole clickable hotspot highlight style for the one-time Memory onboarding guide.
+  - Kept ordinary Memory, Listen + Spell, and Listen + Speak hotspot overlays visually transparent by default.
+  - Rendered the Memory scene image as a normal view background to avoid native image repaint flicker in the Memory hotspot layer.
+  - Added regression coverage so the hint button feature and its dead state do not return.
+- Verification:
+  - User validated the removal and requested commit.
+  - Focused Vitest passed: `tests/sceneMemoryHotspots.test.ts` with 10 tests.
+  - Full typecheck, lint, format check, and full test suite were not run by Codex per the updated project rule; the user will run those checks separately.
+- Remaining:
+  - Continue with v2 Scene Tutor Step 5.2 when the user requests the next implementation step.
