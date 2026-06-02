@@ -2326,3 +2326,183 @@ File change record:
 |---|---|---|
 | `cloudfunctions/sceneTutor/index.js` | Connects guardrails, prompt builder, provider, and parser into the cloud function core pipeline. | v2 Scene Tutor / Step 2.6 |
 | `tests/cloudSceneTutorFunction.test.ts` | Covers the local end-to-end cloud function pipeline with fake providers. | v2 Scene Tutor / Step 2.6 |
+
+## 70. v2 Scene Tutor / Step 3.1 Mini-program cloud capability initialization
+
+The mini-program app now initializes WeChat cloud capability on launch without hardcoding a CloudBase environment ID or any model/provider credentials. This prepares the client for the later `sceneTutor` cloud function call while keeping app startup safe when cloud capability is unavailable.
+
+Current responsibilities:
+- `miniprogram/services/cloudInitService.ts` wraps `wx.cloud.init({ traceUser: true })`.
+- `miniprogram/services/cloudInitService.ts` returns a structured unavailable result if `wx.cloud` is missing or cloud initialization throws.
+- `miniprogram/app.ts` calls the cloud initialization wrapper in `onLaunch`.
+- `miniprogram/app.ts` stores the result in `globalData.isCloudAvailable` for later service/page checks.
+- `miniprogram/typings/index.d.ts` defines the new app global data shape.
+
+Runtime notes:
+- No CloudBase environment ID is hardcoded in source.
+- No API key, provider key, base URL, or model configuration is stored in the mini-program.
+- Cloud initialization failure does not block the existing learning flows; later Scene Tutor cloud calls can show controlled unavailable feedback.
+- The local test command had to invoke Vitest through the project-local Node binary because the Windows `.cmd` shim returned `Access is denied` in the current environment.
+
+Test coverage:
+- `tests/cloudInitService.test.ts` covers successful cloud initialization.
+- `tests/cloudInitService.test.ts` covers missing `wx.cloud`.
+- `tests/cloudInitService.test.ts` covers initialization exceptions.
+- `tests/cloudInitService.test.ts` covers `app.ts` launch wiring.
+
+File change record:
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `miniprogram/services/cloudInitService.ts` | Safely initializes WeChat cloud capability for Scene Tutor cloud-function calls. | v2 Scene Tutor / Step 3.1 |
+| `miniprogram/app.ts` | Calls cloud initialization on launch and stores cloud availability in global data. | v2 Scene Tutor / Step 3.1 |
+| `miniprogram/typings/index.d.ts` | Adds `isCloudAvailable` to the app global data contract. | v2 Scene Tutor / Step 3.1 |
+| `tests/cloudInitService.test.ts` | Covers cloud initialization behavior and app launch wiring. | v2 Scene Tutor / Step 3.1 |
+
+## 71. v2 Scene Tutor / Step 3.2 Scene Tutor cloud function call service
+
+The mini-program now has a client-side service boundary for calling the `sceneTutor` CloudBase function. Page code should use this service later instead of calling `wx.cloud.callFunction` directly.
+
+Current responsibilities:
+- `miniprogram/services/sceneTutorCloudService.ts` exposes `requestSceneTutor(payload)`.
+- `miniprogram/services/sceneTutorCloudService.ts` calls the `sceneTutor` cloud function with the prepared payload.
+- `miniprogram/services/sceneTutorCloudService.ts` validates successful Ask AI and Make Sentences response shapes before returning them to page code.
+- `miniprogram/services/sceneTutorCloudService.ts` maps rejected calls, timeouts, and invalid result shapes to a structured `unavailable` result.
+- `miniprogram/services/sceneTutorCloudService.ts` strips secret-like fields before data leaves the mini-program.
+
+Runtime notes:
+- The service does not store, read, or send model API keys.
+- The timeout fallback prevents Scene Tutor UI from waiting forever when the cloud function or network stalls.
+- Error details, stacks, provider names, status codes, and internal exception messages are not returned to user-facing page code.
+- Tests inject a fake cloud-call function; no real CloudBase environment is required for local verification.
+
+Test coverage:
+- `tests/sceneTutorCloudService.test.ts` covers successful Ask AI responses.
+- `tests/sceneTutorCloudService.test.ts` covers successful Make Sentences responses.
+- `tests/sceneTutorCloudService.test.ts` covers rejected cloud calls.
+- `tests/sceneTutorCloudService.test.ts` covers invalid cloud result shapes.
+- `tests/sceneTutorCloudService.test.ts` covers timeout fallback.
+- `tests/sceneTutorCloudService.test.ts` covers secret-like field stripping.
+
+File change record:
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `miniprogram/services/sceneTutorCloudService.ts` | Wraps the mini-program Scene Tutor CloudBase function call and normalizes cloud results. | v2 Scene Tutor / Step 3.2 |
+| `tests/sceneTutorCloudService.test.ts` | Covers Scene Tutor cloud-call success, failure, timeout, malformed result, and secret stripping. | v2 Scene Tutor / Step 3.2 |
+
+## 72. v2 Scene Tutor / Step 3.3 Scene Tutor copy utility
+
+Scene Tutor now has a centralized mini-program copy utility for user-facing strings. This keeps the upcoming Scene Tutor entry, Ask AI panel, Make Sentences panel, and error/empty/loading states consistent while avoiding visible implementation terminology.
+
+Current responsibilities:
+- `miniprogram/utils/sceneTutorCopy.ts` stores Scene Tutor title and entry copy.
+- `miniprogram/utils/sceneTutorCopy.ts` stores Ask AI recommended questions.
+- `miniprogram/utils/sceneTutorCopy.ts` stores Make Sentences generation labels and selection actions.
+- `miniprogram/utils/sceneTutorCopy.ts` stores loading, unavailable, out-of-scope, and empty-state copy.
+- `miniprogram/services/sceneTutorCloudService.ts` reuses `sceneTutorCopy.errorUnavailable` for cloud-call fallback results.
+
+Runtime notes:
+- User-facing Scene Tutor copy avoids internal terms such as prompt, RAG, token, API, provider, mock, stack, and key.
+- Generation type values still use internal task ids in data objects for routing; labels remain user-facing text.
+- Page rendering for the Scene Tutor entry and panels is handled by later Phase 4+ steps.
+
+Test coverage:
+- `tests/sceneTutorCopy.test.ts` covers the centralized copy structure.
+- `tests/sceneTutorCopy.test.ts` scans Scene Tutor visible copy for forbidden technical wording.
+- `tests/sceneTutorCloudService.test.ts` continues to cover unavailable cloud-call fallback using the centralized copy.
+
+File change record:
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `miniprogram/utils/sceneTutorCopy.ts` | Centralizes Scene Tutor user-facing copy for entry, Ask AI, Make Sentences, loading, errors, empty, and out-of-scope states. | v2 Scene Tutor / Step 3.3 |
+| `miniprogram/services/sceneTutorCloudService.ts` | Reuses Scene Tutor copy for cloud-call unavailable fallback. | v2 Scene Tutor / Step 3.3 |
+| `tests/sceneTutorCopy.test.ts` | Covers Scene Tutor copy structure and technical-wording exclusions. | v2 Scene Tutor / Step 3.3 |
+
+## 73. v2 Scene Tutor / Step 4.1 Scene Tutor scene entry
+
+The scene learning page now exposes a Scene Tutor entry for scenes that are already available to learn. This is still an entry-only integration; the in-page Scene Tutor mode shell and task panels are handled by later Step 4.x work.
+
+Current responsibilities:
+- `miniprogram/pages/scene/sceneViewModel.ts` builds `sceneTutorEntry` for available scenes and returns `null` for coming-soon scenes.
+- `miniprogram/pages/scene/scene.wxml` renders the Scene Tutor entry after the existing learning mode entries.
+- `miniprogram/pages/scene/scene.wxss` styles the Scene Tutor entry as a compact scene-level tool card.
+- `miniprogram/utils/sceneTutorCopy.ts` remains the source for visible Scene Tutor entry copy.
+
+Runtime notes:
+- Classroom and Lecture Hall both receive the Scene Tutor entry because their scene status is `available`.
+- Dormitory and Cafeteria do not receive the available Scene Tutor entry because their scene status is `comingSoon`.
+- The existing Memory, Listen + Spell, and Listen + Speak mode entries remain unchanged.
+- The entry uses `supportingText` in page-facing view-model data to avoid reintroducing the previously banned `description` field name in user-facing page sources.
+
+Test coverage:
+- `tests/sceneTutorPage.test.ts` covers Scene Tutor entry visibility for Classroom and Lecture Hall.
+- `tests/sceneTutorPage.test.ts` covers Scene Tutor entry exclusion for Dormitory and Cafeteria.
+- `tests/sceneTutorPage.test.ts` covers WXML rendering from view-model data while preserving existing mode rendering.
+
+File change record:
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `miniprogram/pages/scene/sceneViewModel.ts` | Adds the Scene Tutor entry data for available scenes. | v2 Scene Tutor / Step 4.1 |
+| `miniprogram/pages/scene/scene.wxml` | Renders the Scene Tutor entry on the scene learning page. | v2 Scene Tutor / Step 4.1 |
+| `miniprogram/pages/scene/scene.wxss` | Styles the Scene Tutor entry. | v2 Scene Tutor / Step 4.1 |
+| `tests/sceneTutorPage.test.ts` | Covers Scene Tutor scene-entry visibility and WXML rendering. | v2 Scene Tutor / Step 4.1 |
+
+## 74. v2 Scene Tutor / Step 4.2 Scene Tutor in-page mode shell
+
+The Scene Tutor entry now opens an in-page Scene Tutor mode shell inside the Learn tab. This keeps Scene Tutor aligned with the existing Memory, Listen + Spell, and Listen + Speak mode-switching model instead of introducing a separate page route.
+
+Current responsibilities:
+- `miniprogram/pages/scene/sceneViewModel.ts` includes `sceneTutor` in the scene entry id union.
+- `miniprogram/pages/scene/sceneViewModel.ts` exposes `sceneTutorPanel` with the empty-state copy and task entry titles.
+- `miniprogram/pages/scene/scene.ts` maps Scene Tutor entry taps to `activeMode: "sceneTutor"`.
+- `miniprogram/pages/scene/scene.wxml` binds the Scene Tutor entry to `onEntryTap` and renders the Scene Tutor mode shell.
+- `miniprogram/pages/scene/scene.wxss` styles the Scene Tutor mode shell.
+
+Runtime notes:
+- Scene Tutor mode uses the same topbar back behavior as the existing learning modes.
+- The mode shell only exposes task entry titles and an empty state; Ask AI and Make Sentences task panels are handled by later steps.
+- Existing practice cleanup remains scoped to Listen + Spell and Listen + Speak interruptions.
+
+Test coverage:
+- `tests/sceneTutorPage.test.ts` covers the Scene Tutor entry id, in-tab action mapping, panel model, and WXML mode shell.
+- `tests/sceneInlineMode.test.ts` continues to ensure in-tab learning mode navigation does not use `wx.navigateTo`.
+
+File change record:
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `miniprogram/pages/scene/sceneViewModel.ts` | Adds `sceneTutor` as an in-page mode id and exposes Scene Tutor panel shell data. | v2 Scene Tutor / Step 4.2 |
+| `miniprogram/pages/scene/scene.ts` | Routes Scene Tutor entry taps into the Learn-tab mode state. | v2 Scene Tutor / Step 4.2 |
+| `miniprogram/pages/scene/scene.wxml` | Binds the Scene Tutor entry to `onEntryTap` and renders the Scene Tutor mode shell. | v2 Scene Tutor / Step 4.2 |
+| `miniprogram/pages/scene/scene.wxss` | Styles the Scene Tutor mode shell. | v2 Scene Tutor / Step 4.2 |
+| `tests/sceneTutorPage.test.ts` | Covers Scene Tutor mode switching and shell rendering. | v2 Scene Tutor / Step 4.2 |
+
+## 75. v2 Scene Tutor / Step 4.3 and Step 5.1 Scene Tutor home and Ask AI input
+
+The Scene Tutor page shell now renders a usable home view and the first Ask AI input state inside the existing Learn-tab scene page.
+
+Current responsibilities:
+- `miniprogram/pages/scene/sceneViewModel.ts` exposes Scene Tutor home actions for Ask AI and Make Sentences.
+- `miniprogram/pages/scene/sceneViewModel.ts` exposes Ask AI panel copy, recommended questions, input state, and submit eligibility state.
+- `miniprogram/pages/scene/scene.ts` switches from the Scene Tutor home state into the Ask AI input state when the Ask AI card is tapped.
+- `miniprogram/pages/scene/scene.ts` keeps Ask AI input and submit-enabled state in page data.
+- `miniprogram/pages/scene/scene.ts` fills the Ask AI input when a recommended question chip is tapped.
+- `miniprogram/pages/scene/scene.wxml` renders the Scene Tutor home task cards and Ask AI input panel.
+- `miniprogram/pages/scene/scene.wxss` styles the Scene Tutor home cards, Ask AI textarea, recommended question chips, and disabled submit state.
+
+Runtime notes:
+- Ask AI recommended question chips only fill the input in Step 5.1; they do not submit automatically.
+- Empty and whitespace-only Ask AI input disables the submit button.
+- Step 5.1 does not call the cloud function yet; payload creation and `sceneTutorCloudService` integration are Step 5.2.
+- Make Sentences panel controls are intentionally not rendered yet.
+
+Test coverage:
+- `tests/sceneTutorPage.test.ts` covers Scene Tutor home card structure and full-width card styling.
+- `tests/sceneTutorPage.test.ts` covers Ask AI input, recommended question chip structure, submit disabled binding, and the absence of Make Sentences controls at this step.
+
+File change record:
+| File path | Purpose | Created / updated phase |
+|---|---|---|
+| `miniprogram/pages/scene/sceneViewModel.ts` | Adds Scene Tutor home action data and Ask AI panel state/copy. | v2 Scene Tutor / Step 4.3 and Step 5.1 |
+| `miniprogram/pages/scene/scene.ts` | Adds Scene Tutor Ask AI task switching and input state handlers. | v2 Scene Tutor / Step 5.1 |
+| `miniprogram/pages/scene/scene.wxml` | Renders Scene Tutor home cards and Ask AI input panel. | v2 Scene Tutor / Step 4.3 and Step 5.1 |
+| `miniprogram/pages/scene/scene.wxss` | Styles Scene Tutor home cards and Ask AI input controls. | v2 Scene Tutor / Step 4.3 and Step 5.1 |
+| `tests/sceneTutorPage.test.ts` | Covers Scene Tutor home rendering and Ask AI input setup. | v2 Scene Tutor / Step 4.3 and Step 5.1 |

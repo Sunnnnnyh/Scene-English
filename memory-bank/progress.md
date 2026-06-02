@@ -1371,3 +1371,135 @@
   - Vitest passed: 54 test files, 279 tests.
 - Remaining:
   - Phase 3 / Step 3.1 needs mini-program cloud capability initialization and safe unavailable handling.
+
+### 2026-06-01 - v2 Scene Tutor / Step 3.1 Mini-program cloud capability initialization
+
+- Completed:
+  - Added `cloudInitService` to safely initialize mini-program cloud capability through `wx.cloud.init({ traceUser: true })`.
+  - Wired cloud initialization into `miniprogram/app.ts` during `onLaunch`.
+  - Added `isCloudAvailable` to app global data so later page/service code can read cloud availability without calling cloud initialization again.
+  - Kept CloudBase environment IDs, API keys, provider keys, base URLs, and model configuration out of mini-program source code.
+  - Added fallback behavior so missing `wx.cloud` or initialization exceptions return `cloud_unavailable` instead of crashing app startup.
+- Verification:
+  - User validated Step 3.1 in WeChat DevTools.
+  - TypeScript miniprogram config passed.
+  - TypeScript test config passed.
+  - ESLint passed.
+  - Prettier check passed.
+  - Vitest passed: 55 test files, 283 tests.
+  - `git diff --check` passed with only Windows CRLF warnings.
+- Remaining:
+  - Step 3.2 needs `sceneTutorCloudService` to wrap `wx.cloud.callFunction`, normalize success/failure responses, and keep API key fields out of the mini-program request path.
+
+### 2026-06-01 - v2 Scene Tutor / Step 3.2 Scene Tutor cloud function call service
+
+- Completed:
+  - Added `sceneTutorCloudService` to wrap the mini-program `wx.cloud.callFunction` boundary for the `sceneTutor` cloud function.
+  - Added `requestSceneTutor(payload)` so later page code can call one service instead of touching `wx.cloud.callFunction` directly.
+  - Normalized successful Ask AI and Make Sentences cloud function responses into typed client-side results.
+  - Converted cloud call rejection, timeout, and invalid result shapes into the user-safe `unavailable` result with `AI Tutor is temporarily unavailable. Please try again.`
+  - Added recursive secret-like field stripping before sending payload data to CloudBase, covering fields such as `apiKey`, `LLM_API_KEY`, `providerKey`, `token`, and `secret`.
+- Verification:
+  - User validated Step 3.2 in WeChat DevTools.
+  - TypeScript miniprogram config passed.
+  - TypeScript test config passed.
+  - ESLint passed.
+  - Prettier check passed.
+  - Vitest passed: 56 test files, 289 tests.
+  - `git diff --check` passed with only Windows CRLF warnings.
+- Remaining:
+  - Step 3.3 needs centralized Scene Tutor user-facing copy for titles, recommended questions, generation labels, loading, errors, empty states, and out-of-scope feedback.
+
+### 2026-06-01 - v2 Scene Tutor / Step 3.3 Scene Tutor copy utility
+
+- Completed:
+  - Added `sceneTutorCopy` as the centralized source for Scene Tutor user-facing copy.
+  - Added copy for Scene Tutor title, entry title, entry description, Ask AI recommended questions, Make Sentences generation type labels, loading, unavailable, out-of-scope, empty state, and selection actions.
+  - Updated `sceneTutorCloudService` to reuse `sceneTutorCopy.errorUnavailable` instead of keeping a separate error string.
+  - Added user-facing copy regression coverage to keep technical implementation words out of Scene Tutor visible copy.
+- Verification:
+  - User validated Step 3.3 in WeChat DevTools.
+  - TypeScript miniprogram config passed.
+  - TypeScript test config passed.
+  - ESLint passed.
+  - Prettier check passed.
+  - Vitest passed: 57 test files, 291 tests.
+  - `git diff --check` passed with only Windows CRLF warnings.
+- Remaining:
+  - Phase 4 / Step 4.1 needs the Scene Tutor entry on the scene learning page for available scenes only.
+
+### 2026-06-01 - v2 Scene Tutor / Step 4.1 Scene Tutor scene entry
+
+- Completed:
+  - Added a Scene Tutor entry model to the scene learning page view model.
+  - Showed the `AI 助教 / Scene Tutor` entry for available scenes: Classroom and Lecture Hall.
+  - Kept the Scene Tutor entry unavailable for coming-soon scenes: Dormitory and Cafeteria.
+  - Rendered Ask AI and Make Sentences capability hints without replacing the existing Memory, Listen + Spell, and Listen + Speak mode entries.
+  - Added focused regression coverage for available-scene visibility, coming-soon exclusion, and WXML rendering.
+- Verification:
+  - User validated Step 4.1 in WeChat DevTools.
+  - TypeScript miniprogram config passed.
+  - TypeScript test config passed.
+  - ESLint passed.
+  - Prettier check passed.
+  - Vitest passed: 58 test files, 294 tests.
+  - `git diff --check` passed with only Windows CRLF warnings.
+- Remaining:
+  - Step 4.2 needs the Scene Tutor entry to switch into an in-page Scene Tutor mode shell without disrupting existing learning modes.
+
+### 2026-06-01 - v2 Scene Tutor / Step 4.2 Scene Tutor in-page mode shell
+
+- Completed:
+  - Extended the scene learning page mode id union with `sceneTutor`.
+  - Wired the Scene Tutor entry into the existing in-tab `onEntryTap` flow.
+  - Added a Scene Tutor mode shell that shows the empty state and the two task entry titles.
+  - Kept Scene Tutor navigation inside the Learn tab with the same topbar back behavior used by existing modes.
+  - Preserved Memory, Listen + Spell, and Listen + Speak mode entry behavior.
+- Verification:
+  - User validated Step 4.2 in WeChat DevTools.
+  - TypeScript miniprogram config passed.
+  - TypeScript test config passed.
+  - ESLint passed.
+  - Prettier check passed.
+  - Vitest passed: 58 test files, 295 tests.
+  - `git diff --check` passed with only Windows CRLF warnings.
+- Remaining:
+  - Step 4.3 needs the Ask AI panel shell inside Scene Tutor.
+  - Step 4.4 needs the Make Sentences panel shell inside Scene Tutor.
+
+### 2026-06-01 - v2 Scene Tutor / Step 4.3 Scene Tutor home rendering
+
+- Completed:
+  - Rendered the Scene Tutor home panel with the current scene name, Scene Tutor title, empty-state text, and two task cards.
+  - Reworked the task cards into full-width stacked cards for Ask AI and Make Sentences.
+  - Added page-model action data for the task cards instead of hardcoding the two card titles in WXML.
+  - Kept Step 4.3 scoped to the Scene Tutor home view without adding task input panels.
+- Verification:
+  - User moved past Step 4.3 and requested the next Scene Tutor implementation step.
+  - TypeScript miniprogram config passed.
+  - TypeScript test config passed.
+  - ESLint passed.
+  - Prettier check passed.
+  - Vitest passed: 58 test files, 302 tests.
+  - `git diff --check` passed with only Windows CRLF warnings.
+- Remaining:
+  - Step 5.1 needs the Ask AI input area, recommended question chips, and empty-input submit guarding.
+
+### 2026-06-01 - v2 Scene Tutor / Step 5.1 Ask AI input and recommended questions
+
+- Completed:
+  - Added Scene Tutor internal task state for the Ask AI panel.
+  - Added Ask AI textarea input, 500-character limit, recommended question chips, and an Ask submit button.
+  - Disabled the Ask submit button for empty or whitespace-only input.
+  - Made recommended question chips fill the input instead of submitting immediately, so users can edit before asking.
+  - Kept this step scoped to input setup only; no cloud function request is sent in Step 5.1.
+- Verification:
+  - User validated Step 5.1 and requested the next step.
+  - TypeScript miniprogram config passed.
+  - TypeScript test config passed.
+  - ESLint passed.
+  - Prettier check passed.
+  - Vitest passed: 58 test files, 304 tests.
+  - `git diff --check` passed with only Windows CRLF warnings.
+- Remaining:
+  - Step 5.2 needs Ask AI submit to build a Scene Tutor payload, call `sceneTutorCloudService`, and expose loading / success / failure state on the page.

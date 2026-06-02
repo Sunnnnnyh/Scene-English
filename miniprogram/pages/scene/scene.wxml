@@ -62,6 +62,26 @@
         </view>
       </block>
     </view>
+
+    <view wx:if="{{sceneTutorEntry}}" class="scene-tutor-section">
+      <text class="section-title">{{sceneTutorEntry.title}}</text>
+      <view
+        class="scene-tutor-entry"
+        data-entry-id="{{sceneTutorEntry.id}}"
+        bindtap="onEntryTap"
+      >
+        <view class="scene-tutor-copy">
+          <text class="scene-tutor-label">{{sceneTutorEntry.sceneTutorLabel}}</text>
+          <text class="scene-tutor-supporting-text">{{sceneTutorEntry.supportingText}}</text>
+          <view class="scene-tutor-capabilities">
+            <block wx:for="{{sceneTutorEntry.capabilityLabels}}" wx:key="*this">
+              <text class="scene-tutor-capability">{{item}}</text>
+            </block>
+          </view>
+        </view>
+        <text class="scene-tutor-action">{{sceneTutorEntry.actionLabel}}</text>
+      </view>
+    </view>
   </block>
 
   <block wx:if="{{activeMode}}">
@@ -87,13 +107,6 @@
 
     <block wx:if="{{activeMode === 'memory'}}">
       <view class="memory-assist">
-        <button
-          class="memory-hint {{memoryHintButtonDisabled ? 'memory-hint--disabled' : ''}}"
-          disabled="{{memoryHintButtonDisabled}}"
-          bindtap="onShowMemoryHint"
-        >
-          {{memoryHintButtonLabel}}
-        </button>
         <button class="scene-word-list-toggle scene-word-list-toggle--compact" bindtap="onToggleSceneWordList">
           {{showSceneWordList ? '收起清单' : '单词清单'}}
         </button>
@@ -111,22 +124,18 @@
         </block>
       </view>
 
-      <view class="scene-preview mode-page-preview memory-scene-preview" bindtap="onMemoryBlankTap">
-        <image
-          wx:if="{{sceneImageLoadStatus !== 'failed'}}"
-          class="scene-image"
-          src="{{sceneImage}}"
-          mode="aspectFill"
-          bindload="onSceneImageLoad"
-          binderror="onSceneImageError"
-        />
-        <view wx:else class="scene-image-fallback">
+      <view
+        class="scene-preview mode-page-preview memory-scene-preview"
+        style="background-image: url({{sceneImage}});"
+        bindtap="onMemoryBlankTap"
+      >
+        <view wx:if="{{sceneImageLoadStatus === 'failed'}}" class="scene-image-fallback">
           <text class="scene-image-fallback__title">Image unavailable.</text>
           <button class="scene-image-fallback__retry" catchtap="onRetrySceneImage">Try again</button>
         </view>
         <block wx:for="{{memoryHotspots}}" wx:key="hotspotId">
           <view
-            class="memory-hotspot {{showMemoryGuide && item.wordId === memoryGuideWordId ? 'memory-hotspot--guided' : ''}} {{memoryHintWordId === item.wordId ? 'memory-hotspot--hinted' : ''}}"
+            class="memory-hotspot {{showMemoryGuide && item.wordId === memoryGuideWordId ? 'memory-hotspot--hinted' : ''}}"
             style="{{item.style}}"
             data-word-id="{{item.wordId}}"
             hover-class="none"
@@ -306,6 +315,67 @@
           </button>
         </view>
       </block>
+    </block>
+
+    <block wx:elif="{{activeMode === 'sceneTutor'}}">
+      <view class="scene-tutor-panel">
+        <text class="scene-tutor-panel-kicker">{{sceneTutorPanel.sceneNameLabel}}</text>
+        <text class="scene-tutor-panel-title">{{sceneTutorPanel.title}}</text>
+        <text wx:if="{{sceneTutorActiveTool === 'home'}}" class="scene-tutor-panel-empty">{{sceneTutorPanel.emptyState}}</text>
+        <view wx:if="{{sceneTutorActiveTool === 'home'}}" class="scene-tutor-panel-actions">
+          <block wx:for="{{sceneTutorPanel.actions}}" wx:key="id">
+            <view
+              class="scene-tutor-panel-action"
+              data-scene-tutor-action-id="{{item.id}}"
+              bindtap="onSceneTutorActionTap"
+            >
+              <view class="scene-tutor-panel-action-copy">
+                <text class="scene-tutor-panel-action-title">{{item.title}}</text>
+                <text class="scene-tutor-panel-action-text">{{item.supportingText}}</text>
+              </view>
+              <text class="scene-tutor-panel-action-label">{{item.actionLabel}}</text>
+            </view>
+          </block>
+        </view>
+        <view wx:elif="{{sceneTutorActiveTool === 'ask'}}" class="scene-tutor-ask-panel">
+          <text class="scene-tutor-ask-title">{{sceneTutorPanel.ask.title}}</text>
+          <textarea
+            class="scene-tutor-ask-input"
+            value="{{sceneTutorAskInput}}"
+            placeholder="{{sceneTutorPanel.ask.inputPlaceholder}}"
+            maxlength="500"
+            auto-height
+            bindinput="onSceneTutorAskInput"
+          />
+          <view class="scene-tutor-recommended-questions">
+            <block wx:for="{{sceneTutorPanel.ask.recommendedQuestions}}" wx:key="*this">
+              <view
+                class="scene-tutor-recommended-question"
+                data-question="{{item}}"
+                bindtap="onSceneTutorRecommendedQuestionTap"
+              >
+                <text class="scene-tutor-recommended-question-text">{{item}}</text>
+              </view>
+            </block>
+          </view>
+          <button
+            class="scene-tutor-ask-submit {{!sceneTutorAskCanSubmit ? 'scene-tutor-ask-submit--disabled' : ''}}"
+            disabled="{{!sceneTutorAskCanSubmit}}"
+            bindtap="onSubmitSceneTutorAsk"
+          >
+            {{sceneTutorPanel.ask.sendLabel}}
+          </button>
+          <view wx:if="{{sceneTutorAskStatus === 'loading'}}" class="scene-tutor-response-state">
+            <text class="scene-tutor-response-state-text">{{sceneTutorPanel.loading}}</text>
+          </view>
+          <view wx:if="{{sceneTutorAskError}}" class="scene-tutor-response-error">
+            <text class="scene-tutor-response-error-text">{{sceneTutorAskError}}</text>
+          </view>
+          <view wx:if="{{sceneTutorAskResult}}" class="scene-tutor-ask-result-preview">
+            <text class="scene-tutor-ask-result-answer">{{sceneTutorAskResult.answer}}</text>
+          </view>
+        </view>
+      </view>
     </block>
 
     <block wx:elif="{{activeMode === 'listeningSpeaking'}}">

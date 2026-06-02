@@ -3,19 +3,53 @@ import type {
   QuizQuestion,
   QuizRound,
   Scene,
+  SceneTutorAskResponse,
   StudyMode,
   UserProgress,
   Word
 } from "../../types";
 import { createHotspotStyle } from "../../utils/hotspot";
+import { sceneTutorCopy } from "../../utils/sceneTutorCopy";
 
-export type SceneEntryId = StudyMode;
+export type SceneEntryId = StudyMode | "sceneTutor";
 
 export type SceneModeEntry = {
   id: StudyMode;
   title: string;
   actionLabel: string;
   isRecommended: boolean;
+};
+
+export type SceneTutorEntry = {
+  id: "sceneTutor";
+  title: string;
+  sceneTutorLabel: string;
+  supportingText: string;
+  capabilityLabels: readonly string[];
+  actionLabel: string;
+};
+
+export type SceneTutorPanelAction = {
+  id: "ask" | "make";
+  title: string;
+  supportingText: string;
+  actionLabel: string;
+};
+
+export type SceneTutorPanelAsk = {
+  title: string;
+  inputPlaceholder: string;
+  sendLabel: string;
+  recommendedQuestions: readonly string[];
+};
+
+export type SceneTutorPanel = {
+  title: string;
+  sceneNameLabel: string;
+  emptyState: string;
+  actions: SceneTutorPanelAction[];
+  ask: SceneTutorPanelAsk;
+  loading: string;
 };
 
 export type SceneMemoryHotspot = {
@@ -46,6 +80,9 @@ export type SceneWordListItem = {
 };
 
 export type SceneImageLoadStatus = "idle" | "failed";
+
+export type SceneTutorActiveTool = "home" | "ask" | "make";
+export type SceneTutorAskStatus = "idle" | "loading" | "success" | "error";
 
 export type SceneListeningWritingQuestion = {
   questionId: QuizQuestion["id"];
@@ -98,15 +135,20 @@ export type SceneViewModel = {
   progressLabel: string;
   progressPercent: number;
   modeEntries: SceneModeEntry[];
+  sceneTutorEntry: SceneTutorEntry | null;
   activeMode: "" | SceneEntryId;
   selectedModeTitle: string;
+  sceneTutorPanel: SceneTutorPanel;
+  sceneTutorActiveTool: SceneTutorActiveTool;
+  sceneTutorAskInput: string;
+  sceneTutorAskCanSubmit: boolean;
+  sceneTutorAskStatus: SceneTutorAskStatus;
+  sceneTutorAskResult: SceneTutorAskResponse | null;
+  sceneTutorAskError: string;
   memoryHotspots: SceneMemoryHotspot[];
   showMemoryGuide: boolean;
   showMemoryTranslationGuide: boolean;
   memoryGuideWordId: Word["id"];
-  memoryHintWordId: Word["id"] | "";
-  memoryHintButtonLabel: string;
-  memoryHintButtonDisabled: boolean;
   selectedMemoryWordId: string;
   selectedMemoryWordCard: SceneMemoryWordCard | null;
   showSceneWordList: boolean;
@@ -183,6 +225,50 @@ const modeEntries: SceneModeEntry[] = [
     isRecommended: false
   }
 ];
+
+function createSceneTutorEntry(scene: Scene): SceneTutorEntry | null {
+  if (scene.status !== "available") {
+    return null;
+  }
+
+  return {
+    id: "sceneTutor",
+    title: sceneTutorCopy.entryTitle,
+    sceneTutorLabel: sceneTutorCopy.title,
+    supportingText: sceneTutorCopy.entryDescription,
+    capabilityLabels: [sceneTutorCopy.ask.title, sceneTutorCopy.make.title],
+    actionLabel: "Open"
+  };
+}
+
+function createSceneTutorPanel(scene: Scene): SceneTutorPanel {
+  return {
+    title: sceneTutorCopy.title,
+    sceneNameLabel: `${scene.nameEn} Scene`,
+    emptyState: sceneTutorCopy.emptyState,
+    actions: [
+      {
+        id: "ask",
+        title: sceneTutorCopy.ask.title,
+        supportingText: sceneTutorCopy.ask.homeSupportingText,
+        actionLabel: sceneTutorCopy.ask.homeActionLabel
+      },
+      {
+        id: "make",
+        title: sceneTutorCopy.make.title,
+        supportingText: sceneTutorCopy.make.homeSupportingText,
+        actionLabel: sceneTutorCopy.make.homeActionLabel
+      }
+    ],
+    ask: {
+      title: sceneTutorCopy.ask.title,
+      inputPlaceholder: sceneTutorCopy.ask.inputPlaceholder,
+      sendLabel: sceneTutorCopy.ask.sendLabel,
+      recommendedQuestions: sceneTutorCopy.ask.recommendedQuestions
+    },
+    loading: sceneTutorCopy.loading
+  };
+}
 
 export function createEmptyListeningWritingState(): SceneListeningWritingState {
   return {
@@ -265,7 +351,6 @@ export function createSceneViewModel(
 ): SceneViewModel {
   const learnedCount = progress.learnedWordIds.length;
   const learnedWordIdSet = new Set(progress.learnedWordIds);
-  const hasUnlearnedWords = words.some((word) => !learnedWordIdSet.has(word.id));
   const progressPercent =
     scene.wordCount > 0 ? Math.round((learnedCount / scene.wordCount) * 100) : 0;
   const memoryHotspots = words.flatMap((word) =>
@@ -295,15 +380,20 @@ export function createSceneViewModel(
     progressLabel: `Learned ${learnedCount} / ${scene.wordCount}`,
     progressPercent,
     modeEntries,
+    sceneTutorEntry: createSceneTutorEntry(scene),
     activeMode: "",
     selectedModeTitle: "",
+    sceneTutorPanel: createSceneTutorPanel(scene),
+    sceneTutorActiveTool: "home",
+    sceneTutorAskInput: "",
+    sceneTutorAskCanSubmit: false,
+    sceneTutorAskStatus: "idle",
+    sceneTutorAskResult: null,
+    sceneTutorAskError: "",
     memoryHotspots,
     showMemoryGuide: false,
     showMemoryTranslationGuide: false,
     memoryGuideWordId: "projector",
-    memoryHintWordId: "",
-    memoryHintButtonLabel: hasUnlearnedWords ? "提示一下" : "已找完",
-    memoryHintButtonDisabled: !hasUnlearnedWords,
     selectedMemoryWordId: "",
     selectedMemoryWordCard: null,
     showSceneWordList: false,
